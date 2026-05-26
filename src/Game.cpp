@@ -528,7 +528,7 @@ void Game::loadMenuFont()
     // 中文回退：Windows 系统字体
     std::string lang = LangManager::currentLangName();
     if (lang == "zh") {
-        paths.push_back("fonts/simsunb.ttf");
+        paths.push_back("fonts/simhei.ttf");
     }
     // 通用回退
     paths.push_back("fonts/arial.ttf");

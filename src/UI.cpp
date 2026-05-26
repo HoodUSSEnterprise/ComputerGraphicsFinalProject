@@ -165,7 +165,7 @@ void UI::reloadFont() {
 
     std::string lang = LangManager::currentLangName();
     if (lang == "zh") {
-        paths.push_back("fonts/simsunb.ttf");
+        paths.push_back("fonts/simhei.ttf");
     }
     paths.push_back("fonts/arial.ttf");
 
