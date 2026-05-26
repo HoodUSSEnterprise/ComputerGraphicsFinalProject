@@ -20,6 +20,7 @@ public:
 
     void showMessage(const std::wstring& msg);
     void reloadFont();
+    void refreshTexts();
 
 private:
     sf::Font m_font;

@@ -190,4 +190,16 @@ void UI::reloadFont() {
         btn.label.setFont(m_font);
         btn.cost.setFont(m_font);
     }
+
+    refreshTexts();
+}
+
+void UI::refreshTexts() {
+    m_instructionText.setString(LangManager::get(TextKey::Instruction));
+    m_startWaveText.setString(LangManager::get(TextKey::StartWave));
+
+    TextKey nameKeys[] = {TextKey::Tower_Arrow, TextKey::Tower_Cannon, TextKey::Tower_Ice};
+    for (size_t i = 0; i < m_towerButtons.size() && i < 3; ++i) {
+        m_towerButtons[i].label.setString(LangManager::get(nameKeys[i]));
+    }
 }

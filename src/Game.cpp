@@ -23,6 +23,7 @@ Game::Game()
     m_window.setView(m_view);
 
     LangManager::loadLanguage("assets/lang_en.json");
+    m_ui.reloadFont();
     initMenu();
     initSettings();
 
