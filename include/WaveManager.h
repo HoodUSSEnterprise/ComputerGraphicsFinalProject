@@ -1,0 +1,42 @@
+#pragma once
+
+#include "Constants.h"
+#include "Enemy.h"
+#include <vector>
+#include <memory>
+
+struct WaveData {
+    int enemyCount;
+    float spawnInterval;  // ç§?
+    float speed;
+    float hp;
+    int reward;
+    sf::Color color;
+};
+
+class WaveManager {
+public:
+    WaveManager();
+
+    void update(float dt, std::vector<std::shared_ptr<Enemy>>& enemies,
+                const std::vector<struct Waypoint>& waypoints);
+
+    bool isWaveComplete() const;
+    bool canStartWave() const { return !m_waveActive && !m_allWavesComplete; }
+    bool areAllWavesComplete() const { return m_allWavesComplete; }
+    void startNextWave();
+
+    int getCurrentWave() const { return m_currentWave; }
+    int getTotalWaves() const { return static_cast<int>(m_waves.size()); }
+    int getEnemiesRemaining() const { return m_remainingInWave; }
+
+private:
+    std::vector<WaveData> m_waves;
+    int m_currentWave;
+    int m_spawnedInWave;
+    int m_remainingInWave;
+    float m_spawnTimer;
+    bool m_waveActive;
+    bool m_allWavesComplete;
+    bool m_waveJustStarted;
+};
