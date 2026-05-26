@@ -36,6 +36,7 @@ private:
     std::vector<Waypoint> m_waypoints;
 
     sf::Texture m_groundTex;
+    sf::Texture m_endTex;
     bool m_hasTexture = false;
 
     mutable sf::RectangleShape m_tileShape;

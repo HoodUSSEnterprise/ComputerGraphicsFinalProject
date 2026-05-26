@@ -26,6 +26,10 @@ void Map::loadBiomeTextures(const std::string &biome)
     } else {
         std::cerr << "[Map] Texture FAILED: " << path << std::endl;
     }
+    // 加载终点纹理
+    if (!m_endTex.loadFromFile("textures/endpoint.png")) {
+        std::cerr << "[Map] endpoint.png FAILED" << std::endl;
+    }
 }
 
 bool Map::loadFromFile(const char *path)
@@ -90,24 +94,15 @@ void Map::draw(sf::RenderWindow &window) const
             switch (m_grid[c][r])
             {
             case TileType::Grass:
-                if (m_hasTexture)
-                {
-                    m_tileShape.setTexture(&m_groundTex);
-                    m_tileShape.setTextureRect(sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
-                    m_tileShape.setFillColor(sf::Color::White);
-                }
-                else
-                {
-                    m_tileShape.setTexture(nullptr);
-                    m_tileShape.setFillColor(sf::Color(34, 139, 34));
-                }
+                m_tileShape.setTexture(nullptr);
+                m_tileShape.setFillColor(sf::Color::White);
                 break;
             case TileType::Path:
                 if (m_hasTexture)
                 {
                     m_tileShape.setTexture(&m_groundTex);
                     m_tileShape.setTextureRect(sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
-                    m_tileShape.setFillColor(sf::Color(160, 140, 100));
+                    m_tileShape.setFillColor(sf::Color(220, 220, 220));
                 }
                 else
                 {
@@ -120,12 +115,13 @@ void Map::draw(sf::RenderWindow &window) const
                 m_tileShape.setFillColor(sf::Color(0, 200, 0));
                 break;
             case TileType::End:
-                m_tileShape.setTexture(nullptr);
-                m_tileShape.setFillColor(sf::Color(200, 0, 0));
+                m_tileShape.setTexture(&m_endTex);
+                m_tileShape.setTextureRect(sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
+                m_tileShape.setFillColor(sf::Color::White);
                 break;
             case TileType::Blocked:
                 m_tileShape.setTexture(nullptr);
-                m_tileShape.setFillColor(sf::Color(80, 80, 80));
+                m_tileShape.setFillColor(sf::Color::Black);
                 break;
             }
             window.draw(m_tileShape);
