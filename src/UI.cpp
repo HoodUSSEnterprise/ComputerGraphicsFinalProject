@@ -135,13 +135,6 @@ void UI::draw(sf::RenderWindow &window) const
     window.draw(m_messageText);
     window.draw(m_instructionText);
 
-    for (const auto &btn : m_towerButtons)
-    {
-        window.draw(btn.bg);
-        window.draw(btn.label);
-        window.draw(btn.cost);
-    }
-
     window.draw(m_startWaveBtn);
     window.draw(m_startWaveText);
 }

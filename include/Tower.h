@@ -6,9 +6,9 @@
 
 enum class TowerType
 {
-    Arrow,  // 箭塔: 快速、低伤害
-    Cannon, // 炮塔: 慢速、范围伤�?
-    Ice     // 冰塔: 减�?
+    Arrow,  // 箭塔
+    Cannon, // 炮塔
+    Ice     // 冰塔
 };
 
 struct TowerStats
@@ -16,7 +16,7 @@ struct TowerStats
     int cost;
     float range;
     float damage;
-    float fireRate; // 每秒攻击次数
+    float fireRate;
     sf::Color color;
     TowerType type;
 };
@@ -40,15 +40,24 @@ public:
     float getFireTimer() const { return m_fireTimer; }
     float getFireCooldown() const { return 1.0f / m_stats.fireRate; }
 
-    static TowerStats getStats(TowerType type);
+    // 升级系统
+    int  getLevel() const { return m_level; }
+    bool canUpgrade() const { return m_level < 3; }
+    int  getUpgradeCost() const;
+    int  getSellValue() const;
+    void upgrade();
+
+    static TowerStats getStats(TowerType type, int level = 1);
 
 private:
     TowerStats m_stats;
     sf::Vector2f m_position;
     float m_fireTimer;
+    int m_level = 1;
 
-    // 图形
     sf::CircleShape m_base;
     sf::CircleShape m_rangeIndicator;
     sf::RectangleShape m_turret;
+
+    void applyStats();
 };

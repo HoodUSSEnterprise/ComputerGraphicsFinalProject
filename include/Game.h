@@ -72,6 +72,17 @@ private:
     void checkProjectileCollisions();
     void towerFindTargets();
     void handleSellTower(float x, float y);
+    void handleTowerUpgrade(float x, float y);
+
+    // ---- 弹出菜单 ----
+    enum class PopupType { None, Build, Tower };
+    PopupType m_popupType = PopupType::None;
+    sf::Vector2f m_popupPos;
+    std::weak_ptr<Tower> m_popupTower;
+    void showBuildPopup(float x, float y);
+    void showTowerPopup(float x, float y);
+    void hidePopup();
+    void drawPopup();
 
     // ---- data ----
     sf::RenderWindow m_window;

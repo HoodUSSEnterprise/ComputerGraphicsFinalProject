@@ -422,6 +422,7 @@ void Game::processPlayingEvents(const sf::Event &event)
 
     if (event.mouseButton.button == sf::Mouse::Left)
     {
+        // 点击底部UI面板
         if (m_ui.isClickOnUI(mx, my))
         {
             if (m_ui.isStartWaveClicked(mx, my))
@@ -438,19 +439,102 @@ void Game::processPlayingEvents(const sf::Event &event)
                     m_ui.showMessage(std::wstring(LangManager::get(TextKey::Wave)) + L" " + std::to_wstring(waveIdx) + L" " + LangManager::get(TextKey::Msg_WaveStarted));
                 }
             }
-            else
+            hidePopup();
+            return;
+        }
+
+        // 弹出菜单已打开 → 处理菜单点击
+        if (m_popupType == PopupType::Build)
+        {
+            auto grid = m_map.worldToGrid(mx, my);
+            float px = m_popupPos.x, py = m_popupPos.y;
+            // 三个建造按钮垂直排列
+            for (int i = 0; i < 3; ++i)
             {
-                handleTowerSelection(mx, my);
+                if (mx >= px && mx <= px + 140 && my >= py + i * 38 && my <= py + i * 38 + 34)
+                {
+                    TowerType tt = static_cast<TowerType>(i);
+                    int cost = Tower::getStats(tt).cost;
+                    if (m_gold >= cost && m_map.canPlaceTower(grid.x, grid.y))
+                    {
+                        sf::Vector2f center = m_map.gridToWorld(grid.x, grid.y);
+                        m_towers.push_back(std::make_shared<Tower>(tt, center));
+                        m_gold -= cost;
+                        m_map.setTile(grid.x, grid.y, TileType::Blocked);
+                    }
+                    else
+                    {
+                        m_ui.showMessage(LangManager::get(TextKey::Msg_NoGold));
+                    }
+                    hidePopup();
+                    return;
+                }
             }
+            hidePopup();
+            return;
+        }
+
+        if (m_popupType == PopupType::Tower)
+        {
+            float px = m_popupPos.x, py = m_popupPos.y;
+            auto twr = m_popupTower.lock();
+            if (twr)
+            {
+                // 升级按钮
+                if (mx >= px && mx <= px + 140 && my >= py && my <= py + 34)
+                {
+                    if (twr->canUpgrade() && m_gold >= twr->getUpgradeCost())
+                    {
+                        m_gold -= twr->getUpgradeCost();
+                        twr->upgrade();
+                    }
+                    hidePopup();
+                    return;
+                }
+                // 出售按钮
+                if (mx >= px && mx <= px + 140 && my >= py + 38 && my <= py + 72)
+                {
+                    int refund = twr->getSellValue();
+                    m_gold += refund;
+                    auto grid = m_map.worldToGrid(twr->getPosition().x, twr->getPosition().y);
+                    m_map.setTile(grid.x, grid.y, TileType::Grass);
+                    m_towers.erase(std::remove_if(m_towers.begin(), m_towers.end(),
+                        [&](auto &t) { return t.get() == twr.get(); }), m_towers.end());
+                    m_ui.showMessage(LangManager::get(TextKey::Msg_Sold) + std::to_wstring(refund));
+                    hidePopup();
+                    return;
+                }
+            }
+            hidePopup();
+            return;
+        }
+
+        // 没有弹出菜单 → 点击地图
+        auto grid = m_map.worldToGrid(mx, my);
+        if (m_map.getTile(grid.x, grid.y) == TileType::Grass)
+        {
+            showBuildPopup(mx, my);
         }
         else
         {
-            handleTowerPlacement(mx, my);
+            // 检查是否点了已有的塔
+            for (auto &t : m_towers)
+            {
+                float dx = t->getPosition().x - mx;
+                float dy = t->getPosition().y - my;
+                if (std::sqrt(dx * dx + dy * dy) < TILE_SIZE / 2.0f)
+                {
+                    showTowerPopup(mx, my);
+                    m_popupTower = t;
+                    return;
+                }
+            }
+            hidePopup();
         }
     }
     else if (event.mouseButton.button == sf::Mouse::Right)
     {
-        handleSellTower(mx, my);
+        hidePopup();
     }
 }
 
@@ -927,6 +1011,7 @@ void Game::renderPlaying()
         enemy->draw(m_window);
 
     m_ui.draw(m_window);
+    drawPopup();
 }
 
 // ============================================================
@@ -1184,4 +1269,104 @@ void Game::processCustomSetupEvents(const sf::Event &event)
 void Game::renderCustomSetup()
 {
     m_customScreen.draw(m_window);
+}
+
+// ============================================================
+//  弹出菜单
+// ============================================================
+
+void Game::showBuildPopup(float x, float y)
+{
+    m_popupType = PopupType::Build;
+    // 确保不超出屏幕
+    m_popupPos.x = std::min(x, WINDOW_WIDTH - 160.0f);
+    m_popupPos.y = std::min(y, WINDOW_HEIGHT - 130.0f);
+}
+
+void Game::showTowerPopup(float x, float y)
+{
+    m_popupType = PopupType::Tower;
+    m_popupPos.x = std::min(x, WINDOW_WIDTH - 160.0f);
+    m_popupPos.y = std::min(y, WINDOW_HEIGHT - 100.0f);
+}
+
+void Game::hidePopup()
+{
+    m_popupType = PopupType::None;
+}
+
+void Game::drawPopup()
+{
+    if (m_popupType == PopupType::None) return;
+
+    float px = m_popupPos.x, py = m_popupPos.y;
+
+    if (m_popupType == PopupType::Build)
+    {
+        TowerType types[] = {TowerType::Arrow, TowerType::Cannon, TowerType::Ice};
+        TextKey nameKeys[] = {TextKey::Tower_Arrow, TextKey::Tower_Cannon, TextKey::Tower_Ice};
+
+        for (int i = 0; i < 3; ++i)
+        {
+            TowerStats s = Tower::getStats(types[i]);
+            sf::RectangleShape btn(sf::Vector2f(140, 34));
+            btn.setPosition(px, py + i * 38);
+            btn.setFillColor(s.color - sf::Color(60, 60, 60, 0));
+            btn.setOutlineColor(sf::Color::White);
+            btn.setOutlineThickness(1);
+            m_window.draw(btn);
+
+            sf::Text label;
+            label.setFont(m_menuFont);
+            label.setCharacterSize(15);
+            label.setFillColor(sf::Color::White);
+            label.setString(std::wstring(LangManager::get(nameKeys[i])) + L" $" + std::to_wstring(s.cost));
+            label.setPosition(px + 5, py + i * 38 + 6);
+            m_window.draw(label);
+        }
+    }
+    else if (m_popupType == PopupType::Tower)
+    {
+        auto twr = m_popupTower.lock();
+        if (!twr) { hidePopup(); return; }
+
+        // 升级按钮
+        {
+            sf::RectangleShape btn(sf::Vector2f(140, 34));
+            btn.setPosition(px, py);
+            btn.setFillColor(twr->canUpgrade() ? sf::Color(50, 150, 50) : sf::Color(60, 60, 60));
+            btn.setOutlineColor(sf::Color::White);
+            btn.setOutlineThickness(1);
+            m_window.draw(btn);
+
+            sf::Text label;
+            label.setFont(m_menuFont);
+            label.setCharacterSize(15);
+            label.setFillColor(sf::Color::White);
+            if (twr->canUpgrade())
+                label.setString(L"Lv" + std::to_wstring(twr->getLevel()) + L" → " + std::to_wstring(twr->getLevel() + 1) + L"  $" + std::to_wstring(twr->getUpgradeCost()));
+            else
+                label.setString(L"Lv" + std::to_wstring(twr->getLevel()) + L" MAX");
+            label.setPosition(px + 5, py + 6);
+            m_window.draw(label);
+        }
+
+        // 出售按钮
+        {
+            sf::RectangleShape btn(sf::Vector2f(140, 34));
+            btn.setPosition(px, py + 38);
+            btn.setFillColor(sf::Color(180, 60, 60));
+            btn.setOutlineColor(sf::Color::White);
+            btn.setOutlineThickness(1);
+            m_window.draw(btn);
+
+            sf::Text label;
+            label.setFont(m_menuFont);
+            label.setCharacterSize(15);
+            label.setFillColor(sf::Color::White);
+            label.setString(L"Sell $" + std::to_wstring(twr->getSellValue()));
+            label.setPosition(px + 5, py + 38 + 6);
+            m_window.draw(label);
+        }
+    }
 }
