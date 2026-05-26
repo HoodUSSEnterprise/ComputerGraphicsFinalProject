@@ -57,7 +57,7 @@ void Game::run()
 }
 
 // ============================================================
-//  状态切�?
+//  状态切换
 // ============================================================
 
 void Game::newGame()
@@ -75,10 +75,13 @@ void Game::newGame(const LevelConfig &cfg)
     m_map = Map();
     m_map.loadFromFile(cfg.mapFile.c_str());
     // 根据群系加载纹理
-    static const char* biomeNames[] = {"grassland","desert","hell","community"};
+    static const char *biomeNames[] = {"grassland", "desert", "hell", "community"};
     int bIdx = static_cast<int>(cfg.biome);
     if (bIdx >= 0 && bIdx < 4)
+    {
         m_map.loadBiomeTextures(biomeNames[bIdx]);
+    }
+    m_map.loadEndTextures();
     m_gold = cfg.startGold;
     m_lives = cfg.startLives;
     m_waveManager = WaveManager();
@@ -1054,7 +1057,8 @@ void Game::updateEnemies(float dt)
         std::remove_if(m_enemies.begin(), m_enemies.end(),
                        [this](const std::shared_ptr<Enemy> &e)
                        {
-                           if (e->hasReachedEnd()) {
+                           if (e->hasReachedEnd())
+                           {
                                m_lives--;
                                return true;
                            }

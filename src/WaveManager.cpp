@@ -1,4 +1,5 @@
 #include "WaveManager.h"
+#include "Map.h"
 #include <cmath>
 
 WaveManager::WaveManager()
@@ -40,10 +41,10 @@ void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>> &enemies,
             wd.hp,
             wd.reward);
 
-        // 设置起点位置
+        // 设置出生位置为起点
         if (!waypoints.empty())
         {
-            enemy->update(0, waypoints); // 初始化位�?
+            enemy->setPosition(waypoints[0].pos);
         }
 
         // 设置颜色

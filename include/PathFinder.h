@@ -15,8 +15,8 @@ extern "C"
         float x, y;
     } PF_Waypoint;
 
-    // 从 grid[col][row] 构建路径点数组，返回路径点数量，waypoints 需预分配足够空间
-    int pf_buildWaypoints(const int grid[PF_MAP_COLS][PF_MAP_ROWS],
+    // 从 Start(2) 沿 Path(1) 走到 End(3)，返回路径点数量
+    int pf_tracePath(const int grid[PF_MAP_COLS][PF_MAP_ROWS],
                           PF_Waypoint *waypoints, int maxPoints,
                           int tileSize);
 

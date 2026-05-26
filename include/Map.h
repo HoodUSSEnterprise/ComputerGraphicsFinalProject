@@ -16,6 +16,7 @@ public:
     Map();
     bool loadFromFile(const char *path);
     void loadBiomeTextures(const std::string &biome);
+    void loadEndTextures();
 
     void draw(sf::RenderWindow &window) const;
 

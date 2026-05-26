@@ -20,6 +20,7 @@ public:
     float getHP() const { return m_hp; }
     float getMaxHP() const { return m_maxHp; }
     sf::Vector2f getPosition() const { return m_shape.getPosition(); }
+    void setPosition(sf::Vector2f pos) { m_shape.setPosition(pos); }
     float getSpeed() const { return m_baseSpeed; }
     int getReward() const { return m_reward; }
 
