@@ -22,8 +22,9 @@ void Map::loadBiomeTextures(const std::string &biome)
 
     m_hasTexture = m_groundTex.loadFromFile(path);
     if (m_hasTexture) {
-        m_groundTex.setRepeated(true);
         std::cout << "[Map] Texture loaded: " << path << std::endl;
+    } else {
+        std::cerr << "[Map] Texture FAILED: " << path << std::endl;
     }
 }
 
@@ -92,6 +93,7 @@ void Map::draw(sf::RenderWindow &window) const
                 if (m_hasTexture)
                 {
                     m_tileShape.setTexture(&m_groundTex);
+                    m_tileShape.setTextureRect(sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
                     m_tileShape.setFillColor(sf::Color::White);
                 }
                 else
@@ -104,6 +106,7 @@ void Map::draw(sf::RenderWindow &window) const
                 if (m_hasTexture)
                 {
                     m_tileShape.setTexture(&m_groundTex);
+                    m_tileShape.setTextureRect(sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
                     m_tileShape.setFillColor(sf::Color(160, 140, 100));
                 }
                 else
