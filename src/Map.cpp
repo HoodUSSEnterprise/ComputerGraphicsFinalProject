@@ -1,4 +1,5 @@
 #include "Map.h"
+#include "PathFinder.h"
 #include <SFML/Graphics.hpp>
 #include <cstdio>
 #include <iostream>
@@ -53,60 +54,17 @@ bool Map::loadFromFile(const char* path) {
 void Map::buildWaypoints() {
     m_waypoints.clear();
 
-    // 找到起点
-    int startCol = -1, startRow = -1;
-    for (int r = 0; r < MAP_ROWS; ++r) {
-        for (int c = 0; c < MAP_COLS; ++c) {
-            if (m_grid[c][r] == TileType::Start) {
-                startCol = c;
-                startRow = r;
-                break;
-            }
-        }
-        if (startCol >= 0) break;
-    }
+    // 将 grid 转为 int 数组传给 C 寻路函数
+    int grid[PF_MAP_COLS][PF_MAP_ROWS];
+    for (int r = 0; r < PF_MAP_ROWS; ++r)
+        for (int c = 0; c < PF_MAP_COLS; ++c)
+            grid[c][r] = static_cast<int>(m_grid[c][r]);
 
-    if (startCol < 0) return;
+    PF_Waypoint pfWp[256];
+    int count = pf_buildWaypoints(grid, pfWp, 256, TILE_SIZE);
 
-    // BFS 从起点沿路径走到终点，构建路径点
-    // 简化：手动记录关键拐点
-    // 使用一个简单的路径跟踪算法
-    int col = startCol, row = startRow;
-    int prevCol = col, prevRow = row;
-    bool moving = true;
-
-    m_waypoints.push_back({gridToWorld(col, row)});
-
-    const int dx[] = {1, 0, -1, 0};
-    const int dy[] = {0, 1, 0, -1};
-
-    while (moving) {
-        bool found = false;
-        for (int d = 0; d < 4; ++d) {
-            int nc = col + dx[d];
-            int nr = row + dy[d];
-
-            // 不要回头
-            if (nc == prevCol && nr == prevRow) continue;
-
-            if (nc >= 0 && nc < MAP_COLS && nr >= 0 && nr < MAP_ROWS) {
-                TileType t = m_grid[nc][nr];
-                if (t == TileType::Path || t == TileType::End) {
-                    prevCol = col;
-                    prevRow = row;
-                    col = nc;
-                    row = nr;
-                    m_waypoints.push_back({gridToWorld(col, row)});
-                    found = true;
-
-                    if (t == TileType::End) {
-                        moving = false;
-                    }
-                    break;
-                }
-            }
-        }
-        if (!found) moving = false;
+    for (int i = 0; i < count; ++i) {
+        m_waypoints.push_back({sf::Vector2f(pfWp[i].x, pfWp[i].y)});
     }
 }
 

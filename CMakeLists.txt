@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(TowerDefense LANGUAGES CXX)
+project(TowerDefense LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -10,6 +10,7 @@ find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
 
 # 源文件
 file(GLOB_RECURSE SOURCES src/*.cpp main/*.cpp)
+list(APPEND SOURCES src/PathFinder.c)
 
 # 可执行文件
 add_executable(tower_defense ${SOURCES})
