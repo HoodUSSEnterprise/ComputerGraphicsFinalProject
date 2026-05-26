@@ -517,7 +517,7 @@ void Game::initMenu()
     m_titleText.setOrigin(tb.width / 2, tb.height / 2);
     m_titleText.setPosition(WINDOW_WIDTH / 2.0f, 150);
 
-    // 副标�?
+    // 副标题
     m_subtitleText.setFont(m_menuFont);
     m_subtitleText.setString(LangManager::get(TextKey::Subtitle));
     m_subtitleText.setCharacterSize(18);

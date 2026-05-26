@@ -9,7 +9,7 @@ set(SFML_DIR "D:/SFML-2.6.1/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
 
 # 源文件
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE SOURCES src/*.cpp main/*.cpp)
 
 # 可执行文件
 add_executable(tower_defense ${SOURCES})
