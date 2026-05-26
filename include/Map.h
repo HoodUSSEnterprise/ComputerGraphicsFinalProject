@@ -29,12 +29,19 @@ public:
     bool canPlaceTower(int col, int row) const;
 
     const std::vector<Waypoint> &getWaypoints() const { return m_waypoints; }
+    void switchPhase();           // 切换到第二阶段路径
+    bool isPhase2() const { return m_phase2; }
+    int  getPhase() const { return m_phase2 ? 2 : 1; }
 
 private:
     void buildWaypoints();
 
     TileType m_grid[MAP_COLS][MAP_ROWS];
+    TileType m_grid2[MAP_COLS][MAP_ROWS];  // 第二阶段地图
     std::vector<Waypoint> m_waypoints;
+    std::vector<Waypoint> m_waypoints2;    // 第二阶段路径
+    bool m_hasPhase2 = false;
+    bool m_phase2 = false;
 
     sf::Texture m_groundTex;
     sf::Texture m_endTex;

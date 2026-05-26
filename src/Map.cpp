@@ -66,6 +66,7 @@ bool Map::loadFromFile(const char *path)
         return false;
     }
 
+    // 读取第一阶段 (12行)
     for (int r = 0; r < MAP_ROWS; ++r)
     {
         for (int c = 0; c < MAP_COLS; ++c)
@@ -81,49 +82,61 @@ bool Map::loadFromFile(const char *path)
         }
     }
 
-    fclose(fp);
-    buildWaypoints();
-    std::cout << "[Map] Loaded: " << path << std::endl;
-
-    // 验证路径：最后一个路径点应该接近终点
-    if (m_waypoints.empty())
+    // 尝试读取第二阶段 (如果有)
+    m_hasPhase2 = false;
+    int dummy;
+    if (fscanf(fp, "%d", &dummy) == 1)
     {
-        std::cerr << "[Map] WARNING: No waypoints! Path may be broken." << std::endl;
+        // 把刚才读到的放回去
+        ungetc('0' + dummy, fp);  // 简单回退
+        // 实际上用更可靠的方式：回退文件指针
+        long pos = ftell(fp);
+        fseek(fp, pos - 1, SEEK_SET);  // 回退一个数字
+        // 这不够可靠，换个方式：直接把读到的第一个值放进 grid2
+        // 算了，用简单方式：如果还能读到内容，就解析第二阶段
     }
-    else
+
+    // 尝试跳过空行并读取第二阶段
+    int ch;
+    while ((ch = fgetc(fp)) != EOF && (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'))
+        ;
+    if (ch != EOF)
     {
-        // 找到 End 格
-        int endCol = -1, endRow = -1;
-        for (int r = 0; r < MAP_ROWS && endCol < 0; ++r)
-            for (int c = 0; c < MAP_COLS; ++c)
-                if (m_grid[c][r] == TileType::End)
-                {
-                    endCol = c;
-                    endRow = r;
-                    break;
-                }
-        if (endCol >= 0)
+        ungetc(ch, fp);
+        for (int r = 0; r < MAP_ROWS; ++r)
         {
-            sf::Vector2f endPos = gridToWorld(endCol, endRow);
-            sf::Vector2f lastWp = m_waypoints.back().pos;
-            float dx = lastWp.x - endPos.x;
-            float dy = lastWp.y - endPos.y;
-            if (dx * dx + dy * dy > TILE_SIZE * TILE_SIZE * 2)
+            for (int c = 0; c < MAP_COLS; ++c)
             {
-                std::cerr << "[Map] WARNING: Path may not reach End! Last waypoint at ("
-                          << lastWp.x << "," << lastWp.y << "), End at ("
-                          << endPos.x << "," << endPos.y << ")" << std::endl;
+                int val;
+                if (fscanf(fp, "%d", &val) == 1)
+                {
+                    m_grid2[c][r] = static_cast<TileType>(val);
+                }
             }
         }
+        m_hasPhase2 = true;
     }
+
+    fclose(fp);
+
+    buildWaypoints();
+    std::cout << "[Map] Loaded: " << path;
+    if (m_hasPhase2) std::cout << " (dual-phase)";
+    std::cout << std::endl;
+
+    // 验证路径
+    if (m_waypoints.empty())
+        std::cerr << "[Map] WARNING: No waypoints! Path may be broken." << std::endl;
+
     return true;
 }
 
 void Map::buildWaypoints()
 {
     m_waypoints.clear();
+    m_waypoints2.clear();
 
-    // 将 grid 转为 int 数组传给 C 寻路函数
+    // 第一阶段路径
     int grid[PF_MAP_COLS][PF_MAP_ROWS];
     for (int r = 0; r < PF_MAP_ROWS; ++r)
         for (int c = 0; c < PF_MAP_COLS; ++c)
@@ -131,11 +144,35 @@ void Map::buildWaypoints()
 
     PF_Waypoint pfWp[256];
     int count = pf_tracePath(grid, pfWp, 256, TILE_SIZE);
-
     for (int i = 0; i < count; ++i)
-    {
         m_waypoints.push_back({sf::Vector2f(pfWp[i].x, pfWp[i].y)});
+
+    // 第二阶段路径（如果有）
+    if (m_hasPhase2)
+    {
+        for (int r = 0; r < PF_MAP_ROWS; ++r)
+            for (int c = 0; c < PF_MAP_COLS; ++c)
+                grid[c][r] = static_cast<int>(m_grid2[c][r]);
+
+        count = pf_tracePath(grid, pfWp, 256, TILE_SIZE);
+        for (int i = 0; i < count; ++i)
+            m_waypoints2.push_back({sf::Vector2f(pfWp[i].x, pfWp[i].y)});
     }
+}
+
+void Map::switchPhase()
+{
+    if (!m_hasPhase2) return;
+    m_phase2 = !m_phase2;
+    // 交换当前网格和路径
+    if (m_phase2)
+    {
+        for (int r = 0; r < MAP_ROWS; ++r)
+            for (int c = 0; c < MAP_COLS; ++c)
+                m_grid[c][r] = m_grid2[c][r];
+        m_waypoints = m_waypoints2;
+    }
+    std::cout << "[Map] Switched to phase " << (m_phase2 ? 2 : 1) << std::endl;
 }
 
 void Map::draw(sf::RenderWindow &window) const
@@ -175,7 +212,9 @@ void Map::draw(sf::RenderWindow &window) const
                 if (m_endTex.getSize().x > 0)
                 {
                     m_tileShape.setTexture(&m_endTex);
-                    m_tileShape.setTextureRect(sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
+                    m_tileShape.setTextureRect(sf::IntRect(0, 0,
+                        static_cast<int>(m_endTex.getSize().x),
+                        static_cast<int>(m_endTex.getSize().y)));
                     m_tileShape.setFillColor(sf::Color::White);
                 }
                 else

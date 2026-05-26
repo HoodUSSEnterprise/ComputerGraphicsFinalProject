@@ -430,6 +430,9 @@ void Game::processPlayingEvents(const sf::Event &event)
                 {
                     m_waveManager.startNextWave();
                     int waveIdx = m_waveManager.getCurrentWave();
+                    int total = m_waveManager.getTotalWaves();
+                    if (waveIdx == total / 2 && total > 2)
+                        m_map.switchPhase();
                     if (waveIdx > 1)
                         m_gold += 50 + (waveIdx - 1) * 10;
                     m_ui.showMessage(std::wstring(LangManager::get(TextKey::Wave)) + L" " + std::to_wstring(waveIdx) + L" " + LangManager::get(TextKey::Msg_WaveStarted));
