@@ -8,6 +8,7 @@
 // 单个关卡配置
 struct LevelConfig {
     std::string id;          // 内部标识
+    std::string mapFile;     // 地图文件路径（相对于工作目录）
     TextKey nameKey;         // 名称文本键
     TextKey descKey;         // 描述文本键
     int startGold;           // 初始金币
@@ -33,6 +34,7 @@ inline std::vector<LevelConfig> getCampaignLevels() {
     return {
         {
             "level1",
+            "assets/maps/level1.txt",
             TextKey::Level1_Name,
             TextKey::Level1_Desc,
             250,   // startGold
@@ -44,6 +46,7 @@ inline std::vector<LevelConfig> getCampaignLevels() {
         },
         {
             "level2",
+            "assets/maps/level2.txt",
             TextKey::Level2_Name,
             TextKey::Level2_Desc,
             200,   // startGold
@@ -55,6 +58,7 @@ inline std::vector<LevelConfig> getCampaignLevels() {
         },
         {
             "level3",
+            "assets/maps/level3.txt",
             TextKey::Level3_Name,
             TextKey::Level3_Desc,
             150,   // startGold

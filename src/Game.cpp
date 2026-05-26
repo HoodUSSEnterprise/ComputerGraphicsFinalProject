@@ -69,6 +69,7 @@ void Game::newGame(const LevelConfig& cfg)
     m_enemies.clear();
     m_projectiles.clear();
     m_map = Map();
+    m_map.loadFromFile(cfg.mapFile.c_str());
     m_gold = cfg.startGold;
     m_lives = cfg.startLives;
     m_waveManager = WaveManager();
@@ -1124,6 +1125,7 @@ void Game::processCustomSetupEvents(const sf::Event& event)
     CustomParams params;
     if (m_customScreen.update(event, m_window, params)) {
         LevelConfig cfg;
+        cfg.mapFile      = "assets/maps/level1.txt";
         cfg.startGold    = params.startGold;
         cfg.startLives   = params.startLives;
         cfg.waveCount    = params.waves;

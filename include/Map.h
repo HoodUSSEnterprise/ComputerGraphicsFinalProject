@@ -11,6 +11,7 @@ struct Waypoint {
 class Map {
 public:
     Map();
+    bool loadFromFile(const char* path);
 
     void draw(sf::RenderWindow& window) const;
 
@@ -25,7 +26,6 @@ public:
     const std::vector<Waypoint>& getWaypoints() const { return m_waypoints; }
 
 private:
-    void loadDefaultMap();
     void buildWaypoints();
 
     TileType m_grid[MAP_COLS][MAP_ROWS];
