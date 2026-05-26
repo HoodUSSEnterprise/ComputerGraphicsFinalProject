@@ -305,6 +305,16 @@ void Game::drawPopup()
 
     if (m_popupType == PopupType::Build)
     {
+        // 高亮目标格子
+        float hx = m_popupGrid.x * TILE_SIZE;
+        float hy = m_popupGrid.y * TILE_SIZE;
+        sf::RectangleShape highlight(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+        highlight.setPosition(hx, hy);
+        highlight.setFillColor(sf::Color(255, 255, 0, 80));
+        highlight.setOutlineColor(sf::Color(255, 255, 0, 180));
+        highlight.setOutlineThickness(2);
+        m_window.draw(highlight);
+
         TowerType types[] = {TowerType::Arrow, TowerType::Cannon, TowerType::Ice};
         TextKey nameKeys[] = {TextKey::Tower_Arrow, TextKey::Tower_Cannon, TextKey::Tower_Ice};
         for (int i = 0; i < 3; ++i)
