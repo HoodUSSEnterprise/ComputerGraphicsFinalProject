@@ -26,10 +26,12 @@ Game::Game()
     initSettings();
 
     // 尝试加载背景音乐
-    if (m_bgm.openFromFile("sound/bgm.mp3")) {
+    if (m_bgm.openFromFile("sound/bgm.mp3"))
+    {
         m_bgm.setLoop(true);
         m_bgm.setVolume(m_volume);
-        if (m_bgmOn) m_bgm.play();
+        if (m_bgmOn)
+            m_bgm.play();
     }
 }
 
@@ -63,7 +65,7 @@ void Game::newGame()
     newGame(defaultCfg);
 }
 
-void Game::newGame(const LevelConfig& cfg)
+void Game::newGame(const LevelConfig &cfg)
 {
     m_towers.clear();
     m_enemies.clear();
@@ -216,10 +218,13 @@ void Game::handleResize()
     float viewRatio = viewW / viewH;
 
     float vpW, vpH;
-    if (windowRatio > viewRatio) {
+    if (windowRatio > viewRatio)
+    {
         vpH = viewH;
         vpW = vpH * windowRatio;
-    } else {
+    }
+    else
+    {
         vpW = viewW;
         vpH = vpW / windowRatio;
     }
@@ -252,7 +257,8 @@ void Game::processMenuEvents(const sf::Event &event)
         m_state = GameState::CampaignSelect;
         break;
     case 1:
-        if (!loadGame()) newGame();
+        if (!loadGame())
+            newGame();
         break;
     case 2:
         m_state = GameState::CustomSetup;
@@ -261,8 +267,11 @@ void Game::processMenuEvents(const sf::Event &event)
         m_state = GameState::Settings;
         buildSettingsUI();
         break;
-    case 4: m_window.close(); break;
-    default: break;
+    case 4:
+        m_window.close();
+        break;
+    default:
+        break;
     }
 }
 
@@ -274,19 +283,20 @@ void Game::processSettingsEvents(const sf::Event &event)
             sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
 
         // 悬停设置按钮
-        for (auto& btn : m_settingsButtons) {
+        for (auto &btn : m_settingsButtons)
+        {
             bool inside = btn.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
             btn.hovered = inside;
-            btn.bg.setFillColor(inside ? sf::Color(70,70,100) : sf::Color(50,50,70));
-            btn.bg.setOutlineColor(inside ? sf::Color(255,215,0) : sf::Color(100,100,140));
-            btn.label.setFillColor(inside ? sf::Color(255,215,0) : sf::Color::White);
+            btn.bg.setFillColor(inside ? sf::Color(70, 70, 100) : sf::Color(50, 50, 70));
+            btn.bg.setOutlineColor(inside ? sf::Color(255, 215, 0) : sf::Color(100, 100, 140));
+            btn.label.setFillColor(inside ? sf::Color(255, 215, 0) : sf::Color::White);
         }
 
         if (m_draggingVol)
         {
             float nx = std::max(m_volTrack.getPosition().x,
-                        std::min(worldPos.x,
-                                 m_volTrack.getPosition().x + m_volTrack.getSize().x));
+                                std::min(worldPos.x,
+                                         m_volTrack.getPosition().x + m_volTrack.getSize().x));
             float ratio = (nx - m_volTrack.getPosition().x) / m_volTrack.getSize().x;
             m_volume = ratio * 100.0f;
             m_volKnob.setPosition(nx, m_volKnob.getPosition().y);
@@ -312,10 +322,9 @@ void Game::processSettingsEvents(const sf::Event &event)
         {
         case 0: // 语言向左
         {
-            static const char* langs[] = {
+            static const char *langs[] = {
                 "assets/lang_en.json", "assets/lang_zh.json",
-                "assets/lang_de.json"
-            };
+                "assets/lang_de.json"};
             static int cur = 0;
             cur = (cur - 1 + 3) % 3;
             LangManager::loadLanguage(langs[cur]);
@@ -326,10 +335,9 @@ void Game::processSettingsEvents(const sf::Event &event)
         }
         case 1: // 语言向右
         {
-            static const char* langs[] = {
+            static const char *langs[] = {
                 "assets/lang_en.json", "assets/lang_zh.json",
-                "assets/lang_de.json"
-            };
+                "assets/lang_de.json"};
             static int cur = 0;
             cur = (cur + 1) % 3;
             LangManager::loadLanguage(langs[cur]);
@@ -340,10 +348,13 @@ void Game::processSettingsEvents(const sf::Event &event)
         }
         case 2: // BGM 开�?
             m_bgmOn = !m_bgmOn;
-            if (m_bgmOn) {
+            if (m_bgmOn)
+            {
                 if (m_bgm.getStatus() != sf::Music::Playing)
                     m_bgm.play();
-            } else {
+            }
+            else
+            {
                 m_bgm.pause();
             }
             // 刷新 BGM 标签
@@ -352,7 +363,8 @@ void Game::processSettingsEvents(const sf::Event &event)
         case 3: // Back
             m_state = GameState::Menu;
             break;
-        default: break;
+        default:
+            break;
         }
         return;
     }
@@ -554,19 +566,22 @@ void Game::initMenu()
 void Game::loadMenuFont()
 {
     // 按优先级尝试字体路径：JSON指定 �?系统回退
-    std::vector<std::string> paths = { LangManager::getFontPath() };
+    std::vector<std::string> paths = {LangManager::getFontPath()};
 
     // 中文回退：Windows 系统字体
     std::string lang = LangManager::currentLangName();
-    if (lang == "zh") {
+    if (lang == "zh")
+    {
         paths.push_back("fonts/simhei.ttf");
     }
     // 通用回退
     paths.push_back("fonts/arial.ttf");
 
     bool loaded = false;
-    for (const auto& p : paths) {
-        if (m_menuFont.loadFromFile(p)) {
+    for (const auto &p : paths)
+    {
+        if (m_menuFont.loadFromFile(p))
+        {
             std::cout << "[Font] menu loaded: " << p << std::endl;
             loaded = true;
             break;
@@ -577,7 +592,7 @@ void Game::loadMenuFont()
 
     m_titleText.setFont(m_menuFont);
     m_subtitleText.setFont(m_menuFont);
-    for (auto& btn : m_menuButtons)
+    for (auto &btn : m_menuButtons)
         btn.label.setFont(m_menuFont);
 }
 
@@ -782,7 +797,8 @@ void Game::renderSettings()
     bg.setFillColor(sf::Color(15, 15, 30));
     m_window.draw(bg);
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; ++i)
+    {
         sf::RectangleShape line(sf::Vector2f(WINDOW_WIDTH, 2));
         line.setFillColor(sf::Color(30, 30, 50));
         line.setPosition(0, i * 80.0f);
@@ -828,7 +844,8 @@ void Game::renderSettings()
     m_window.draw(volLabel);
 
     // 设置按钮
-    for (const auto& btn : m_settingsButtons) {
+    for (const auto &btn : m_settingsButtons)
+    {
         m_window.draw(btn.bg);
         m_window.draw(btn.label);
     }
@@ -860,7 +877,8 @@ void Game::refreshAllTexts()
     m_langLabel.setString(LangManager::get(TextKey::Language_Label));
     m_langValue.setString(L"[" + std::wstring(LangManager::currentLangName().begin(), LangManager::currentLangName().end()) + L"]");
     // 更新设置页按钮
-    if (!m_settingsButtons.empty()) {
+    if (!m_settingsButtons.empty())
+    {
         m_settingsButtons[2].label.setString(
             std::wstring(L"BGM: ") + (m_bgmOn ? LangManager::get(TextKey::BGM_On) : LangManager::get(TextKey::BGM_Off)));
         m_settingsButtons[3].label.setString(LangManager::get(TextKey::Back));
@@ -1103,10 +1121,11 @@ void Game::checkProjectileCollisions()
 //  战役选关画面
 // ============================================================
 
-void Game::processCampaignEvents(const sf::Event& event)
+void Game::processCampaignEvents(const sf::Event &event)
 {
     LevelConfig chosen;
-    if (m_campaignScreen.update(event, m_window, chosen)) {
+    if (m_campaignScreen.update(event, m_window, chosen))
+    {
         newGame(chosen);
     }
 }
@@ -1120,19 +1139,20 @@ void Game::renderCampaign()
 //  自定义模式画面
 // ============================================================
 
-void Game::processCustomSetupEvents(const sf::Event& event)
+void Game::processCustomSetupEvents(const sf::Event &event)
 {
     CustomParams params;
-    if (m_customScreen.update(event, m_window, params)) {
+    if (m_customScreen.update(event, m_window, params))
+    {
         LevelConfig cfg;
-        cfg.mapFile      = "assets/maps/level1.txt";
-        cfg.startGold    = params.startGold;
-        cfg.startLives   = params.startLives;
-        cfg.waveCount    = params.waves;
-        cfg.baseEnemies  = params.enemiesPerWave;
-        cfg.speedMul     = params.speedMul;
-        cfg.hpMul        = params.hpMul;
-        cfg.id           = "custom";
+        cfg.mapFile = "assets/maps/level1.txt";
+        cfg.startGold = params.startGold;
+        cfg.startLives = params.startLives;
+        cfg.waveCount = params.waves;
+        cfg.baseEnemies = params.enemiesPerWave;
+        cfg.speedMul = params.speedMul;
+        cfg.hpMul = params.hpMul;
+        cfg.id = "custom";
         newGame(cfg);
     }
 }

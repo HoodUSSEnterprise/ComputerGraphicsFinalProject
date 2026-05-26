@@ -5,21 +5,23 @@
 #include <vector>
 #include <memory>
 
-struct WaveData {
+struct WaveData
+{
     int enemyCount;
-    float spawnInterval;  // �?
+    float spawnInterval;
     float speed;
     float hp;
     int reward;
     sf::Color color;
 };
 
-class WaveManager {
+class WaveManager
+{
 public:
     WaveManager();
 
-    void update(float dt, std::vector<std::shared_ptr<Enemy>>& enemies,
-                const std::vector<struct Waypoint>& waypoints);
+    void update(float dt, std::vector<std::shared_ptr<Enemy>> &enemies,
+                const std::vector<struct Waypoint> &waypoints);
 
     bool isWaveComplete() const;
     bool canStartWave() const { return !m_waveActive && !m_allWavesComplete; }

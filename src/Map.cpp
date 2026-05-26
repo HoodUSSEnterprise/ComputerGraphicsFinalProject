@@ -4,7 +4,8 @@
 #include <cstdio>
 #include <iostream>
 
-Map::Map() {
+Map::Map()
+{
     // 初始化瓦片图形
     m_grassTile.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
     m_grassTile.setFillColor(sf::Color(34, 139, 34));
@@ -26,17 +27,22 @@ Map::Map() {
     m_blockedTile.setFillColor(sf::Color(100, 100, 100));
 }
 
-bool Map::loadFromFile(const char* path) {
-    FILE* fp = fopen(path, "r");
-    if (!fp) {
+bool Map::loadFromFile(const char *path)
+{
+    FILE *fp = fopen(path, "r");
+    if (!fp)
+    {
         std::cerr << "[Map] Cannot open: " << path << std::endl;
         return false;
     }
 
-    for (int r = 0; r < MAP_ROWS; ++r) {
-        for (int c = 0; c < MAP_COLS; ++c) {
+    for (int r = 0; r < MAP_ROWS; ++r)
+    {
+        for (int c = 0; c < MAP_COLS; ++c)
+        {
             int val;
-            if (fscanf(fp, "%d", &val) != 1) {
+            if (fscanf(fp, "%d", &val) != 1)
+            {
                 std::cerr << "[Map] Read error at row " << r << " col " << c << std::endl;
                 fclose(fp);
                 return false;
@@ -51,7 +57,8 @@ bool Map::loadFromFile(const char* path) {
     return true;
 }
 
-void Map::buildWaypoints() {
+void Map::buildWaypoints()
+{
     m_waypoints.clear();
 
     // 将 grid 转为 int 数组传给 C 寻路函数
@@ -63,19 +70,24 @@ void Map::buildWaypoints() {
     PF_Waypoint pfWp[256];
     int count = pf_buildWaypoints(grid, pfWp, 256, TILE_SIZE);
 
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; ++i)
+    {
         m_waypoints.push_back({sf::Vector2f(pfWp[i].x, pfWp[i].y)});
     }
 }
 
-void Map::draw(sf::RenderWindow& window) const {
-    for (int r = 0; r < MAP_ROWS; ++r) {
-        for (int c = 0; c < MAP_COLS; ++c) {
+void Map::draw(sf::RenderWindow &window) const
+{
+    for (int r = 0; r < MAP_ROWS; ++r)
+    {
+        for (int c = 0; c < MAP_COLS; ++c)
+        {
             float x = static_cast<float>(c * TILE_SIZE);
             float y = static_cast<float>(r * TILE_SIZE);
 
             sf::RectangleShape tile;
-            switch (m_grid[c][r]) {
+            switch (m_grid[c][r])
+            {
             case TileType::Grass:
                 tile = m_grassTile;
                 break;
@@ -98,28 +110,33 @@ void Map::draw(sf::RenderWindow& window) const {
     }
 }
 
-TileType Map::getTile(int col, int row) const {
+TileType Map::getTile(int col, int row) const
+{
     if (col >= 0 && col < MAP_COLS && row >= 0 && row < MAP_ROWS)
         return m_grid[col][row];
     return TileType::Blocked;
 }
 
-void Map::setTile(int col, int row, TileType type) {
+void Map::setTile(int col, int row, TileType type)
+{
     if (col >= 0 && col < MAP_COLS && row >= 0 && row < MAP_ROWS)
         m_grid[col][row] = type;
 }
 
-sf::Vector2f Map::gridToWorld(int col, int row) const {
+sf::Vector2f Map::gridToWorld(int col, int row) const
+{
     return sf::Vector2f(col * TILE_SIZE + TILE_SIZE / 2.0f,
                         row * TILE_SIZE + TILE_SIZE / 2.0f);
 }
 
-sf::Vector2i Map::worldToGrid(float x, float y) const {
+sf::Vector2i Map::worldToGrid(float x, float y) const
+{
     return sf::Vector2i(static_cast<int>(x / TILE_SIZE),
                         static_cast<int>(y / TILE_SIZE));
 }
 
-bool Map::canPlaceTower(int col, int row) const {
+bool Map::canPlaceTower(int col, int row) const
+{
     if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS)
         return false;
     return m_grid[col][row] == TileType::Grass;

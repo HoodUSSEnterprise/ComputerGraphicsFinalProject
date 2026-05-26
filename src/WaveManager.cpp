@@ -2,49 +2,48 @@
 #include <cmath>
 
 WaveManager::WaveManager()
-    : m_currentWave(0)
-    , m_spawnedInWave(0)
-    , m_remainingInWave(0)
-    , m_spawnTimer(0)
-    , m_waveActive(false)
-    , m_allWavesComplete(false)
-    , m_waveJustStarted(false) {
+    : m_currentWave(0), m_spawnedInWave(0), m_remainingInWave(0), m_spawnTimer(0), m_waveActive(false), m_allWavesComplete(false), m_waveJustStarted(false)
+{
 
     // 定义波次: 数量, 间隔, 速度, 血�? 奖励, 颜色
     m_waves = {
-        {8,  1.0f, 80.0f,  50.0f,  10, sf::Color(220, 50, 50)},
-        {12, 0.9f, 85.0f,  70.0f,  12, sf::Color(220, 100, 50)},
-        {15, 0.8f, 90.0f,  100.0f, 15, sf::Color(200, 50, 150)},
-        {18, 0.7f, 95.0f,  140.0f, 18, sf::Color(50, 150, 200)},
+        {8, 1.0f, 80.0f, 50.0f, 10, sf::Color(220, 50, 50)},
+        {12, 0.9f, 85.0f, 70.0f, 12, sf::Color(220, 100, 50)},
+        {15, 0.8f, 90.0f, 100.0f, 15, sf::Color(200, 50, 150)},
+        {18, 0.7f, 95.0f, 140.0f, 18, sf::Color(50, 150, 200)},
         {20, 0.6f, 100.0f, 200.0f, 20, sf::Color(200, 200, 50)},
     };
 }
 
-void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>>& enemies,
-                         const std::vector<Waypoint>& waypoints) {
+void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>> &enemies,
+                         const std::vector<Waypoint> &waypoints)
+{
 
-    if (!m_waveActive || m_allWavesComplete) return;
+    if (!m_waveActive || m_allWavesComplete)
+        return;
 
-    if (m_spawnedInWave >= static_cast<int>(m_waves[m_currentWave].enemyCount)) {
+    if (m_spawnedInWave >= static_cast<int>(m_waves[m_currentWave].enemyCount))
+    {
         // 本波已全部生�?
         m_waveActive = false;
         return;
     }
 
     m_spawnTimer -= dt;
-    if (m_spawnTimer <= 0) {
-        const auto& wd = m_waves[m_currentWave];
+    if (m_spawnTimer <= 0)
+    {
+        const auto &wd = m_waves[m_currentWave];
 
         auto enemy = std::make_shared<Enemy>(
-            0,                 // 第一个路径点索引
+            0, // 第一个路径点索引
             wd.speed,
             wd.hp,
-            wd.reward
-        );
+            wd.reward);
 
         // 设置起点位置
-        if (!waypoints.empty()) {
-            enemy->update(0, waypoints);  // 初始化位�?
+        if (!waypoints.empty())
+        {
+            enemy->update(0, waypoints); // 初始化位�?
         }
 
         // 设置颜色
@@ -58,31 +57,38 @@ void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>>& enemies,
     }
 }
 
-bool WaveManager::isWaveComplete() const {
-    if (m_allWavesComplete) return true;
-    if (!m_waveActive) {
-        if (m_currentWave >= static_cast<int>(m_waves.size())) return true;
+bool WaveManager::isWaveComplete() const
+{
+    if (m_allWavesComplete)
+        return true;
+    if (!m_waveActive)
+    {
+        if (m_currentWave >= static_cast<int>(m_waves.size()))
+            return true;
         return m_spawnedInWave >= static_cast<int>(m_waves[m_currentWave].enemyCount);
     }
     return false;
 }
 
-void WaveManager::startNextWave() {
-    if (m_currentWave >= static_cast<int>(m_waves.size())) {
+void WaveManager::startNextWave()
+{
+    if (m_currentWave >= static_cast<int>(m_waves.size()))
+    {
         m_allWavesComplete = true;
         return;
     }
 
-    const auto& wd = m_waves[m_currentWave];
+    const auto &wd = m_waves[m_currentWave];
     m_spawnedInWave = 0;
     m_remainingInWave = wd.enemyCount;
-    m_spawnTimer = 0.5f;  // 第一只快速出�?
+    m_spawnTimer = 0.5f; // 第一只快速出�?
     m_waveActive = true;
     m_waveJustStarted = true;
-    m_currentWave++;  // 推进到下一�?
+    m_currentWave++; // 推进到下一�?
 }
 
-void WaveManager::setCustomWaves(int waveCount, int enemiesPerWave, float speedMul, float hpMul) {
+void WaveManager::setCustomWaves(int waveCount, int enemiesPerWave, float speedMul, float hpMul)
+{
     m_waves.clear();
     m_currentWave = 0;
     m_spawnedInWave = 0;
@@ -103,7 +109,8 @@ void WaveManager::setCustomWaves(int waveCount, int enemiesPerWave, float speedM
         sf::Color(100, 200, 200),
     };
 
-    for (int i = 0; i < waveCount; ++i) {
+    for (int i = 0; i < waveCount; ++i)
+    {
         WaveData wd;
         wd.enemyCount = enemiesPerWave + i * 2;
         wd.spawnInterval = std::max(0.3f, 1.0f - i * 0.05f);

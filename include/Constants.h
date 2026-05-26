@@ -12,10 +12,11 @@ constexpr int MAP_COLS = 16;
 constexpr int MAP_ROWS = 12;
 
 // 地图格类型
-enum class TileType : int {
-    Grass = 0,   // 可放置塔
-    Path = 1,    // 敌人路径
-    Start = 2,   // 出生点
-    End = 3,     // 终点
-    Blocked = 4  // 不可放置
+enum class TileType : int
+{
+    Grass = 0,  // 可放置塔
+    Path = 1,   // 敌人路径
+    Start = 2,  // 出生点
+    End = 3,    // 终点
+    Blocked = 4 // 不可放置
 };

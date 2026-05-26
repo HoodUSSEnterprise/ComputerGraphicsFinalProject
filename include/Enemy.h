@@ -3,12 +3,13 @@
 #include "Constants.h"
 #include <SFML/Graphics.hpp>
 
-class Enemy {
+class Enemy
+{
 public:
     Enemy(int waypointIndex, float speed, float hp, int reward);
 
-    void update(float dt, const std::vector<struct Waypoint>& waypoints);
-    void draw(sf::RenderWindow& window) const;
+    void update(float dt, const std::vector<struct Waypoint> &waypoints);
+    void draw(sf::RenderWindow &window) const;
 
     void takeDamage(float damage);
     bool isDead() const { return m_dead; }
@@ -22,7 +23,7 @@ public:
     float getSpeed() const { return m_baseSpeed; }
     int getReward() const { return m_reward; }
 
-    // 用于范围检�?
+    // 用于范围检�?
     sf::FloatRect getBounds() const { return m_shape.getGlobalBounds(); }
 
 private:

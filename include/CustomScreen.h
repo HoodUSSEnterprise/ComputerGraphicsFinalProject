@@ -5,18 +5,20 @@
 #include <vector>
 
 // 自定义模式参数设置界面
-class CustomScreen {
+class CustomScreen
+{
 public:
     CustomScreen();
 
     // 返回 true 表示玩家点击了开始，params 被填充
-    bool update(const sf::Event& event, sf::RenderWindow& window,
-                CustomParams& outParams);
-    void draw(sf::RenderWindow& window) const;
+    bool update(const sf::Event &event, sf::RenderWindow &window,
+                CustomParams &outParams);
+    void draw(sf::RenderWindow &window) const;
     void refreshTexts();
 
 private:
-    struct ParamButton {
+    struct ParamButton
+    {
         sf::RectangleShape bg;
         sf::Text label;
         bool hovered = false;

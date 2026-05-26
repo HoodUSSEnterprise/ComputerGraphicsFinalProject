@@ -11,61 +11,64 @@ bool LangManager::s_loaded = false;
 // ============================================================
 //  Key -> TextKey 映射表
 // ============================================================
-struct KeyEntry {
-    const char* name;
+struct KeyEntry
+{
+    const char *name;
     TextKey key;
 };
 
 static const KeyEntry KEY_MAP[] = {
-    {"Title",            TextKey::Title},
-    {"Subtitle",         TextKey::Subtitle},
-    {"NewGame",          TextKey::NewGame},
-    {"LoadGame",         TextKey::LoadGame},
-    {"Settings",         TextKey::Settings},
-    {"Exit",             TextKey::Exit},
-    {"MenuHint",         TextKey::MenuHint},
-    {"Language_Label",   TextKey::Language_Label},
-    {"Gold",             TextKey::Gold},
-    {"Lives",            TextKey::Lives},
-    {"Wave",             TextKey::Wave},
-    {"StartWave",        TextKey::StartWave},
-    {"Instruction",      TextKey::Instruction},
-    {"Tower_Arrow",      TextKey::Tower_Arrow},
-    {"Tower_Cannon",     TextKey::Tower_Cannon},
-    {"Tower_Ice",        TextKey::Tower_Ice},
-    {"Msg_CannotPlace",  TextKey::Msg_CannotPlace},
-    {"Msg_NoGold",       TextKey::Msg_NoGold},
-    {"Msg_AlreadyHere",  TextKey::Msg_AlreadyHere},
-    {"Msg_Placed",       TextKey::Msg_Placed},
-    {"Msg_Sold",         TextKey::Msg_Sold},
-    {"Msg_WaveStarted",  TextKey::Msg_WaveStarted},
-    {"Victory",          TextKey::Victory},
-    {"GameOver",         TextKey::GameOver},
-    {"PressR",           TextKey::PressR},
-    {"EscToMenu",        TextKey::EscToMenu},
-    {"Back",             TextKey::Back},
-    {"Volume",           TextKey::Volume},
-    {"BGM_On",           TextKey::BGM_On},
-    {"BGM_Off",          TextKey::BGM_Off},
-    {"CustomMode",       TextKey::CustomMode},
-    {"CustomWaves",      TextKey::CustomWaves},
-    {"CustomEnemies",    TextKey::CustomEnemies},
-    {"CustomGold",       TextKey::CustomGold},
-    {"CustomLives",      TextKey::CustomLives},
-    {"CustomSpeed",      TextKey::CustomSpeed},
-    {"CustomHP",         TextKey::CustomHP},
-    {"CustomStart",      TextKey::CustomStart},
-    {"Campaign",         TextKey::Campaign},
-    {"Level1_Name",      TextKey::Level1_Name},
-    {"Level1_Desc",      TextKey::Level1_Desc},
-    {"Level2_Name",      TextKey::Level2_Name},
-    {"Level2_Desc",      TextKey::Level2_Desc},
-    {"Level3_Name",      TextKey::Level3_Name},
-    {"Level3_Desc",      TextKey::Level3_Desc},
+    {"Title", TextKey::Title},
+    {"Subtitle", TextKey::Subtitle},
+    {"NewGame", TextKey::NewGame},
+    {"LoadGame", TextKey::LoadGame},
+    {"Settings", TextKey::Settings},
+    {"Exit", TextKey::Exit},
+    {"MenuHint", TextKey::MenuHint},
+    {"Language_Label", TextKey::Language_Label},
+    {"Gold", TextKey::Gold},
+    {"Lives", TextKey::Lives},
+    {"Wave", TextKey::Wave},
+    {"StartWave", TextKey::StartWave},
+    {"Instruction", TextKey::Instruction},
+    {"Tower_Arrow", TextKey::Tower_Arrow},
+    {"Tower_Cannon", TextKey::Tower_Cannon},
+    {"Tower_Ice", TextKey::Tower_Ice},
+    {"Msg_CannotPlace", TextKey::Msg_CannotPlace},
+    {"Msg_NoGold", TextKey::Msg_NoGold},
+    {"Msg_AlreadyHere", TextKey::Msg_AlreadyHere},
+    {"Msg_Placed", TextKey::Msg_Placed},
+    {"Msg_Sold", TextKey::Msg_Sold},
+    {"Msg_WaveStarted", TextKey::Msg_WaveStarted},
+    {"Victory", TextKey::Victory},
+    {"GameOver", TextKey::GameOver},
+    {"PressR", TextKey::PressR},
+    {"EscToMenu", TextKey::EscToMenu},
+    {"Back", TextKey::Back},
+    {"Volume", TextKey::Volume},
+    {"BGM_On", TextKey::BGM_On},
+    {"BGM_Off", TextKey::BGM_Off},
+    {"CustomMode", TextKey::CustomMode},
+    {"CustomWaves", TextKey::CustomWaves},
+    {"CustomEnemies", TextKey::CustomEnemies},
+    {"CustomGold", TextKey::CustomGold},
+    {"CustomLives", TextKey::CustomLives},
+    {"CustomSpeed", TextKey::CustomSpeed},
+    {"CustomHP", TextKey::CustomHP},
+    {"CustomStart", TextKey::CustomStart},
+    {"Campaign", TextKey::Campaign},
+    {"Level1_Name", TextKey::Level1_Name},
+    {"Level1_Desc", TextKey::Level1_Desc},
+    {"Level2_Name", TextKey::Level2_Name},
+    {"Level2_Desc", TextKey::Level2_Desc},
+    {"Level3_Name", TextKey::Level3_Name},
+    {"Level3_Desc", TextKey::Level3_Desc},
 };
 
-TextKey LangManager::keyFromString(const std::string& name) {
-    for (const auto& entry : KEY_MAP) {
+TextKey LangManager::keyFromString(const std::string &name)
+{
+    for (const auto &entry : KEY_MAP)
+    {
         if (name == entry.name)
             return entry.key;
     }
@@ -75,9 +78,11 @@ TextKey LangManager::keyFromString(const std::string& name) {
 // ============================================================
 //  JSON 加载
 // ============================================================
-bool LangManager::loadLanguage(const std::string& jsonPath) {
+bool LangManager::loadLanguage(const std::string &jsonPath)
+{
     std::ifstream file(jsonPath);
-    if (!file) {
+    if (!file)
+    {
         std::cerr << "[LangManager] Cannot open: " << jsonPath << std::endl;
         return false;
     }
@@ -87,28 +92,33 @@ bool LangManager::loadLanguage(const std::string& jsonPath) {
     std::string content = buffer.str();
 
     std::unordered_map<std::string, std::string> raw;
-    if (!parseFlatJson(content, raw)) {
+    if (!parseFlatJson(content, raw))
+    {
         std::cerr << "[LangManager] Failed to parse: " << jsonPath << std::endl;
         return false;
     }
 
     // 填入 s_texts 数组
-    for (const auto& entry : KEY_MAP) {
+    for (const auto &entry : KEY_MAP)
+    {
         auto it = raw.find(entry.name);
-        if (it != raw.end()) {
+        if (it != raw.end())
+        {
             s_texts[static_cast<int>(entry.key)] = utf8ToWide(it->second);
         }
     }
 
     // 提取字体路径
     auto fontIt = raw.find("Font");
-    if (fontIt != raw.end()) {
+    if (fontIt != raw.end())
+    {
         s_fontPath = fontIt->second;
     }
 
     // 从文件名提取语言名
     auto pos = jsonPath.find("lang_");
-    if (pos != std::string::npos) {
+    if (pos != std::string::npos)
+    {
         auto end = jsonPath.find(".json", pos);
         s_currentLang = jsonPath.substr(pos + 5, end - pos - 5);
     }
@@ -118,7 +128,8 @@ bool LangManager::loadLanguage(const std::string& jsonPath) {
     return true;
 }
 
-const std::wstring& LangManager::get(TextKey key) {
+const std::wstring &LangManager::get(TextKey key)
+{
     int idx = static_cast<int>(key);
     if (idx >= 0 && idx < static_cast<int>(TextKey::COUNT))
         return s_texts[idx];
@@ -132,18 +143,21 @@ const std::wstring& LangManager::get(TextKey key) {
 // ============================================================
 #ifdef _WIN32
 #include <windows.h>
-std::wstring LangManager::utf8ToWide(const std::string& utf8) {
-    if (utf8.empty()) return L"";
+std::wstring LangManager::utf8ToWide(const std::string &utf8)
+{
+    if (utf8.empty())
+        return L"";
     int len = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, nullptr, 0);
     std::wstring result(len, L'\0');
     MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, &result[0], len);
-    result.resize(len - 1);  // 去掉 null terminator
+    result.resize(len - 1); // 去掉 null terminator
     return result;
 }
 #else
 #include <codecvt>
 #include <locale>
-std::wstring LangManager::utf8ToWide(const std::string& utf8) {
+std::wstring LangManager::utf8ToWide(const std::string &utf8)
+{
     std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
     return conv.from_bytes(utf8);
 }
@@ -153,9 +167,18 @@ std::wstring LangManager::utf8ToWide(const std::string& utf8) {
 //  轻量平面 JSON 解析器
 //  只支持 {"key": "value", ...} 格式，value 必须是字符串
 // ============================================================
-bool LangManager::parseFlatJson(const std::string& content,
-                                std::unordered_map<std::string, std::string>& out) {
-    enum State { ExpectKey, InKey, ExpectColon, ExpectValue, InValue, ExpectComma };
+bool LangManager::parseFlatJson(const std::string &content,
+                                std::unordered_map<std::string, std::string> &out)
+{
+    enum State
+    {
+        ExpectKey,
+        InKey,
+        ExpectColon,
+        ExpectValue,
+        InValue,
+        ExpectComma
+    };
     State state = ExpectKey;
 
     std::string key;
@@ -163,54 +186,96 @@ bool LangManager::parseFlatJson(const std::string& content,
     bool inString = false;
     bool escape = false;
 
-    for (size_t i = 0; i < content.size(); ++i) {
+    for (size_t i = 0; i < content.size(); ++i)
+    {
         char ch = content[i];
 
         // 跳过空白
         if (!inString && (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'))
             continue;
 
-        switch (state) {
+        switch (state)
+        {
         case ExpectKey:
-            if (ch == '}') return true;  // 空对象
-            if (ch == '"') { key.clear(); state = InKey; }
-            else if (ch != '{') return false;
+            if (ch == '}')
+                return true; // 空对象
+            if (ch == '"')
+            {
+                key.clear();
+                state = InKey;
+            }
+            else if (ch != '{')
+                return false;
             break;
 
         case InKey:
-            if (escape) { key += ch; escape = false; }
-            else if (ch == '\\') { escape = true; }
-            else if (ch == '"') { state = ExpectColon; }
-            else { key += ch; }
+            if (escape)
+            {
+                key += ch;
+                escape = false;
+            }
+            else if (ch == '\\')
+            {
+                escape = true;
+            }
+            else if (ch == '"')
+            {
+                state = ExpectColon;
+            }
+            else
+            {
+                key += ch;
+            }
             break;
 
         case ExpectColon:
-            if (ch == ':') state = ExpectValue;
-            else return false;
+            if (ch == ':')
+                state = ExpectValue;
+            else
+                return false;
             break;
 
         case ExpectValue:
-            if (ch == '"') { value.clear(); state = InValue; }
-            else return false;
+            if (ch == '"')
+            {
+                value.clear();
+                state = InValue;
+            }
+            else
+                return false;
             break;
 
         case InValue:
-            if (escape) { value += ch; escape = false; }
-            else if (ch == '\\') { escape = true; }
-            else if (ch == '"') {
+            if (escape)
+            {
+                value += ch;
+                escape = false;
+            }
+            else if (ch == '\\')
+            {
+                escape = true;
+            }
+            else if (ch == '"')
+            {
                 out[key] = value;
                 state = ExpectComma;
             }
-            else { value += ch; }
+            else
+            {
+                value += ch;
+            }
             break;
 
         case ExpectComma:
-            if (ch == ',') state = ExpectKey;
-            else if (ch == '}') return true;
-            else return false;
+            if (ch == ',')
+                state = ExpectKey;
+            else if (ch == '}')
+                return true;
+            else
+                return false;
             break;
         }
     }
 
-    return state == ExpectComma;  // 正常结束于 }
+    return state == ExpectComma; // 正常结束于 }
 }

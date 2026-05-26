@@ -4,16 +4,18 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-struct Waypoint {
+struct Waypoint
+{
     sf::Vector2f pos;
 };
 
-class Map {
+class Map
+{
 public:
     Map();
-    bool loadFromFile(const char* path);
+    bool loadFromFile(const char *path);
 
-    void draw(sf::RenderWindow& window) const;
+    void draw(sf::RenderWindow &window) const;
 
     TileType getTile(int col, int row) const;
     void setTile(int col, int row, TileType type);
@@ -23,7 +25,7 @@ public:
 
     bool canPlaceTower(int col, int row) const;
 
-    const std::vector<Waypoint>& getWaypoints() const { return m_waypoints; }
+    const std::vector<Waypoint> &getWaypoints() const { return m_waypoints; }
 
 private:
     void buildWaypoints();

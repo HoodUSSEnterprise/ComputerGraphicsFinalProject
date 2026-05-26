@@ -6,13 +6,14 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-class Projectile {
+class Projectile
+{
 public:
     Projectile(sf::Vector2f start, std::shared_ptr<Enemy> target,
                float damage, float speed, TowerType towerType);
 
     void update(float dt);
-    void draw(sf::RenderWindow& window) const;
+    void draw(sf::RenderWindow &window) const;
 
     bool hasHit() const { return m_hasHit; }
     std::shared_ptr<Enemy> getTarget() const { return m_target.lock(); }

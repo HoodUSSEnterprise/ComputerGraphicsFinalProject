@@ -2,26 +2,32 @@
 #include "LangManager.h"
 #include <iostream>
 
-CampaignScreen::CampaignScreen() {
+CampaignScreen::CampaignScreen()
+{
     loadFont();
     buildUI();
 }
 
-void CampaignScreen::loadFont() {
-    std::vector<std::string> paths = { LangManager::getFontPath() };
+void CampaignScreen::loadFont()
+{
+    std::vector<std::string> paths = {LangManager::getFontPath()};
     std::string lang = LangManager::currentLangName();
-    if (lang == "zh") paths.push_back("fonts/simhei.ttf");
+    if (lang == "zh")
+        paths.push_back("fonts/simhei.ttf");
     paths.push_back("fonts/arial.ttf");
 
-    for (const auto& p : paths) {
-        if (m_font.loadFromFile(p)) {
+    for (const auto &p : paths)
+    {
+        if (m_font.loadFromFile(p))
+        {
             std::cout << "[Font] CampaignScreen loaded: " << p << std::endl;
             break;
         }
     }
 }
 
-void CampaignScreen::buildUI() {
+void CampaignScreen::buildUI()
+{
     m_buttons.clear();
 
     m_titleText.setFont(m_font);
@@ -30,7 +36,8 @@ void CampaignScreen::buildUI() {
     m_titleText.setStyle(sf::Text::Bold);
 
     auto levels = getCampaignLevels();
-    for (size_t i = 0; i < levels.size(); ++i) {
+    for (size_t i = 0; i < levels.size(); ++i)
+    {
         LevelButton btn;
         float yPos = 160.0f + i * 160.0f;
 
@@ -69,21 +76,21 @@ void CampaignScreen::buildUI() {
     refreshTexts();
 }
 
-void CampaignScreen::refreshTexts() {
+void CampaignScreen::refreshTexts()
+{
     auto levels = getCampaignLevels();
     m_titleText.setString(LangManager::get(TextKey::Campaign));
     sf::FloatRect tb = m_titleText.getLocalBounds();
     m_titleText.setOrigin(tb.width / 2, tb.height / 2);
     m_titleText.setPosition(WINDOW_WIDTH / 2.0f, 90);
 
-    for (size_t i = 0; i < m_buttons.size() && i < levels.size(); ++i) {
+    for (size_t i = 0; i < m_buttons.size() && i < levels.size(); ++i)
+    {
         m_buttons[i].nameText.setString(
             std::to_wstring(i + 1) + L". " + LangManager::get(levels[i].nameKey));
         m_buttons[i].descText.setString(LangManager::get(levels[i].descKey));
 
-        std::wstring info = L"$" + std::to_wstring(levels[i].startGold)
-            + L"  |  " + std::to_wstring(levels[i].startLives) + L" HP"
-            + L"  |  " + std::to_wstring(levels[i].waveCount) + L" " + LangManager::get(TextKey::Wave);
+        std::wstring info = L"$" + std::to_wstring(levels[i].startGold) + L"  |  " + std::to_wstring(levels[i].startLives) + L" HP" + L"  |  " + std::to_wstring(levels[i].waveCount) + L" " + LangManager::get(TextKey::Wave);
         m_buttons[i].infoText.setString(info);
     }
 
@@ -92,12 +99,15 @@ void CampaignScreen::refreshTexts() {
     m_backHint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
 }
 
-bool CampaignScreen::update(const sf::Event& event, sf::RenderWindow& window,
-                             LevelConfig& outLevel) {
-    if (event.type == sf::Event::MouseMoved) {
+bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
+                            LevelConfig &outLevel)
+{
+    if (event.type == sf::Event::MouseMoved)
+    {
         sf::Vector2f worldPos = window.mapPixelToCoords(
             sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
-        for (auto& btn : m_buttons) {
+        for (auto &btn : m_buttons)
+        {
             bool inside = btn.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
             btn.hovered = inside;
             btn.bg.setFillColor(inside ? sf::Color(60, 60, 90) : sf::Color(40, 40, 60));
@@ -107,11 +117,13 @@ bool CampaignScreen::update(const sf::Event& event, sf::RenderWindow& window,
     }
 
     if (event.type == sf::Event::MouseButtonPressed &&
-        event.mouseButton.button == sf::Mouse::Left) {
+        event.mouseButton.button == sf::Mouse::Left)
+    {
         sf::Vector2f worldPos = window.mapPixelToCoords(
             sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
         int idx = getButtonIndex(worldPos.x, worldPos.y);
-        if (idx >= 0 && idx < static_cast<int>(m_buttons.size())) {
+        if (idx >= 0 && idx < static_cast<int>(m_buttons.size()))
+        {
             outLevel = getCampaignLevels()[idx];
             return true;
         }
@@ -120,12 +132,14 @@ bool CampaignScreen::update(const sf::Event& event, sf::RenderWindow& window,
     return false;
 }
 
-void CampaignScreen::draw(sf::RenderWindow& window) const {
+void CampaignScreen::draw(sf::RenderWindow &window) const
+{
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
     bg.setFillColor(sf::Color(15, 15, 30));
     window.draw(bg);
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; ++i)
+    {
         sf::RectangleShape line(sf::Vector2f(WINDOW_WIDTH, 2));
         line.setFillColor(sf::Color(30, 30, 50));
         line.setPosition(0, i * 80.0f);
@@ -133,7 +147,8 @@ void CampaignScreen::draw(sf::RenderWindow& window) const {
     }
 
     window.draw(m_titleText);
-    for (const auto& btn : m_buttons) {
+    for (const auto &btn : m_buttons)
+    {
         window.draw(btn.bg);
         window.draw(btn.nameText);
         window.draw(btn.descText);
@@ -142,8 +157,10 @@ void CampaignScreen::draw(sf::RenderWindow& window) const {
     window.draw(m_backHint);
 }
 
-int CampaignScreen::getButtonIndex(float mx, float my) const {
-    for (size_t i = 0; i < m_buttons.size(); ++i) {
+int CampaignScreen::getButtonIndex(float mx, float my) const
+{
+    for (size_t i = 0; i < m_buttons.size(); ++i)
+    {
         if (m_buttons[i].bg.getGlobalBounds().contains(mx, my))
             return static_cast<int>(i);
     }

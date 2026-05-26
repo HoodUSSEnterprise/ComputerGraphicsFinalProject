@@ -4,7 +4,8 @@
 #include <iomanip>
 #include <iostream>
 
-UI::UI() : m_messageTimer(0) {
+UI::UI() : m_messageTimer(0)
+{
     reloadFont();
 
     // 面板背景
@@ -49,7 +50,8 @@ UI::UI() : m_messageTimer(0) {
     TextKey nameKeys[] = {TextKey::Tower_Arrow, TextKey::Tower_Cannon, TextKey::Tower_Ice};
     TowerType types[] = {TowerType::Arrow, TowerType::Cannon, TowerType::Ice};
 
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i)
+    {
         TowerButton btn;
         btn.type = types[i];
         btn.bg.setSize(sf::Vector2f(100, 80));
@@ -90,37 +92,42 @@ UI::UI() : m_messageTimer(0) {
 }
 
 void UI::update(float dt, int gold, int lives, int currentWave,
-                int totalWaves, TowerType selectedTower) {
+                int totalWaves, TowerType selectedTower)
+{
 
     // 更新文字
-    m_goldText.setString(std::wstring(LangManager::get(TextKey::Gold))
-                         + L": " + std::to_wstring(gold));
-    m_livesText.setString(std::wstring(LangManager::get(TextKey::Lives))
-                          + L": " + std::to_wstring(lives));
-    m_waveText.setString(std::wstring(LangManager::get(TextKey::Wave))
-                         + L": " + std::to_wstring(currentWave)
-                         + L" / " + std::to_wstring(totalWaves));
+    m_goldText.setString(std::wstring(LangManager::get(TextKey::Gold)) + L": " + std::to_wstring(gold));
+    m_livesText.setString(std::wstring(LangManager::get(TextKey::Lives)) + L": " + std::to_wstring(lives));
+    m_waveText.setString(std::wstring(LangManager::get(TextKey::Wave)) + L": " + std::to_wstring(currentWave) + L" / " + std::to_wstring(totalWaves));
 
     // 更新消息
-    if (m_messageTimer > 0) {
+    if (m_messageTimer > 0)
+    {
         m_messageTimer -= dt;
-    } else {
+    }
+    else
+    {
         m_messageText.setString("");
     }
 
     // 更新按钮高亮
-    for (auto& btn : m_towerButtons) {
-        if (btn.type == selectedTower) {
+    for (auto &btn : m_towerButtons)
+    {
+        if (btn.type == selectedTower)
+        {
             btn.bg.setOutlineColor(sf::Color::Yellow);
             btn.bg.setOutlineThickness(3);
-        } else {
+        }
+        else
+        {
             btn.bg.setOutlineColor(sf::Color::White);
             btn.bg.setOutlineThickness(1);
         }
     }
 }
 
-void UI::draw(sf::RenderWindow& window) const {
+void UI::draw(sf::RenderWindow &window) const
+{
     window.draw(m_panelBg);
     window.draw(m_goldText);
     window.draw(m_livesText);
@@ -128,7 +135,8 @@ void UI::draw(sf::RenderWindow& window) const {
     window.draw(m_messageText);
     window.draw(m_instructionText);
 
-    for (const auto& btn : m_towerButtons) {
+    for (const auto &btn : m_towerButtons)
+    {
         window.draw(btn.bg);
         window.draw(btn.label);
         window.draw(btn.cost);
@@ -138,40 +146,50 @@ void UI::draw(sf::RenderWindow& window) const {
     window.draw(m_startWaveText);
 }
 
-TowerType UI::handleClick(float x, float y) const {
-    for (const auto& btn : m_towerButtons) {
-        if (btn.bg.getGlobalBounds().contains(x, y)) {
+TowerType UI::handleClick(float x, float y) const
+{
+    for (const auto &btn : m_towerButtons)
+    {
+        if (btn.bg.getGlobalBounds().contains(x, y))
+        {
             return btn.type;
         }
     }
-    return TowerType::Arrow;  // 默认
+    return TowerType::Arrow; // 默认
 }
 
-bool UI::isClickOnUI(float x, float y) const {
+bool UI::isClickOnUI(float x, float y) const
+{
     return y >= MAP_ROWS * TILE_SIZE;
 }
 
-bool UI::isStartWaveClicked(float x, float y) const {
+bool UI::isStartWaveClicked(float x, float y) const
+{
     return m_startWaveBtn.getGlobalBounds().contains(x, y);
 }
 
-void UI::showMessage(const std::wstring& msg) {
+void UI::showMessage(const std::wstring &msg)
+{
     m_messageText.setString(msg);
     m_messageTimer = 2.0f;
 }
 
-void UI::reloadFont() {
-    std::vector<std::string> paths = { LangManager::getFontPath() };
+void UI::reloadFont()
+{
+    std::vector<std::string> paths = {LangManager::getFontPath()};
 
     std::string lang = LangManager::currentLangName();
-    if (lang == "zh") {
+    if (lang == "zh")
+    {
         paths.push_back("fonts/simhei.ttf");
     }
     paths.push_back("fonts/arial.ttf");
 
     bool loaded = false;
-    for (const auto& p : paths) {
-        if (m_font.loadFromFile(p)) {
+    for (const auto &p : paths)
+    {
+        if (m_font.loadFromFile(p))
+        {
             std::cout << "[Font] UI loaded: " << p << std::endl;
             loaded = true;
             break;
@@ -186,7 +204,8 @@ void UI::reloadFont() {
     m_messageText.setFont(m_font);
     m_instructionText.setFont(m_font);
     m_startWaveText.setFont(m_font);
-    for (auto& btn : m_towerButtons) {
+    for (auto &btn : m_towerButtons)
+    {
         btn.label.setFont(m_font);
         btn.cost.setFont(m_font);
     }
@@ -194,12 +213,14 @@ void UI::reloadFont() {
     refreshTexts();
 }
 
-void UI::refreshTexts() {
+void UI::refreshTexts()
+{
     m_instructionText.setString(LangManager::get(TextKey::Instruction));
     m_startWaveText.setString(LangManager::get(TextKey::StartWave));
 
     TextKey nameKeys[] = {TextKey::Tower_Arrow, TextKey::Tower_Cannon, TextKey::Tower_Ice};
-    for (size_t i = 0; i < m_towerButtons.size() && i < 3; ++i) {
+    for (size_t i = 0; i < m_towerButtons.size() && i < 3; ++i)
+    {
         m_towerButtons[i].label.setString(LangManager::get(nameKeys[i]));
     }
 }

@@ -17,7 +17,8 @@
 #include <memory>
 #include <fstream>
 
-enum class GameState {
+enum class GameState
+{
     Menu,
     Settings,
     CampaignSelect,
@@ -27,14 +28,15 @@ enum class GameState {
     GameWon
 };
 
-class Game {
+class Game
+{
 public:
     Game();
     void run();
 
 private:
     // ---- state ----
-    void newGame(const LevelConfig& cfg);
+    void newGame(const LevelConfig &cfg);
     void newGame();
     void saveGame();
     bool loadGame();
@@ -43,11 +45,11 @@ private:
     // ---- events ----
     void processEvents();
     void handleResize();
-    void processMenuEvents(const sf::Event& event);
-    void processSettingsEvents(const sf::Event& event);
-    void processCampaignEvents(const sf::Event& event);
-    void processCustomSetupEvents(const sf::Event& event);
-    void processPlayingEvents(const sf::Event& event);
+    void processMenuEvents(const sf::Event &event);
+    void processSettingsEvents(const sf::Event &event);
+    void processCampaignEvents(const sf::Event &event);
+    void processCustomSetupEvents(const sf::Event &event);
+    void processPlayingEvents(const sf::Event &event);
 
     // ---- update ----
     void update(float dt);
@@ -93,7 +95,7 @@ private:
 
     // ---- settings ----
     float m_volume;
-    bool  m_bgmOn;
+    bool m_bgmOn;
     sf::Music m_bgm;
     void applyVolume();
     void initSettings();
@@ -103,17 +105,18 @@ private:
     sf::Text m_titleText;
     sf::Text m_subtitleText;
 
-    struct MenuButton {
+    struct MenuButton
+    {
         sf::RectangleShape bg;
         sf::Text label;
         bool hovered = false;
     };
-    std::vector<MenuButton> m_menuButtons;      // 主菜单按钮
-    std::vector<MenuButton> m_settingsButtons;  // 设置界面按钮
+    std::vector<MenuButton> m_menuButtons;     // 主菜单按钮
+    std::vector<MenuButton> m_settingsButtons; // 设置界面按钮
 
     // 音量滑块
     sf::RectangleShape m_volTrack;
-    sf::CircleShape    m_volKnob;
+    sf::CircleShape m_volKnob;
     bool m_draggingVol;
 
     // 语言切换标签
@@ -127,10 +130,10 @@ private:
     void loadMenuFont();
     void refreshAllTexts();
     void updateMenuHover(float mx, float my);
-    int  getMenuButtonIndex(float mx, float my) const;
-    int  getSettingsButtonIndex(float mx, float my) const;
+    int getMenuButtonIndex(float mx, float my) const;
+    int getSettingsButtonIndex(float mx, float my) const;
 
     // ---- 战役 & 自定义模式 ----
     CampaignScreen m_campaignScreen;
-    CustomScreen   m_customScreen;
+    CustomScreen m_customScreen;
 };

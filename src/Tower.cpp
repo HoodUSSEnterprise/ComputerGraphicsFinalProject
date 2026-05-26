@@ -1,8 +1,10 @@
 #include "Tower.h"
 #include <cmath>
 
-TowerStats Tower::getStats(TowerType type) {
-    switch (type) {
+TowerStats Tower::getStats(TowerType type)
+{
+    switch (type)
+    {
     case TowerType::Arrow:
         return {50, 150.0f, 15.0f, 2.0f, sf::Color(100, 200, 100), type};
     case TowerType::Cannon:
@@ -14,7 +16,8 @@ TowerStats Tower::getStats(TowerType type) {
 }
 
 Tower::Tower(TowerType type, sf::Vector2f position)
-    : m_stats(getStats(type)), m_position(position), m_fireTimer(0) {
+    : m_stats(getStats(type)), m_position(position), m_fireTimer(0)
+{
 
     // 底座
     m_base.setRadius(TILE_SIZE / 3.0f);
@@ -24,7 +27,7 @@ Tower::Tower(TowerType type, sf::Vector2f position)
     m_base.setOutlineColor(sf::Color::White);
     m_base.setOutlineThickness(2);
 
-    // 射程指示器（半透明�?
+    // 射程指示器（半透明�?
     m_rangeIndicator.setRadius(m_stats.range);
     m_rangeIndicator.setOrigin(m_stats.range, m_stats.range);
     m_rangeIndicator.setPosition(position);
@@ -39,22 +42,27 @@ Tower::Tower(TowerType type, sf::Vector2f position)
     m_turret.setFillColor(sf::Color(50, 50, 50));
 }
 
-void Tower::update(float dt) {
-    if (m_fireTimer > 0) {
+void Tower::update(float dt)
+{
+    if (m_fireTimer > 0)
+    {
         m_fireTimer -= dt;
     }
 }
 
-void Tower::draw(sf::RenderWindow& window) const {
+void Tower::draw(sf::RenderWindow &window) const
+{
     window.draw(m_rangeIndicator);
     window.draw(m_base);
     window.draw(m_turret);
 }
 
-bool Tower::canFire() const {
+bool Tower::canFire() const
+{
     return m_fireTimer <= 0;
 }
 
-void Tower::resetFireTimer() {
+void Tower::resetFireTimer()
+{
     m_fireTimer = 1.0f / m_stats.fireRate;
 }

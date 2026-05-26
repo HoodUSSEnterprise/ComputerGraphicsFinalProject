@@ -4,32 +4,39 @@
 #include <iomanip>
 #include <iostream>
 
-CustomScreen::CustomScreen() : m_params() {
+CustomScreen::CustomScreen() : m_params()
+{
     loadFont();
     buildUI();
 }
 
-void CustomScreen::loadFont() {
-    std::vector<std::string> paths = { LangManager::getFontPath() };
+void CustomScreen::loadFont()
+{
+    std::vector<std::string> paths = {LangManager::getFontPath()};
     std::string lang = LangManager::currentLangName();
-    if (lang == "zh") paths.push_back("fonts/simhei.ttf");
+    if (lang == "zh")
+        paths.push_back("fonts/simhei.ttf");
     paths.push_back("fonts/arial.ttf");
 
-    for (const auto& p : paths) {
-        if (m_font.loadFromFile(p)) {
+    for (const auto &p : paths)
+    {
+        if (m_font.loadFromFile(p))
+        {
             std::cout << "[Font] CustomScreen loaded: " << p << std::endl;
             break;
         }
     }
 }
 
-void CustomScreen::buildUI() {
+void CustomScreen::buildUI()
+{
     m_buttons.clear();
 
-    struct ParamDef {
+    struct ParamDef
+    {
         TextKey labelKey;
-        int* valueInt;
-        float* valueFloat;
+        int *valueInt;
+        float *valueFloat;
         int minInt, maxInt;
         float minFloat, maxFloat;
         float step;
@@ -37,16 +44,17 @@ void CustomScreen::buildUI() {
     };
 
     ParamDef params[] = {
-        {TextKey::CustomWaves,   &m_params.waves,         nullptr, 1,  20,  0,    0,    1,    false},
-        {TextKey::CustomEnemies, &m_params.enemiesPerWave,nullptr, 5,  50,  0,    0,    1,    false},
-        {TextKey::CustomGold,    &m_params.startGold,     nullptr, 100,1000,0,    0,    50,   false},
-        {TextKey::CustomLives,   &m_params.startLives,    nullptr, 5,  100, 0,    0,    5,    false},
-        {TextKey::CustomSpeed,   nullptr, &m_params.speedMul, 0, 0,    0.5f, 3.0f, 0.1f, true},
-        {TextKey::CustomHP,      nullptr, &m_params.hpMul,    0, 0,    0.5f, 3.0f, 0.1f, true},
+        {TextKey::CustomWaves, &m_params.waves, nullptr, 1, 20, 0, 0, 1, false},
+        {TextKey::CustomEnemies, &m_params.enemiesPerWave, nullptr, 5, 50, 0, 0, 1, false},
+        {TextKey::CustomGold, &m_params.startGold, nullptr, 100, 1000, 0, 0, 50, false},
+        {TextKey::CustomLives, &m_params.startLives, nullptr, 5, 100, 0, 0, 5, false},
+        {TextKey::CustomSpeed, nullptr, &m_params.speedMul, 0, 0, 0.5f, 3.0f, 0.1f, true},
+        {TextKey::CustomHP, nullptr, &m_params.hpMul, 0, 0, 0.5f, 3.0f, 0.1f, true},
     };
     constexpr int paramCount = 6;
 
-    for (int i = 0; i < paramCount; ++i) {
+    for (int i = 0; i < paramCount; ++i)
+    {
         float yPos = 180.0f + i * 72.0f;
 
         // 标签
@@ -156,24 +164,35 @@ void CustomScreen::buildUI() {
     refreshTexts();
 }
 
-void CustomScreen::refreshValueLabels() {
-    struct { int intVal; float floatVal; bool isFloat; } vals[] = {
-        {m_params.waves,          0, false},
+void CustomScreen::refreshValueLabels()
+{
+    struct
+    {
+        int intVal;
+        float floatVal;
+        bool isFloat;
+    } vals[] = {
+        {m_params.waves, 0, false},
         {m_params.enemiesPerWave, 0, false},
-        {m_params.startGold,      0, false},
-        {m_params.startLives,     0, false},
-        {0, m_params.speedMul,    true},
-        {0, m_params.hpMul,       true},
+        {m_params.startGold, 0, false},
+        {m_params.startLives, 0, false},
+        {0, m_params.speedMul, true},
+        {0, m_params.hpMul, true},
     };
 
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 6; ++i)
+    {
         int idx = i * 4 + 2;
-        if (idx < static_cast<int>(m_buttons.size())) {
-            if (vals[i].isFloat) {
+        if (idx < static_cast<int>(m_buttons.size()))
+        {
+            if (vals[i].isFloat)
+            {
                 std::wstringstream wss;
                 wss << L"x" << std::fixed << std::setprecision(1) << vals[i].floatVal;
                 m_buttons[idx].label.setString(wss.str());
-            } else {
+            }
+            else
+            {
                 m_buttons[idx].label.setString(std::to_wstring(vals[i].intVal));
             }
             sf::FloatRect lb = m_buttons[idx].label.getLocalBounds();
@@ -186,7 +205,8 @@ void CustomScreen::refreshValueLabels() {
     }
 }
 
-void CustomScreen::refreshTexts() {
+void CustomScreen::refreshTexts()
+{
     m_titleText.setFont(m_font);
     m_titleText.setString(LangManager::get(TextKey::CustomMode));
     m_titleText.setCharacterSize(46);
@@ -201,12 +221,15 @@ void CustomScreen::refreshTexts() {
     m_backHint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
 }
 
-bool CustomScreen::update(const sf::Event& event, sf::RenderWindow& window,
-                           CustomParams& outParams) {
-    if (event.type == sf::Event::MouseMoved) {
+bool CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
+                          CustomParams &outParams)
+{
+    if (event.type == sf::Event::MouseMoved)
+    {
         sf::Vector2f worldPos = window.mapPixelToCoords(
             sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
-        for (auto& btn : m_buttons) {
+        for (auto &btn : m_buttons)
+        {
             bool inside = btn.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
             btn.hovered = inside;
             if (inside)
@@ -224,53 +247,89 @@ bool CustomScreen::update(const sf::Event& event, sf::RenderWindow& window,
     sf::Vector2f worldPos = window.mapPixelToCoords(
         sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     int idx = getButtonIndex(worldPos.x, worldPos.y);
-    if (idx < 0) return false;
+    if (idx < 0)
+        return false;
 
     int paramIdx = idx / 4;
-    int btnType  = idx % 4;
+    int btnType = idx % 4;
 
-    if (paramIdx < 6) {
-        switch (btnType) {
+    if (paramIdx < 6)
+    {
+        switch (btnType)
+        {
         case 1: // -
-            switch (paramIdx) {
-            case 0: m_params.waves = std::max(1, m_params.waves - 1); break;
-            case 1: m_params.enemiesPerWave = std::max(5, m_params.enemiesPerWave - 1); break;
-            case 2: m_params.startGold = std::max(100, m_params.startGold - 50); break;
-            case 3: m_params.startLives = std::max(5, m_params.startLives - 5); break;
-            case 4: m_params.speedMul = std::max(0.5f, m_params.speedMul - 0.1f); break;
-            case 5: m_params.hpMul = std::max(0.5f, m_params.hpMul - 0.1f); break;
+            switch (paramIdx)
+            {
+            case 0:
+                m_params.waves = std::max(1, m_params.waves - 1);
+                break;
+            case 1:
+                m_params.enemiesPerWave = std::max(5, m_params.enemiesPerWave - 1);
+                break;
+            case 2:
+                m_params.startGold = std::max(100, m_params.startGold - 50);
+                break;
+            case 3:
+                m_params.startLives = std::max(5, m_params.startLives - 5);
+                break;
+            case 4:
+                m_params.speedMul = std::max(0.5f, m_params.speedMul - 0.1f);
+                break;
+            case 5:
+                m_params.hpMul = std::max(0.5f, m_params.hpMul - 0.1f);
+                break;
             }
             refreshValueLabels();
             break;
         case 3: // +
-            switch (paramIdx) {
-            case 0: m_params.waves = std::min(20, m_params.waves + 1); break;
-            case 1: m_params.enemiesPerWave = std::min(50, m_params.enemiesPerWave + 1); break;
-            case 2: m_params.startGold = std::min(1000, m_params.startGold + 50); break;
-            case 3: m_params.startLives = std::min(100, m_params.startLives + 5); break;
-            case 4: m_params.speedMul = std::min(3.0f, m_params.speedMul + 0.1f); break;
-            case 5: m_params.hpMul = std::min(3.0f, m_params.hpMul + 0.1f); break;
+            switch (paramIdx)
+            {
+            case 0:
+                m_params.waves = std::min(20, m_params.waves + 1);
+                break;
+            case 1:
+                m_params.enemiesPerWave = std::min(50, m_params.enemiesPerWave + 1);
+                break;
+            case 2:
+                m_params.startGold = std::min(1000, m_params.startGold + 50);
+                break;
+            case 3:
+                m_params.startLives = std::min(100, m_params.startLives + 5);
+                break;
+            case 4:
+                m_params.speedMul = std::min(3.0f, m_params.speedMul + 0.1f);
+                break;
+            case 5:
+                m_params.hpMul = std::min(3.0f, m_params.hpMul + 0.1f);
+                break;
             }
             refreshValueLabels();
             break;
-        default: break;
+        default:
+            break;
         }
-    } else if (idx == 24) {
+    }
+    else if (idx == 24)
+    {
         outParams = m_params;
-        return true;  // 开始
-    } else if (idx == 25) {
-        return true;  // 返回（outParams 不用）
+        return true; // 开始
+    }
+    else if (idx == 25)
+    {
+        return true; // 返回（outParams 不用）
     }
 
     return false;
 }
 
-void CustomScreen::draw(sf::RenderWindow& window) const {
+void CustomScreen::draw(sf::RenderWindow &window) const
+{
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
     bg.setFillColor(sf::Color(15, 15, 30));
     window.draw(bg);
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; ++i)
+    {
         sf::RectangleShape line(sf::Vector2f(WINDOW_WIDTH, 2));
         line.setFillColor(sf::Color(30, 30, 50));
         line.setPosition(0, i * 80.0f);
@@ -278,15 +337,18 @@ void CustomScreen::draw(sf::RenderWindow& window) const {
     }
 
     window.draw(m_titleText);
-    for (const auto& btn : m_buttons) {
+    for (const auto &btn : m_buttons)
+    {
         window.draw(btn.bg);
         window.draw(btn.label);
     }
     window.draw(m_backHint);
 }
 
-int CustomScreen::getButtonIndex(float mx, float my) const {
-    for (size_t i = 0; i < m_buttons.size(); ++i) {
+int CustomScreen::getButtonIndex(float mx, float my) const
+{
+    for (size_t i = 0; i < m_buttons.size(); ++i)
+    {
         if (m_buttons[i].bg.getGlobalBounds().contains(mx, my))
             return static_cast<int>(i);
     }
