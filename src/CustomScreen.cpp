@@ -216,6 +216,24 @@ void CustomScreen::refreshTexts()
     m_titleText.setOrigin(tb.width / 2, tb.height / 2);
     m_titleText.setPosition(WINDOW_WIDTH / 2.0f, 90);
 
+    // 刷新参数标签 (每4个按钮一组: 0=标签, 1=-, 2=值, 3=+)
+    static const TextKey paramKeys[] = {
+        TextKey::CustomWaves, TextKey::CustomEnemies,
+        TextKey::CustomGold, TextKey::CustomLives,
+        TextKey::CustomSpeed, TextKey::CustomHP
+    };
+    for (int i = 0; i < 6; ++i) {
+        int idx = i * 4;  // 标签按钮索引
+        if (idx < static_cast<int>(m_buttons.size()))
+            m_buttons[idx].label.setString(LangManager::get(paramKeys[i]));
+    }
+
+    // 刷新开始/返回按钮
+    int n = static_cast<int>(m_buttons.size());
+    if (n > 24) m_buttons[24].label.setString(LangManager::get(TextKey::CustomStart));
+    if (n > 25) m_buttons[25].label.setString(LangManager::get(TextKey::Back));
+
+    m_backHint.setString(L"ESC: Back to Menu");
     sf::FloatRect hb = m_backHint.getLocalBounds();
     m_backHint.setOrigin(hb.width / 2, hb.height / 2);
     m_backHint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
