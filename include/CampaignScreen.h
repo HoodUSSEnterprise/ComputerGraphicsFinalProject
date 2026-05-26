@@ -4,34 +4,33 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-// 战役选关界面：展示3个关卡，玩家选择后返回对应 LevelConfig
+// 战役选关界面：群系分组，子关卡可选
 class CampaignScreen
 {
 public:
     CampaignScreen();
 
-    // 返回 true 表示玩家选择了关卡，level 被填充
     bool update(const sf::Event &event, sf::RenderWindow &window,
                 LevelConfig &outLevel);
     void draw(sf::RenderWindow &window) const;
     void refreshTexts();
 
 private:
-    struct LevelButton
+    // 每个UI行：可能是群系标题，也可能是关卡按钮
+    struct RowItem
     {
         sf::RectangleShape bg;
-        sf::Text nameText;
-        sf::Text descText;
-        sf::Text infoText;
+        sf::Text label;
+        int levelIndex = -1;  // -1 = 群系标题, >=0 = 关卡在 getCampaignLevels() 中的索引
         bool hovered = false;
     };
 
     sf::Font m_font;
     sf::Text m_titleText;
-    std::vector<LevelButton> m_buttons;
+    std::vector<RowItem> m_rows;
     sf::Text m_backHint;
 
-    int getButtonIndex(float mx, float my) const;
+    int getRowIndex(float mx, float my) const;
     void loadFont();
     void buildUI();
 };

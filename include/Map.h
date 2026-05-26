@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <string>
 
 struct Waypoint
 {
@@ -14,6 +15,7 @@ class Map
 public:
     Map();
     bool loadFromFile(const char *path);
+    void loadBiomeTextures(const std::string &biome);
 
     void draw(sf::RenderWindow &window) const;
 
@@ -33,9 +35,8 @@ private:
     TileType m_grid[MAP_COLS][MAP_ROWS];
     std::vector<Waypoint> m_waypoints;
 
-    sf::RectangleShape m_grassTile;
-    sf::RectangleShape m_pathTile;
-    sf::RectangleShape m_startTile;
-    sf::RectangleShape m_endTile;
-    sf::RectangleShape m_blockedTile;
+    sf::Texture m_groundTex;
+    bool m_hasTexture = false;
+
+    mutable sf::RectangleShape m_tileShape;
 };

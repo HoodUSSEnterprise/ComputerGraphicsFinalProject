@@ -6,25 +6,25 @@
 
 Map::Map()
 {
-    // 初始化瓦片图形
-    m_grassTile.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-    m_grassTile.setFillColor(sf::Color(34, 139, 34));
-    m_grassTile.setOutlineColor(sf::Color(25, 100, 25));
-    m_grassTile.setOutlineThickness(1);
+    m_tileShape.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+    m_tileShape.setOutlineThickness(1);
+    m_tileShape.setOutlineColor(sf::Color(40, 40, 40));
+}
 
-    m_pathTile.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-    m_pathTile.setFillColor(sf::Color(194, 178, 128));
-    m_pathTile.setOutlineColor(sf::Color(160, 140, 100));
-    m_pathTile.setOutlineThickness(1);
+void Map::loadBiomeTextures(const std::string &biome)
+{
+    std::string path;
+    if (biome == "grassland")      path = "textures/ground1.png";
+    else if (biome == "desert")    path = "textures/ground2.png";
+    else if (biome == "hell")      path = "textures/ground3.png";
+    else if (biome == "community") path = "textures/ground1.png";
+    else                           path = "textures/ground1.png";
 
-    m_startTile.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-    m_startTile.setFillColor(sf::Color(0, 200, 0));
-
-    m_endTile.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-    m_endTile.setFillColor(sf::Color(200, 0, 0));
-
-    m_blockedTile.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-    m_blockedTile.setFillColor(sf::Color(100, 100, 100));
+    m_hasTexture = m_groundTex.loadFromFile(path);
+    if (m_hasTexture) {
+        m_groundTex.setRepeated(true);
+        std::cout << "[Map] Texture loaded: " << path << std::endl;
+    }
 }
 
 bool Map::loadFromFile(const char *path)
@@ -84,28 +84,48 @@ void Map::draw(sf::RenderWindow &window) const
         {
             float x = static_cast<float>(c * TILE_SIZE);
             float y = static_cast<float>(r * TILE_SIZE);
+            m_tileShape.setPosition(x, y);
 
-            sf::RectangleShape tile;
             switch (m_grid[c][r])
             {
             case TileType::Grass:
-                tile = m_grassTile;
+                if (m_hasTexture)
+                {
+                    m_tileShape.setTexture(&m_groundTex);
+                    m_tileShape.setFillColor(sf::Color::White);
+                }
+                else
+                {
+                    m_tileShape.setTexture(nullptr);
+                    m_tileShape.setFillColor(sf::Color(34, 139, 34));
+                }
                 break;
             case TileType::Path:
-                tile = m_pathTile;
+                if (m_hasTexture)
+                {
+                    m_tileShape.setTexture(&m_groundTex);
+                    m_tileShape.setFillColor(sf::Color(160, 140, 100));
+                }
+                else
+                {
+                    m_tileShape.setTexture(nullptr);
+                    m_tileShape.setFillColor(sf::Color(194, 178, 128));
+                }
                 break;
             case TileType::Start:
-                tile = m_startTile;
+                m_tileShape.setTexture(nullptr);
+                m_tileShape.setFillColor(sf::Color(0, 200, 0));
                 break;
             case TileType::End:
-                tile = m_endTile;
+                m_tileShape.setTexture(nullptr);
+                m_tileShape.setFillColor(sf::Color(200, 0, 0));
                 break;
             case TileType::Blocked:
-                tile = m_blockedTile;
+                m_tileShape.setTexture(nullptr);
+                m_tileShape.setFillColor(sf::Color(80, 80, 80));
                 break;
             }
-            tile.setPosition(x, y);
-            window.draw(tile);
+            window.draw(m_tileShape);
         }
     }
 }

@@ -2,6 +2,12 @@
 #include "LangManager.h"
 #include <iostream>
 
+static const char* biomeNamesC[] = {"grassland","desert","hell","community"};
+static const TextKey biomeTitleKeys[] = {
+    TextKey::Biome_Grassland, TextKey::Biome_Desert,
+    TextKey::Biome_Hell, TextKey::Biome_Community
+};
+
 CampaignScreen::CampaignScreen()
 {
     loadFont();
@@ -12,123 +18,140 @@ void CampaignScreen::loadFont()
 {
     std::vector<std::string> paths = {LangManager::getFontPath()};
     std::string lang = LangManager::currentLangName();
-    if (lang == "zh")
-        paths.push_back("fonts/simhei.ttf");
+    if (lang == "zh") paths.push_back("fonts/simhei.ttf");
     paths.push_back("fonts/arial.ttf");
-
     for (const auto &p : paths)
-    {
-        if (m_font.loadFromFile(p))
-        {
-            std::cout << "[Font] CampaignScreen loaded: " << p << std::endl;
-            break;
-        }
-    }
+        if (m_font.loadFromFile(p)) { std::cout << "[Font] Campaign loaded: " << p << std::endl; break; }
 }
 
 void CampaignScreen::buildUI()
 {
-    m_buttons.clear();
+    m_rows.clear();
 
     m_titleText.setFont(m_font);
-    m_titleText.setCharacterSize(46);
+    m_titleText.setCharacterSize(40);
     m_titleText.setFillColor(sf::Color(255, 215, 0));
     m_titleText.setStyle(sf::Text::Bold);
 
     auto levels = getCampaignLevels();
+    int curBiome = -1;
+    float y = 110.0f;
+
     for (size_t i = 0; i < levels.size(); ++i)
     {
-        LevelButton btn;
-        float yPos = 160.0f + i * 160.0f;
+        int b = static_cast<int>(levels[i].biome);
 
-        btn.bg.setSize(sf::Vector2f(600, 130));
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 300, yPos);
-        btn.bg.setFillColor(sf::Color(40, 40, 60));
-        btn.bg.setOutlineColor(sf::Color(80, 80, 120));
-        btn.bg.setOutlineThickness(2);
+        // 新群系标题行
+        if (b != curBiome) {
+            curBiome = b;
+            RowItem header;
+            header.levelIndex = -1;
+            header.bg.setSize(sf::Vector2f(600, 36));
+            header.bg.setPosition(WINDOW_WIDTH / 2.0f - 300, y);
+            sf::Color hdrCol(60, 60, 80);
+            if (b == 0) hdrCol = sf::Color(40, 100, 40);       // grassland green
+            else if (b == 1) hdrCol = sf::Color(160, 120, 40); // desert orange
+            else if (b == 2) hdrCol = sf::Color(140, 30, 30);  // hell red
+            else if (b == 3) hdrCol = sf::Color(60, 60, 120);  // community blue
+            header.bg.setFillColor(hdrCol);
+            header.bg.setOutlineThickness(0);
+            header.label.setFont(m_font);
+            header.label.setCharacterSize(22);
+            header.label.setFillColor(sf::Color::White);
+            header.label.setPosition(WINDOW_WIDTH / 2.0f - 290, y + 4);
+            m_rows.push_back(header);
+            y += 42.0f;
+        }
 
-        // 关卡名称
-        btn.nameText.setFont(m_font);
-        btn.nameText.setCharacterSize(28);
-        btn.nameText.setFillColor(sf::Color(255, 215, 0));
-        btn.nameText.setPosition(WINDOW_WIDTH / 2.0f - 280, yPos + 10);
-
-        // 描述
-        btn.descText.setFont(m_font);
-        btn.descText.setCharacterSize(16);
-        btn.descText.setFillColor(sf::Color(180, 180, 200));
-        btn.descText.setPosition(WINDOW_WIDTH / 2.0f - 280, yPos + 50);
-
-        // 参数信息
-        btn.infoText.setFont(m_font);
-        btn.infoText.setCharacterSize(14);
-        btn.infoText.setFillColor(sf::Color(140, 200, 140));
-        btn.infoText.setPosition(WINDOW_WIDTH / 2.0f - 280, yPos + 85);
-
-        m_buttons.push_back(btn);
+        // 关卡按钮
+        RowItem btn;
+        btn.levelIndex = static_cast<int>(i);
+        btn.bg.setSize(sf::Vector2f(560, 38));
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 280, y);
+        btn.bg.setFillColor(sf::Color(35, 35, 55));
+        btn.bg.setOutlineColor(sf::Color(70, 70, 100));
+        btn.bg.setOutlineThickness(1);
+        btn.label.setFont(m_font);
+        btn.label.setCharacterSize(17);
+        btn.label.setFillColor(sf::Color(200, 200, 220));
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f - 270, y + 8);
+        m_rows.push_back(btn);
+        y += 44.0f;
     }
 
     m_backHint.setFont(m_font);
     m_backHint.setCharacterSize(14);
     m_backHint.setFillColor(sf::Color(120, 120, 140));
-    m_backHint.setString("ESC: Back to Menu");
-
     refreshTexts();
 }
 
 void CampaignScreen::refreshTexts()
 {
-    auto levels = getCampaignLevels();
     m_titleText.setString(LangManager::get(TextKey::Campaign));
     sf::FloatRect tb = m_titleText.getLocalBounds();
     m_titleText.setOrigin(tb.width / 2, tb.height / 2);
-    m_titleText.setPosition(WINDOW_WIDTH / 2.0f, 90);
+    m_titleText.setPosition(WINDOW_WIDTH / 2.0f, 65);
 
-    for (size_t i = 0; i < m_buttons.size() && i < levels.size(); ++i)
+    auto levels = getCampaignLevels();
+    int curBiome = -1;
+
+    for (auto &row : m_rows)
     {
-        m_buttons[i].nameText.setString(
-            std::to_wstring(i + 1) + L". " + LangManager::get(levels[i].nameKey));
-        m_buttons[i].descText.setString(LangManager::get(levels[i].descKey));
-
-        std::wstring info = L"$" + std::to_wstring(levels[i].startGold) + L"  |  " + std::to_wstring(levels[i].startLives) + L" HP" + L"  |  " + std::to_wstring(levels[i].waveCount) + L" " + LangManager::get(TextKey::Wave);
-        m_buttons[i].infoText.setString(info);
+        if (row.levelIndex < 0) {
+            // 群系标题：从后续关卡推断群系
+            for (auto &r2 : m_rows) {
+                if (r2.levelIndex >= 0) {
+                    int b = static_cast<int>(levels[r2.levelIndex].biome);
+                    if (b > curBiome) { curBiome = b; break; }
+                }
+            }
+            if (curBiome >= 0 && curBiome < 4)
+                row.label.setString(LangManager::get(biomeTitleKeys[curBiome]));
+        } else {
+            int idx = row.levelIndex;
+            if (idx < static_cast<int>(levels.size())) {
+                row.label.setString(
+                    std::wstring(levels[idx].id.begin(), levels[idx].id.end())
+                    + L"  " + LangManager::get(levels[idx].nameKey));
+            }
+        }
     }
 
+    m_backHint.setString(L"ESC: " + std::wstring(LangManager::get(TextKey::Back)));
     sf::FloatRect hb = m_backHint.getLocalBounds();
     m_backHint.setOrigin(hb.width / 2, hb.height / 2);
     m_backHint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
 }
 
 bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
-                            LevelConfig &outLevel)
+                             LevelConfig &outLevel)
 {
-    if (event.type == sf::Event::MouseMoved)
-    {
+    if (event.type == sf::Event::MouseMoved) {
         sf::Vector2f worldPos = window.mapPixelToCoords(
             sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
-        for (auto &btn : m_buttons)
-        {
-            bool inside = btn.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
-            btn.hovered = inside;
-            btn.bg.setFillColor(inside ? sf::Color(60, 60, 90) : sf::Color(40, 40, 60));
-            btn.bg.setOutlineColor(inside ? sf::Color(255, 215, 0) : sf::Color(80, 80, 120));
+        for (auto &row : m_rows) {
+            bool inside = row.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
+            row.hovered = inside && row.levelIndex >= 0;
+            if (row.levelIndex >= 0)
+                row.bg.setFillColor(inside ? sf::Color(55, 55, 90) : sf::Color(35, 35, 55));
         }
         return false;
     }
 
     if (event.type == sf::Event::MouseButtonPressed &&
-        event.mouseButton.button == sf::Mouse::Left)
-    {
+        event.mouseButton.button == sf::Mouse::Left) {
         sf::Vector2f worldPos = window.mapPixelToCoords(
             sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-        int idx = getButtonIndex(worldPos.x, worldPos.y);
-        if (idx >= 0 && idx < static_cast<int>(m_buttons.size()))
-        {
-            outLevel = getCampaignLevels()[idx];
-            return true;
+        int idx = getRowIndex(worldPos.x, worldPos.y);
+        if (idx >= 0 && m_rows[idx].levelIndex >= 0) {
+            int li = m_rows[idx].levelIndex;
+            auto levels = getCampaignLevels();
+            if (li < static_cast<int>(levels.size())) {
+                outLevel = levels[li];
+                return true;
+            }
         }
     }
-
     return false;
 }
 
@@ -137,32 +160,19 @@ void CampaignScreen::draw(sf::RenderWindow &window) const
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
     bg.setFillColor(sf::Color(15, 15, 30));
     window.draw(bg);
-
-    for (int i = 0; i < 10; ++i)
-    {
-        sf::RectangleShape line(sf::Vector2f(WINDOW_WIDTH, 2));
-        line.setFillColor(sf::Color(30, 30, 50));
-        line.setPosition(0, i * 80.0f);
-        window.draw(line);
-    }
-
     window.draw(m_titleText);
-    for (const auto &btn : m_buttons)
-    {
-        window.draw(btn.bg);
-        window.draw(btn.nameText);
-        window.draw(btn.descText);
-        window.draw(btn.infoText);
+
+    for (const auto &row : m_rows) {
+        window.draw(row.bg);
+        window.draw(row.label);
     }
     window.draw(m_backHint);
 }
 
-int CampaignScreen::getButtonIndex(float mx, float my) const
+int CampaignScreen::getRowIndex(float mx, float my) const
 {
-    for (size_t i = 0; i < m_buttons.size(); ++i)
-    {
-        if (m_buttons[i].bg.getGlobalBounds().contains(mx, my))
+    for (size_t i = 0; i < m_rows.size(); ++i)
+        if (m_rows[i].bg.getGlobalBounds().contains(mx, my))
             return static_cast<int>(i);
-    }
     return -1;
 }

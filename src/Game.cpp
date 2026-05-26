@@ -22,6 +22,8 @@ Game::Game()
 
     LangManager::loadLanguage("assets/lang_en.json");
     m_ui.reloadFont();
+    m_campaignScreen.refreshTexts();
+    m_customScreen.refreshTexts();
     initMenu();
     initSettings();
 
@@ -72,6 +74,11 @@ void Game::newGame(const LevelConfig &cfg)
     m_projectiles.clear();
     m_map = Map();
     m_map.loadFromFile(cfg.mapFile.c_str());
+    // 根据群系加载纹理
+    static const char* biomeNames[] = {"grassland","desert","hell","community"};
+    int bIdx = static_cast<int>(cfg.biome);
+    if (bIdx >= 0 && bIdx < 4)
+        m_map.loadBiomeTextures(biomeNames[bIdx]);
     m_gold = cfg.startGold;
     m_lives = cfg.startLives;
     m_waveManager = WaveManager();
@@ -1045,9 +1052,13 @@ void Game::updateEnemies(float dt)
 
     m_enemies.erase(
         std::remove_if(m_enemies.begin(), m_enemies.end(),
-                       [](const std::shared_ptr<Enemy> &e)
+                       [this](const std::shared_ptr<Enemy> &e)
                        {
-                           return e->isDead() || e->hasReachedEnd();
+                           if (e->hasReachedEnd()) {
+                               m_lives--;
+                               return true;
+                           }
+                           return e->isDead();
                        }),
         m_enemies.end());
 }
