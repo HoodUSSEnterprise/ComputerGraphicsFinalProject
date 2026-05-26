@@ -257,12 +257,12 @@ void Game::processMenuEvents(const sf::Event &event)
         if (!loadGame()) newGame();
         break;
     case 2:
-        m_state = GameState::Settings;
-        buildSettingsUI();
-        break;
-    case 3:
         initCustomSetup();
         m_state = GameState::CustomSetup;
+        break;
+    case 3:
+        m_state = GameState::Settings;
+        buildSettingsUI();
         break;
     case 4: m_window.close(); break;
     default: break;
@@ -578,6 +578,8 @@ void Game::loadMenuFont()
     m_titleText.setFont(m_menuFont);
     m_subtitleText.setFont(m_menuFont);
     for (auto& btn : m_menuButtons)
+        btn.label.setFont(m_menuFont);
+    for (auto& btn : m_customButtons)
         btn.label.setFont(m_menuFont);
 }
 
