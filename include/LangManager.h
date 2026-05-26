@@ -10,6 +10,10 @@ enum class TextKey {
     Msg_CannotPlace, Msg_NoGold, Msg_AlreadyHere, Msg_Placed, Msg_Sold, Msg_WaveStarted,
     Victory, GameOver, PressR, EscToMenu, Back, Volume, BGM_On, BGM_Off,
     CustomMode, CustomWaves, CustomEnemies, CustomGold, CustomLives, CustomSpeed, CustomHP, CustomStart,
+    Campaign,
+    Level1_Name, Level1_Desc,
+    Level2_Name, Level2_Desc,
+    Level3_Name, Level3_Desc,
     COUNT
 };
 

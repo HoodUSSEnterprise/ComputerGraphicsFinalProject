@@ -37,5 +37,12 @@
     "CustomLives": "Start Lives",
     "CustomSpeed": "Speed",
     "CustomHP": "HP",
-    "CustomStart": "Start Game"
+    "CustomStart": "Start Game",
+    "Campaign": "Campaign",
+    "Level1_Name": "Green Plains",
+    "Level1_Desc": "A peaceful grassland. Easy enemies, perfect for beginners.",
+    "Level2_Name": "Desert Storm",
+    "Level2_Desc": "The scorching desert. Faster and tougher enemies await.",
+    "Level3_Name": "Frozen Peak",
+    "Level3_Desc": "An icy mountain. Only the strongest will survive."
 }

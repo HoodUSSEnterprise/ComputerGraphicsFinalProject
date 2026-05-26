@@ -37,5 +37,12 @@
     "CustomLives": "Startleben",
     "CustomSpeed": "Geschw.",
     "CustomHP": "LP",
-    "CustomStart": "Spiel starten"
-}
+    "CustomStart": "Spiel starten",
+    "Campaign": "Kampagne",
+    "Level1_Name": "Grune Ebene",
+    "Level1_Desc": "Eine friedliche Wiese. Leichte Gegner, perfekt fur Anfanger.",
+    "Level2_Name": "Wustensturm",
+    "Level2_Desc": "Die gluhende Wuste. Schnellere und starkere Gegner warten.",
+    "Level3_Name": "Gefrorener Gipfel",
+    "Level3_Desc": "Ein eisiger Berg. Nur die Starksten uberleben."
+}}

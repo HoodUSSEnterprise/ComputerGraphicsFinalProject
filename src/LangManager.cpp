@@ -55,6 +55,13 @@ static const KeyEntry KEY_MAP[] = {
     {"CustomSpeed",      TextKey::CustomSpeed},
     {"CustomHP",         TextKey::CustomHP},
     {"CustomStart",      TextKey::CustomStart},
+    {"Campaign",         TextKey::Campaign},
+    {"Level1_Name",      TextKey::Level1_Name},
+    {"Level1_Desc",      TextKey::Level1_Desc},
+    {"Level2_Name",      TextKey::Level2_Name},
+    {"Level2_Desc",      TextKey::Level2_Desc},
+    {"Level3_Name",      TextKey::Level3_Name},
+    {"Level3_Desc",      TextKey::Level3_Desc},
 };
 
 TextKey LangManager::keyFromString(const std::string& name) {

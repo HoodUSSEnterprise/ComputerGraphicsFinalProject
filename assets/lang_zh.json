@@ -37,5 +37,12 @@
     "CustomLives": "初始生命",
     "CustomSpeed": "速度倍率",
     "CustomHP": "生命倍率",
-    "CustomStart": "开始游戏"
+    "CustomStart": "开始游戏",
+    "Campaign": "战役模式",
+    "Level1_Name": "翠绿平原",
+    "Level1_Desc": "宁静的草原，敌人较弱，适合新手练习。",
+    "Level2_Name": "沙漠风暴",
+    "Level2_Desc": "炙热的沙漠，敌人更快更强。",
+    "Level3_Name": "冰封山峰",
+    "Level3_Desc": "严寒的山巅，只有最强者才能生存。"
 }
