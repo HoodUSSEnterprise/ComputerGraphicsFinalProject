@@ -46,9 +46,6 @@ void Game::processPlayingEvents(const sf::Event &event)
                 {
                     m_waveManager.startNextWave();
                     int waveIdx = m_waveManager.getCurrentWave();
-                    int total = m_waveManager.getTotalWaves();
-                    if (waveIdx == total / 2 && total > 2)
-                        m_map.switchPhase();
                     if (waveIdx > 1)
                         m_gold += 50 + (waveIdx - 1) * 10;
                     m_ui.showMessage(std::wstring(LangManager::get(TextKey::Wave)) + L" " + std::to_wstring(waveIdx) + L" " + LangManager::get(TextKey::Msg_WaveStarted));
@@ -60,22 +57,29 @@ void Game::processPlayingEvents(const sf::Event &event)
 
         if (m_popupType == PopupType::Build)
         {
-            auto grid = m_map.worldToGrid(mx, my);
             float px = m_popupPos.x, py = m_popupPos.y;
+            int gx = m_popupGrid.x, gy = m_popupGrid.y;
             for (int i = 0; i < 3; ++i)
             {
                 if (mx >= px && mx <= px + 140 && my >= py + i * 38 && my <= py + i * 38 + 34)
                 {
                     TowerType tt = static_cast<TowerType>(i);
                     int cost = Tower::getStats(tt).cost;
-                    if (m_gold >= cost && m_map.canPlaceTower(grid.x, grid.y))
+                    if (m_gold < cost)
                     {
-                        sf::Vector2f center = m_map.gridToWorld(grid.x, grid.y);
+                        m_ui.showMessage(LangManager::get(TextKey::Msg_NoGold));
+                    }
+                    else if (!m_map.canPlaceTower(gx, gy))
+                    {
+                        m_ui.showMessage(LangManager::get(TextKey::Msg_CannotPlace));
+                    }
+                    else
+                    {
+                        sf::Vector2f center = m_map.gridToWorld(gx, gy);
                         m_towers.push_back(std::make_shared<Tower>(tt, center));
                         m_gold -= cost;
-                        m_map.setTile(grid.x, grid.y, TileType::Blocked);
+                        m_map.setTile(gx, gy, TileType::Blocked);
                     }
-                    else { m_ui.showMessage(LangManager::get(TextKey::Msg_NoGold)); }
                     hidePopup();
                     return;
                 }
@@ -114,7 +118,7 @@ void Game::processPlayingEvents(const sf::Event &event)
         auto grid = m_map.worldToGrid(mx, my);
         if (m_map.getTile(grid.x, grid.y) == TileType::Grass)
         {
-            showBuildPopup(mx, my);
+            showBuildPopup(mx, my, grid.x, grid.y);
         }
         else
         {
@@ -276,11 +280,13 @@ void Game::checkProjectileCollisions()
 //  弹出菜单
 // ============================================================
 
-void Game::showBuildPopup(float x, float y)
+void Game::showBuildPopup(float x, float y, int gx, int gy)
 {
     m_popupType = PopupType::Build;
     m_popupPos.x = std::min(x, WINDOW_WIDTH - 160.0f);
     m_popupPos.y = std::min(y, WINDOW_HEIGHT - 130.0f);
+    m_popupGrid.x = gx;
+    m_popupGrid.y = gy;
 }
 
 void Game::showTowerPopup(float x, float y)

@@ -78,8 +78,9 @@ private:
     enum class PopupType { None, Build, Tower };
     PopupType m_popupType = PopupType::None;
     sf::Vector2f m_popupPos;
+    sf::Vector2i m_popupGrid;
     std::weak_ptr<Tower> m_popupTower;
-    void showBuildPopup(float x, float y);
+    void showBuildPopup(float x, float y, int gx, int gy);
     void showTowerPopup(float x, float y);
     void hidePopup();
     void drawPopup();
