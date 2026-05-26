@@ -330,10 +330,9 @@ void Game::processSettingsEvents(const sf::Event &event)
         case 0: // 语言向左
         {
             static const char *langs[] = {
-                "assets/lang_en.json", "assets/lang_zh.json",
-                "assets/lang_de.json"};
+                "assets/lang_en.json", "assets/lang_zh.json"};
             static int cur = 0;
-            cur = (cur - 1 + 3) % 3;
+            cur = (cur - 1 + 2) % 2;
             LangManager::loadLanguage(langs[cur]);
             loadMenuFont();
             m_ui.reloadFont();
@@ -343,10 +342,9 @@ void Game::processSettingsEvents(const sf::Event &event)
         case 1: // 语言向右
         {
             static const char *langs[] = {
-                "assets/lang_en.json", "assets/lang_zh.json",
-                "assets/lang_de.json"};
+                "assets/lang_en.json", "assets/lang_zh.json"};
             static int cur = 0;
-            cur = (cur + 1) % 3;
+            cur = (cur + 1) % 2;
             LangManager::loadLanguage(langs[cur]);
             loadMenuFont();
             m_ui.reloadFont();
@@ -892,7 +890,9 @@ void Game::refreshAllTexts()
     }
     // 更新战役和自定义界面
     m_campaignScreen.refreshTexts();
+    m_campaignScreen.reloadFont();
     m_customScreen.refreshTexts();
+    m_customScreen.reloadFont();
 }
 
 int Game::getSettingsButtonIndex(float mx, float my) const
@@ -1153,10 +1153,12 @@ void Game::renderCampaign()
 void Game::processCustomSetupEvents(const sf::Event &event)
 {
     CustomParams params;
-    if (m_customScreen.update(event, m_window, params))
+    int result = m_customScreen.update(event, m_window, params);
+    if (result == 1)
     {
         LevelConfig cfg;
-        cfg.mapFile = "assets/maps/level1.txt";
+        cfg.mapFile = "assets/maps/grassland/1-1.txt";
+        cfg.biome = Biome::Grassland;
         cfg.startGold = params.startGold;
         cfg.startLives = params.startLives;
         cfg.waveCount = params.waves;
@@ -1165,6 +1167,10 @@ void Game::processCustomSetupEvents(const sf::Event &event)
         cfg.hpMul = params.hpMul;
         cfg.id = "custom";
         newGame(cfg);
+    }
+    else if (result == 2)
+    {
+        m_state = GameState::Menu;
     }
 }
 

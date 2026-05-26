@@ -14,6 +14,7 @@ public:
                 LevelConfig &outLevel);
     void draw(sf::RenderWindow &window) const;
     void refreshTexts();
+    void reloadFont();
 
 private:
     // 每个UI行：可能是群系标题，也可能是关卡按钮

@@ -10,11 +10,12 @@ class CustomScreen
 public:
     CustomScreen();
 
-    // 返回 true 表示玩家点击了开始，params 被填充
-    bool update(const sf::Event &event, sf::RenderWindow &window,
-                CustomParams &outParams);
+    // 返回: 0=无操作, 1=开始游戏(params已填充), 2=返回
+    int update(const sf::Event &event, sf::RenderWindow &window,
+               CustomParams &outParams);
     void draw(sf::RenderWindow &window) const;
     void refreshTexts();
+    void reloadFont();
 
 private:
     struct ParamButton

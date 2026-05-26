@@ -24,6 +24,16 @@ void CampaignScreen::loadFont()
         if (m_font.loadFromFile(p)) { std::cout << "[Font] Campaign loaded: " << p << std::endl; break; }
 }
 
+void CampaignScreen::reloadFont()
+{
+    loadFont();
+    for (auto &row : m_rows)
+        row.label.setFont(m_font);
+    m_titleText.setFont(m_font);
+    m_backHint.setFont(m_font);
+    refreshTexts();
+}
+
 void CampaignScreen::buildUI()
 {
     m_rows.clear();

@@ -221,7 +221,17 @@ void CustomScreen::refreshTexts()
     m_backHint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
 }
 
-bool CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
+void CustomScreen::reloadFont()
+{
+    loadFont();
+    for (auto &btn : m_buttons)
+        btn.label.setFont(m_font);
+    m_titleText.setFont(m_font);
+    m_backHint.setFont(m_font);
+    refreshTexts();
+}
+
+int CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
                           CustomParams &outParams)
 {
     if (event.type == sf::Event::MouseMoved)
@@ -237,18 +247,18 @@ bool CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
             else if (btn.bg.getOutlineThickness() > 0)
                 btn.bg.setOutlineColor(sf::Color(100, 100, 140));
         }
-        return false;
+        return 0;
     }
 
     if (event.type != sf::Event::MouseButtonPressed ||
         event.mouseButton.button != sf::Mouse::Left)
-        return false;
+        return 0;
 
     sf::Vector2f worldPos = window.mapPixelToCoords(
         sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     int idx = getButtonIndex(worldPos.x, worldPos.y);
     if (idx < 0)
-        return false;
+        return 0;
 
     int paramIdx = idx / 4;
     int btnType = idx % 4;
@@ -312,14 +322,14 @@ bool CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
     else if (idx == 24)
     {
         outParams = m_params;
-        return true; // 开始
+        return 1; // 开始
     }
     else if (idx == 25)
     {
-        return true; // 返回（outParams 不用）
+        return 2; // 返回
     }
 
-    return false;
+    return 0;
 }
 
 void CustomScreen::draw(sf::RenderWindow &window) const
