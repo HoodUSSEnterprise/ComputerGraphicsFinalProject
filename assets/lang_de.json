@@ -29,5 +29,13 @@
     "Back": "Zuruck",
     "Volume": "Lautstarke",
     "BGM_On": "AN",
-    "BGM_Off": "AUS"
+    "BGM_Off": "AUS",
+    "CustomMode": "Benutzerdefiniert",
+    "CustomWaves": "Wellen",
+    "CustomEnemies": "Gegner/Welle",
+    "CustomGold": "Startgold",
+    "CustomLives": "Startleben",
+    "CustomSpeed": "Geschw.",
+    "CustomHP": "LP",
+    "CustomStart": "Spiel starten"
 }

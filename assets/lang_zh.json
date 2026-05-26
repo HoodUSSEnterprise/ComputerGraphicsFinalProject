@@ -29,5 +29,13 @@
     "Back": "返回",
     "Volume": "音量",
     "BGM_On": "开",
-    "BGM_Off": "关"
+    "BGM_Off": "关",
+    "CustomMode": "自定义模式",
+    "CustomWaves": "波次数",
+    "CustomEnemies": "每波敌人",
+    "CustomGold": "初始金币",
+    "CustomLives": "初始生命",
+    "CustomSpeed": "速度倍率",
+    "CustomHP": "生命倍率",
+    "CustomStart": "开始游戏"
 }

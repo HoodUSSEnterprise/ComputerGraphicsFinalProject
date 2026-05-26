@@ -47,6 +47,14 @@ static const KeyEntry KEY_MAP[] = {
     {"Volume",           TextKey::Volume},
     {"BGM_On",           TextKey::BGM_On},
     {"BGM_Off",          TextKey::BGM_Off},
+    {"CustomMode",       TextKey::CustomMode},
+    {"CustomWaves",      TextKey::CustomWaves},
+    {"CustomEnemies",    TextKey::CustomEnemies},
+    {"CustomGold",       TextKey::CustomGold},
+    {"CustomLives",      TextKey::CustomLives},
+    {"CustomSpeed",      TextKey::CustomSpeed},
+    {"CustomHP",         TextKey::CustomHP},
+    {"CustomStart",      TextKey::CustomStart},
 };
 
 TextKey LangManager::keyFromString(const std::string& name) {

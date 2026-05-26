@@ -9,6 +9,7 @@ enum class TextKey {
     Tower_Arrow, Tower_Cannon, Tower_Ice,
     Msg_CannotPlace, Msg_NoGold, Msg_AlreadyHere, Msg_Placed, Msg_Sold, Msg_WaveStarted,
     Victory, GameOver, PressR, EscToMenu, Back, Volume, BGM_On, BGM_Off,
+    CustomMode, CustomWaves, CustomEnemies, CustomGold, CustomLives, CustomSpeed, CustomHP, CustomStart,
     COUNT
 };
 

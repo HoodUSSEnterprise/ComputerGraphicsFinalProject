@@ -2,6 +2,8 @@
 #include "LangManager.h"
 #include <cmath>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 // ============================================================
 //  构�?/ 主循�?
@@ -64,6 +66,25 @@ void Game::newGame()
     m_gold = 200;
     m_lives = 20;
     m_waveManager = WaveManager();
+    m_selectedTowerType = TowerType::Arrow;
+    m_state = GameState::Playing;
+}
+
+void Game::newCustomGame()
+{
+    m_towers.clear();
+    m_enemies.clear();
+    m_projectiles.clear();
+    m_map = Map();
+    m_gold = m_customParams.startGold;
+    m_lives = m_customParams.startLives;
+    m_waveManager = WaveManager();
+    m_waveManager.setCustomWaves(
+        m_customParams.waves,
+        m_customParams.enemiesPerWave,
+        m_customParams.speedMul,
+        m_customParams.hpMul
+    );
     m_selectedTowerType = TowerType::Arrow;
     m_state = GameState::Playing;
 }
@@ -166,6 +187,9 @@ void Game::processEvents()
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                 m_state = GameState::Menu;
             break;
+        case GameState::CustomSetup:
+            processCustomSetupEvents(event);
+            break;
         case GameState::Playing:
             processPlayingEvents(event);
             break;
@@ -236,7 +260,11 @@ void Game::processMenuEvents(const sf::Event &event)
         m_state = GameState::Settings;
         buildSettingsUI();
         break;
-    case 3: m_window.close(); break;
+    case 3:
+        initCustomSetup();
+        m_state = GameState::CustomSetup;
+        break;
+    case 4: m_window.close(); break;
     default: break;
     }
 }
@@ -453,6 +481,9 @@ void Game::render()
     case GameState::Settings:
         renderSettings();
         break;
+    case GameState::CustomSetup:
+        renderCustomSetup();
+        break;
     case GameState::Playing:
         renderPlaying();
         break;
@@ -495,9 +526,9 @@ void Game::initMenu()
     m_subtitleText.setOrigin(sb.width / 2, sb.height / 2);
     m_subtitleText.setPosition(WINDOW_WIDTH / 2.0f, 220);
 
-    // 按钮: New Game, Load Game, Settings, Exit
-    TextKey btnKeys[] = {TextKey::NewGame, TextKey::LoadGame, TextKey::Settings, TextKey::Exit};
-    for (int i = 0; i < 4; ++i)
+    // 按钮: New Game, Load Game, Custom Mode, Settings, Exit
+    TextKey btnKeys[] = {TextKey::NewGame, TextKey::LoadGame, TextKey::CustomMode, TextKey::Settings, TextKey::Exit};
+    for (int i = 0; i < 5; ++i)
     {
         MenuButton btn;
         btn.bg.setSize(sf::Vector2f(280, 56));
@@ -821,8 +852,8 @@ void Game::applyVolume()
 
 void Game::refreshAllTexts()
 {
-    TextKey btnKeys[] = {TextKey::NewGame, TextKey::LoadGame, TextKey::Settings, TextKey::Exit};
-    for (size_t i = 0; i < m_menuButtons.size() && i < 4; ++i)
+    TextKey btnKeys[] = {TextKey::NewGame, TextKey::LoadGame, TextKey::CustomMode, TextKey::Settings, TextKey::Exit};
+    for (size_t i = 0; i < m_menuButtons.size() && i < 5; ++i)
         m_menuButtons[i].label.setString(LangManager::get(btnKeys[i]));
     m_titleText.setString(LangManager::get(TextKey::Title));
     m_subtitleText.setString(LangManager::get(TextKey::Subtitle));
@@ -1063,4 +1094,296 @@ void Game::checkProjectileCollisions()
                            return p->hasHit();
                        }),
         m_projectiles.end());
+}
+
+// ============================================================
+//  自定义模式画面
+// ============================================================
+
+void Game::initCustomSetup()
+{
+    m_customButtons.clear();
+
+    // 参数定义: { TextKey, 值指针, 最小值, 最大值, 步长 }
+    struct ParamDef {
+        TextKey labelKey;
+        int* valueInt;
+        float* valueFloat;
+        int minInt, maxInt;
+        float minFloat, maxFloat;
+        float step;
+        bool isFloat;
+    };
+
+    ParamDef params[] = {
+        {TextKey::CustomWaves,   &m_customParams.waves,         nullptr, 1,  20, 0, 0, 1,  false},
+        {TextKey::CustomEnemies, &m_customParams.enemiesPerWave,nullptr, 5,  50, 0, 0, 1,  false},
+        {TextKey::CustomGold,    &m_customParams.startGold,     nullptr, 100,1000,0,0, 50, false},
+        {TextKey::CustomLives,   &m_customParams.startLives,    nullptr, 5,  100,0, 0, 5,  false},
+        {TextKey::CustomSpeed,   nullptr, &m_customParams.speedMul, 0, 0, 0.5f, 3.0f, 0.1f, true},
+        {TextKey::CustomHP,      nullptr, &m_customParams.hpMul,    0, 0, 0.5f, 3.0f, 0.1f, true},
+    };
+    constexpr int paramCount = 6;
+
+    for (int i = 0; i < paramCount; ++i) {
+        float yPos = 180.0f + i * 72.0f;
+
+        // 标签
+        {
+            MenuButton btn;
+            btn.bg.setSize(sf::Vector2f(180, 40));
+            btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 300, yPos);
+            btn.bg.setFillColor(sf::Color(40, 40, 55));
+            btn.bg.setOutlineThickness(0);
+            btn.label.setFont(m_menuFont);
+            btn.label.setString(LangManager::get(params[i].labelKey));
+            btn.label.setCharacterSize(20);
+            btn.label.setFillColor(sf::Color(180, 180, 200));
+            sf::FloatRect lb = btn.label.getLocalBounds();
+            btn.label.setPosition(WINDOW_WIDTH / 2.0f - 295, yPos + 6);
+            m_customButtons.push_back(btn);
+        }
+
+        // 减号按钮
+        {
+            MenuButton btn;
+            btn.bg.setSize(sf::Vector2f(50, 40));
+            btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 100, yPos);
+            btn.bg.setFillColor(sf::Color(50, 50, 70));
+            btn.bg.setOutlineColor(sf::Color(100, 100, 140));
+            btn.bg.setOutlineThickness(2);
+            btn.label.setFont(m_menuFont);
+            btn.label.setString("-");
+            btn.label.setCharacterSize(26);
+            btn.label.setFillColor(sf::Color::White);
+            sf::FloatRect lb = btn.label.getLocalBounds();
+            btn.label.setPosition(WINDOW_WIDTH / 2.0f - 87, yPos + 2);
+            m_customButtons.push_back(btn);
+        }
+
+        // 当前值标签 (用 bg + label 显示)
+        {
+            MenuButton btn;
+            btn.bg.setSize(sf::Vector2f(120, 40));
+            btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 45, yPos);
+            btn.bg.setFillColor(sf::Color(30, 30, 45));
+            btn.bg.setOutlineColor(sf::Color(80, 80, 100));
+            btn.bg.setOutlineThickness(1);
+            btn.label.setFont(m_menuFont);
+            btn.label.setCharacterSize(20);
+            btn.label.setFillColor(sf::Color::Yellow);
+            m_customButtons.push_back(btn);
+        }
+
+        // 加号按钮
+        {
+            MenuButton btn;
+            btn.bg.setSize(sf::Vector2f(50, 40));
+            btn.bg.setPosition(WINDOW_WIDTH / 2.0f + 80, yPos);
+            btn.bg.setFillColor(sf::Color(50, 50, 70));
+            btn.bg.setOutlineColor(sf::Color(100, 100, 140));
+            btn.bg.setOutlineThickness(2);
+            btn.label.setFont(m_menuFont);
+            btn.label.setString("+");
+            btn.label.setCharacterSize(26);
+            btn.label.setFillColor(sf::Color::White);
+            sf::FloatRect lb = btn.label.getLocalBounds();
+            btn.label.setPosition(WINDOW_WIDTH / 2.0f + 93, yPos + 2);
+            m_customButtons.push_back(btn);
+        }
+    }
+
+    // 开始按钮
+    {
+        MenuButton btn;
+        btn.bg.setSize(sf::Vector2f(250, 50));
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 125, 640);
+        btn.bg.setFillColor(sf::Color(50, 150, 50));
+        btn.bg.setOutlineColor(sf::Color::White);
+        btn.bg.setOutlineThickness(2);
+        btn.label.setFont(m_menuFont);
+        btn.label.setString(LangManager::get(TextKey::CustomStart));
+        btn.label.setCharacterSize(24);
+        btn.label.setFillColor(sf::Color::White);
+        sf::FloatRect lb = btn.label.getLocalBounds();
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f - lb.width / 2, 650);
+        m_customButtons.push_back(btn);
+    }
+
+    // 返回按钮
+    {
+        MenuButton btn;
+        btn.bg.setSize(sf::Vector2f(200, 50));
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 100, 710);
+        btn.bg.setFillColor(sf::Color(50, 50, 70));
+        btn.bg.setOutlineColor(sf::Color(100, 100, 140));
+        btn.bg.setOutlineThickness(2);
+        btn.label.setFont(m_menuFont);
+        btn.label.setString(LangManager::get(TextKey::Back));
+        btn.label.setCharacterSize(22);
+        btn.label.setFillColor(sf::Color::White);
+        sf::FloatRect lb = btn.label.getLocalBounds();
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f - lb.width / 2, 722);
+        m_customButtons.push_back(btn);
+    }
+
+    refreshCustomSetupTexts();
+}
+
+void Game::refreshCustomSetupTexts()
+{
+    // 更新6个参数的值显示 (索引: 0标签, 1减号, 2值, 3加号, ...)
+    // 参数顺序: waves, enemies, gold, lives, speed, hp
+    struct { int intVal; float floatVal; bool isFloat; } vals[] = {
+        {m_customParams.waves,          0, false},
+        {m_customParams.enemiesPerWave, 0, false},
+        {m_customParams.startGold,      0, false},
+        {m_customParams.startLives,     0, false},
+        {0, m_customParams.speedMul,    true},
+        {0, m_customParams.hpMul,       true},
+    };
+
+    for (int i = 0; i < 6; ++i) {
+        int idx = i * 4 + 2;  // 值标签的索引
+        if (idx < static_cast<int>(m_customButtons.size())) {
+            if (vals[i].isFloat) {
+                std::wstringstream wss;
+                wss << L"x" << std::fixed << std::setprecision(1) << vals[i].floatVal;
+                m_customButtons[idx].label.setString(wss.str());
+            } else {
+                m_customButtons[idx].label.setString(std::to_wstring(vals[i].intVal));
+            }
+            // 居中
+            sf::FloatRect lb = m_customButtons[idx].label.getLocalBounds();
+            float bx = m_customButtons[idx].bg.getPosition().x;
+            float bw = m_customButtons[idx].bg.getSize().x;
+            m_customButtons[idx].label.setPosition(
+                bx + bw / 2.0f - lb.width / 2,
+                m_customButtons[idx].bg.getPosition().y + 6);
+        }
+    }
+}
+
+void Game::processCustomSetupEvents(const sf::Event& event)
+{
+    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+        m_state = GameState::Menu;
+        return;
+    }
+
+    if (event.type == sf::Event::MouseMoved) {
+        sf::Vector2f worldPos = m_window.mapPixelToCoords(
+            sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
+        for (auto& btn : m_customButtons) {
+            bool inside = btn.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
+            btn.hovered = inside;
+            if (inside) {
+                btn.bg.setOutlineColor(sf::Color(255, 215, 0));
+            } else {
+                btn.bg.setOutlineColor(sf::Color(100, 100, 140));
+            }
+        }
+        return;
+    }
+
+    if (event.type != sf::Event::MouseButtonPressed ||
+        event.mouseButton.button != sf::Mouse::Left)
+        return;
+
+    sf::Vector2f worldPos = m_window.mapPixelToCoords(
+        sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+    int idx = getCustomSetupButtonIndex(worldPos.x, worldPos.y);
+    if (idx < 0) return;
+
+    // 6个参数, 每个占4个按钮 (标签, 减号, 值, 加号) = 24个
+    // 第24个=开始按钮, 第25个=返回按钮
+    int paramIdx = idx / 4;
+    int btnType  = idx % 4;
+
+    if (paramIdx < 6) {
+        // 修改参数
+        switch (btnType) {
+        case 1: // 减号
+            switch (paramIdx) {
+            case 0: m_customParams.waves = std::max(1, m_customParams.waves - 1); break;
+            case 1: m_customParams.enemiesPerWave = std::max(5, m_customParams.enemiesPerWave - 1); break;
+            case 2: m_customParams.startGold = std::max(100, m_customParams.startGold - 50); break;
+            case 3: m_customParams.startLives = std::max(5, m_customParams.startLives - 5); break;
+            case 4: m_customParams.speedMul = std::max(0.5f, m_customParams.speedMul - 0.1f); break;
+            case 5: m_customParams.hpMul = std::max(0.5f, m_customParams.hpMul - 0.1f); break;
+            }
+            refreshCustomSetupTexts();
+            break;
+        case 3: // 加号
+            switch (paramIdx) {
+            case 0: m_customParams.waves = std::min(20, m_customParams.waves + 1); break;
+            case 1: m_customParams.enemiesPerWave = std::min(50, m_customParams.enemiesPerWave + 1); break;
+            case 2: m_customParams.startGold = std::min(1000, m_customParams.startGold + 50); break;
+            case 3: m_customParams.startLives = std::min(100, m_customParams.startLives + 5); break;
+            case 4: m_customParams.speedMul = std::min(3.0f, m_customParams.speedMul + 0.1f); break;
+            case 5: m_customParams.hpMul = std::min(3.0f, m_customParams.hpMul + 0.1f); break;
+            }
+            refreshCustomSetupTexts();
+            break;
+        default: break;
+        }
+    } else if (idx == 24) {
+        // 开始按钮
+        newCustomGame();
+    } else if (idx == 25) {
+        // 返回按钮
+        m_state = GameState::Menu;
+    }
+}
+
+int Game::getCustomSetupButtonIndex(float mx, float my) const
+{
+    for (size_t i = 0; i < m_customButtons.size(); ++i) {
+        if (m_customButtons[i].bg.getGlobalBounds().contains(mx, my))
+            return static_cast<int>(i);
+    }
+    return -1;
+}
+
+void Game::renderCustomSetup()
+{
+    sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
+    bg.setFillColor(sf::Color(15, 15, 30));
+    m_window.draw(bg);
+
+    for (int i = 0; i < 10; ++i) {
+        sf::RectangleShape line(sf::Vector2f(WINDOW_WIDTH, 2));
+        line.setFillColor(sf::Color(30, 30, 50));
+        line.setPosition(0, i * 80.0f);
+        m_window.draw(line);
+    }
+
+    // 标题
+    sf::Text title;
+    title.setFont(m_menuFont);
+    title.setString(LangManager::get(TextKey::CustomMode));
+    title.setCharacterSize(46);
+    title.setFillColor(sf::Color(255, 215, 0));
+    title.setStyle(sf::Text::Bold);
+    sf::FloatRect tb = title.getLocalBounds();
+    title.setOrigin(tb.width / 2, tb.height / 2);
+    title.setPosition(WINDOW_WIDTH / 2.0f, 90);
+    m_window.draw(title);
+
+    // 所有自定义按钮
+    for (const auto& btn : m_customButtons) {
+        m_window.draw(btn.bg);
+        m_window.draw(btn.label);
+    }
+
+    // 底部提示
+    sf::Text hint;
+    hint.setFont(m_menuFont);
+    hint.setString("ESC: Back to Menu");
+    hint.setCharacterSize(14);
+    hint.setFillColor(sf::Color(120, 120, 140));
+    sf::FloatRect hb = hint.getLocalBounds();
+    hint.setOrigin(hb.width / 2, hb.height / 2);
+    hint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
+    m_window.draw(hint);
 }

@@ -7,7 +7,7 @@
 
 struct WaveData {
     int enemyCount;
-    float spawnInterval;  // �?
+    float spawnInterval;  // �?
     float speed;
     float hp;
     int reward;
@@ -29,6 +29,9 @@ public:
     int getCurrentWave() const { return m_currentWave; }
     int getTotalWaves() const { return static_cast<int>(m_waves.size()); }
     int getEnemiesRemaining() const { return m_remainingInWave; }
+
+    // 自定义模式：根据参数生成波次
+    void setCustomWaves(int waveCount, int enemiesPerWave, float speedMul, float hpMul);
 
 private:
     std::vector<WaveData> m_waves;
