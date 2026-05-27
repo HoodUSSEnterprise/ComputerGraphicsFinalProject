@@ -11,10 +11,11 @@ void Enemy::loadTextures()
     // 纹理路径和对应属性: {文件, hpMul, spdMul, rewardMul, weight}
     struct { const char* path; float hpMul; float spdMul; int rewardMul; int weight; } cfg[] = {
         {"textures/enemy1.png", 1.0f, 1.0f, 1, 40},  // 绿色史莱姆
-        {"textures/enemy2.png", 1.6f, 1.0f, 1, 30},  // 黄色中型
-        {"textures/enemy3.png", 2.5f, 0.8f, 2, 20},  // 红色重型
-        {"textures/boss1.png",  5.0f, 0.5f, 3,  5},  // BOSS1
-        {"textures/boss2.png",  6.0f, 0.4f, 4,  5},  // BOSS2
+        {"textures/enemy2.png", 1.6f, 1.0f, 1, 35},  // 黄色中型
+        {"textures/enemy3.png", 2.5f, 0.8f, 2, 25},  // 红色重型
+        // BOSS 不参与普通出怪，只在最后一波随机选一只
+        {"textures/boss1.png",  5.0f, 0.5f, 3,  0},  // BOSS1（最后一波候选）
+        {"textures/boss2.png",  6.0f, 0.4f, 4,  0},  // BOSS2（最后一波候选）
     };
     s_variantCount = sizeof(cfg) / sizeof(cfg[0]);
 
@@ -28,7 +29,9 @@ void Enemy::loadTextures()
 int Enemy::getRandomVariant()
 {
     int totalW = 0;
-    for (int i = 0; i < s_variantCount; ++i) totalW += s_variants[i].weight;
+    // 只算普通怪（权重>0），BOSS权重为0不参与
+    for (int i = 0; i < s_variantCount; ++i)
+        totalW += s_variants[i].weight;
     int r = rand() % totalW;
     for (int i = 0; i < s_variantCount; ++i)
     {
@@ -36,6 +39,14 @@ int Enemy::getRandomVariant()
         if (r < 0) return i;
     }
     return 0;
+}
+
+int Enemy::getRandomBoss()
+{
+    // BOSS 从索引 3 开始到末尾随机选
+    int bossCount = s_variantCount - 3;
+    if (bossCount <= 0) return 0;
+    return 3 + rand() % bossCount;
 }
 
 Enemy::Enemy(int waypointIndex, float speed, float hp, int reward, int variantIdx)

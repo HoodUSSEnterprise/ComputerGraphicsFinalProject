@@ -44,4 +44,5 @@ private:
     bool m_waveActive;
     bool m_allWavesComplete;
     bool m_waveJustStarted;
+    bool m_boss2Spawned = false;
 };

@@ -34,9 +34,16 @@ void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>> &enemies,
     if (m_spawnTimer <= 0)
     {
         const auto &wd = m_waves[m_currentWave];
+        bool isLastWave = (m_currentWave == static_cast<int>(m_waves.size()));
 
-        // 随机敌人类型（权重随机）
-        int variant = Enemy::getRandomVariant();
+        // 最后一波首只怪 → 随机 BOSS，仅此一只
+        int variant;
+        if (isLastWave && !m_boss2Spawned && m_spawnedInWave == 0) {
+            variant = Enemy::getRandomBoss();
+            m_boss2Spawned = true;
+        } else {
+            variant = Enemy::getRandomVariant();
+        }
 
         auto enemy = std::make_shared<Enemy>(
             0, wd.speed, wd.hp, wd.reward, variant);

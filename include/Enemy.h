@@ -27,7 +27,8 @@ public:
     sf::FloatRect getBounds() const { return m_sprite.getGlobalBounds(); }
 
     static void loadTextures();
-    static int getRandomVariant();  // 随机选择敌人类型
+    static int getRandomVariant();
+    static int getRandomBoss();     // 随机选一只 BOSS
 
 private:
     // 纹理和变体配置
