@@ -23,13 +23,13 @@ target_link_libraries(tower_defense PRIVATE sfml-system sfml-window sfml-graphic
 if(WIN32)
     add_custom_command(TARGET tower_defense POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "D:/SFML-2.6.1/bin/sfml-system-2.dll" $<TARGET_FILE_DIR:tower_defense>
+        "D:/SFML-2.6.1/bin/sfml-system-2.dll" $<TARGET_FILE_DIR:tower_defense>  #输入正确的路径
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "D:/SFML-2.6.1/bin/sfml-window-2.dll" $<TARGET_FILE_DIR:tower_defense>
+        "D:/SFML-2.6.1/bin/sfml-window-2.dll" $<TARGET_FILE_DIR:tower_defense>  #输入正确的路径
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "D:/SFML-2.6.1/bin/sfml-graphics-2.dll" $<TARGET_FILE_DIR:tower_defense>
+        "D:/SFML-2.6.1/bin/sfml-graphics-2.dll" $<TARGET_FILE_DIR:tower_defense>  #输入正确的路径
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "D:/SFML-2.6.1/bin/sfml-audio-2.dll" $<TARGET_FILE_DIR:tower_defense>
+        "D:/SFML-2.6.1/bin/sfml-audio-2.dll" $<TARGET_FILE_DIR:tower_defense>  #输入正确的路径
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:tower_defense>/assets"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
