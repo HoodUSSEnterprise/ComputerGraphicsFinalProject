@@ -78,6 +78,18 @@ void Game::newGame(const LevelConfig &cfg)
     m_infiniteGold = false;
     m_infiniteDamage = false;
     clearCheatBuffer();
+
+    // 记录当前战役关卡索引（用于通关后解锁下一关）
+    auto levels = getCampaignLevels();
+    m_currentCampaignIndex = -1;
+    for (size_t i = 0; i < levels.size(); ++i)
+    {
+        if (levels[i].id == cfg.id)
+        {
+            m_currentCampaignIndex = static_cast<int>(i);
+            break;
+        }
+    }
 }
 
 void Game::saveGame()
@@ -166,7 +178,43 @@ void Game::processEvents()
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::R) newGame();
                 else if (event.key.code == sf::Keyboard::Escape) returnToMenu();
-            } break;
+            }
+            else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+            {
+                sf::Vector2f worldPos = m_window.mapPixelToCoords(
+                    sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+                float mx = worldPos.x, my = worldPos.y;
+
+                // "下一关"按钮区域
+                if (m_state == GameState::GameWon && m_hasCharacter && m_currentCampaignIndex >= 0)
+                {
+                    auto levels = getCampaignLevels();
+                    bool hasNext = (m_currentCampaignIndex + 1 < m_playerData.unlockedLevels &&
+                                    m_currentCampaignIndex + 1 < static_cast<int>(levels.size()));
+
+                    // 下一关按钮: x=W/2-170, y=H/2+5, w=160, h=44
+                    if (hasNext && mx >= WINDOW_WIDTH / 2.0f - 170 && mx <= WINDOW_WIDTH / 2.0f - 10 &&
+                        my >= WINDOW_HEIGHT / 2.0f + 5 && my <= WINDOW_HEIGHT / 2.0f + 49)
+                    {
+                        newGame(levels[m_currentCampaignIndex + 1]);
+                        return;
+                    }
+
+                    // 返回主页按钮: x=W/2+10, y=H/2+5, w=160, h=44
+                    if (mx >= WINDOW_WIDTH / 2.0f + 10 && mx <= WINDOW_WIDTH / 2.0f + 170 &&
+                        my >= WINDOW_HEIGHT / 2.0f + 5 && my <= WINDOW_HEIGHT / 2.0f + 49)
+                    {
+                        returnToMenu();
+                        return;
+                    }
+                }
+                else
+                {
+                    // 点击任意位置返回
+                    returnToMenu();
+                }
+            }
+            break;
         default: break;
         }
     }

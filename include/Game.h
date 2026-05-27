@@ -126,6 +126,7 @@ private:
     TowerType m_selectedTowerType;
     int m_gold;
     int m_lives;
+    int m_currentCampaignIndex = -1;  // 当前正在玩的战役关卡索引，-1=自定义
 
     sf::Clock m_clock;
 

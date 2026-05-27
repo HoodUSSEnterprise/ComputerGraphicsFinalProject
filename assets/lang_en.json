@@ -105,5 +105,8 @@
     "Shop_Desc_FireRate": "+10% fire rate per level",
 
     "Level_Locked": "LOCKED",
-    "Level_Complete": "CLEAR"
+    "Level_Complete": "CLEAR",
+
+    "NextLevel": "Next Level",
+    "BackToMenu": "Back to Menu"
 }

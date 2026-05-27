@@ -171,20 +171,20 @@ void Game::update(float dt)
 
     if (m_waveManager.areAllWavesComplete() && m_enemies.empty())
     {
-        // 通关：累计金币给玩家，解锁下一关，保存进度
+        // 通关：累计金币，解锁下一关，保存进度
         if (m_state != GameState::GameWon)
         {
-            int levelIdx = -1;
-            // 找到当前关卡的索引（用于解锁下一关）
-            // 简化：直接根据unlockedLevels判断
-            auto levels = getCampaignLevels();
-            if (m_hasCharacter)
+            if (m_hasCharacter && m_currentCampaignIndex >= 0)
             {
                 m_playerData.totalGold += m_gold;
-                // 如果当前解锁数等于已通关数+1（即正在打最新解锁的关），通关后解锁下一关
+                // 只有当前关卡是最后解锁的关卡时，才解锁下一关
+                auto levels = getCampaignLevels();
                 int totalLevels = static_cast<int>(levels.size());
-                if (m_playerData.unlockedLevels < totalLevels)
+                if (m_currentCampaignIndex + 1 == m_playerData.unlockedLevels &&
+                    m_playerData.unlockedLevels < totalLevels)
+                {
                     m_playerData.unlockedLevels++;
+                }
                 m_playerData.save(PlayerData::makeSavePath(m_playerData.name));
             }
         }
@@ -222,32 +222,106 @@ void Game::renderPlaying()
 
 void Game::renderEndScreen()
 {
+    // 半透明遮罩
     sf::RectangleShape overlay(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
     overlay.setFillColor(sf::Color(0, 0, 0, 180));
     m_window.draw(overlay);
 
-    sf::Text text;
-    text.setFont(m_menuFont);
-    text.setCharacterSize(48);
-    text.setStyle(sf::Text::Bold);
-    if (m_state == GameState::GameWon)
-    { text.setString(LangManager::get(TextKey::Victory)); text.setFillColor(sf::Color::Yellow); }
-    else
-    { text.setString(LangManager::get(TextKey::GameOver)); text.setFillColor(sf::Color::Red); }
-    sf::FloatRect bounds = text.getLocalBounds();
-    text.setOrigin(bounds.width / 2, bounds.height / 2);
-    text.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f - 60);
-    m_window.draw(text);
+    // 对话框背景
+    sf::RectangleShape dlgBg(sf::Vector2f(420, 240));
+    dlgBg.setPosition(WINDOW_WIDTH / 2.0f - 210, WINDOW_HEIGHT / 2.0f - 120);
+    dlgBg.setFillColor(sf::Color(25, 25, 45));
+    dlgBg.setOutlineColor(m_state == GameState::GameWon ? sf::Color(255, 215, 0) : sf::Color(255, 80, 80));
+    dlgBg.setOutlineThickness(3);
+    m_window.draw(dlgBg);
 
-    sf::Text hint;
-    hint.setFont(m_menuFont);
-    hint.setCharacterSize(22);
-    hint.setFillColor(sf::Color::White);
-    hint.setString(std::wstring(LangManager::get(TextKey::PressR)) + L"    |    " + std::wstring(LangManager::get(TextKey::EscToMenu)));
-    bounds = hint.getLocalBounds();
-    hint.setOrigin(bounds.width / 2, bounds.height / 2);
-    hint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f + 20);
-    m_window.draw(hint);
+    // 标题
+    sf::Text title;
+    title.setFont(m_menuFont);
+    title.setCharacterSize(44);
+    title.setStyle(sf::Text::Bold);
+    if (m_state == GameState::GameWon)
+    { title.setString(LangManager::get(TextKey::Victory)); title.setFillColor(sf::Color::Yellow); }
+    else
+    { title.setString(LangManager::get(TextKey::GameOver)); title.setFillColor(sf::Color::Red); }
+    sf::FloatRect tb = title.getLocalBounds();
+    title.setOrigin(tb.width / 2, tb.height / 2);
+    title.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f - 70);
+    m_window.draw(title);
+
+    // 通关时显示"下一关"和"返回主页"按钮
+    if (m_state == GameState::GameWon && m_hasCharacter && m_currentCampaignIndex >= 0)
+    {
+        auto levels = getCampaignLevels();
+        bool hasNext = (m_currentCampaignIndex + 1 < m_playerData.unlockedLevels &&
+                        m_currentCampaignIndex + 1 < static_cast<int>(levels.size()));
+
+        // 下一关按钮
+        {
+            sf::RectangleShape btn(sf::Vector2f(160, 44));
+            btn.setPosition(WINDOW_WIDTH / 2.0f - 170, WINDOW_HEIGHT / 2.0f + 5);
+            btn.setFillColor(hasNext ? sf::Color(40, 100, 40) : sf::Color(50, 50, 50));
+            btn.setOutlineColor(hasNext ? sf::Color(100, 200, 100) : sf::Color(80, 80, 80));
+            btn.setOutlineThickness(2);
+            m_window.draw(btn);
+
+            sf::Text btnText;
+            btnText.setFont(m_menuFont);
+            btnText.setString(LangManager::get(TextKey::NextLevel));
+            btnText.setCharacterSize(20);
+            btnText.setFillColor(hasNext ? sf::Color::White : sf::Color(120, 120, 120));
+            sf::FloatRect bb = btnText.getLocalBounds();
+            btnText.setOrigin(bb.width / 2, bb.height / 2);
+            btnText.setPosition(WINDOW_WIDTH / 2.0f - 90, WINDOW_HEIGHT / 2.0f + 27);
+            m_window.draw(btnText);
+        }
+
+        // 返回主页按钮
+        {
+            sf::RectangleShape btn(sf::Vector2f(160, 44));
+            btn.setPosition(WINDOW_WIDTH / 2.0f + 10, WINDOW_HEIGHT / 2.0f + 5);
+            btn.setFillColor(sf::Color(50, 50, 70));
+            btn.setOutlineColor(sf::Color(100, 100, 140));
+            btn.setOutlineThickness(2);
+            m_window.draw(btn);
+
+            sf::Text btnText;
+            btnText.setFont(m_menuFont);
+            btnText.setString(LangManager::get(TextKey::BackToMenu));
+            btnText.setCharacterSize(20);
+            btnText.setFillColor(sf::Color::White);
+            sf::FloatRect bb = btnText.getLocalBounds();
+            btnText.setOrigin(bb.width / 2, bb.height / 2);
+            btnText.setPosition(WINDOW_WIDTH / 2.0f + 90, WINDOW_HEIGHT / 2.0f + 27);
+            m_window.draw(btnText);
+        }
+    }
+    else if (m_state == GameState::GameOver)
+    {
+        // 失败时的提示
+        sf::Text hint;
+        hint.setFont(m_menuFont);
+        hint.setCharacterSize(22);
+        hint.setFillColor(sf::Color::White);
+        hint.setString(std::wstring(LangManager::get(TextKey::PressR)) + L"    |    " + std::wstring(LangManager::get(TextKey::EscToMenu)));
+        sf::FloatRect hb = hint.getLocalBounds();
+        hint.setOrigin(hb.width / 2, hb.height / 2);
+        hint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f + 30);
+        m_window.draw(hint);
+    }
+    else
+    {
+        // 自定义模式通关
+        sf::Text hint;
+        hint.setFont(m_menuFont);
+        hint.setCharacterSize(22);
+        hint.setFillColor(sf::Color::White);
+        hint.setString(LangManager::get(TextKey::BackToMenu));
+        sf::FloatRect hb = hint.getLocalBounds();
+        hint.setOrigin(hb.width / 2, hb.height / 2);
+        hint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f + 30);
+        m_window.draw(hint);
+    }
 }
 
 // ============================================================

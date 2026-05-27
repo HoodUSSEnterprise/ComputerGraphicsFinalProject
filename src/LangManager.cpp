@@ -128,6 +128,10 @@ static const KeyEntry KEY_MAP[] = {
     // 关卡锁定
     {"Level_Locked", TextKey::Level_Locked},
     {"Level_Complete", TextKey::Level_Complete},
+
+    // 通关界面
+    {"NextLevel", TextKey::NextLevel},
+    {"BackToMenu", TextKey::BackToMenu},
 };
 
 TextKey LangManager::keyFromString(const std::string &name)

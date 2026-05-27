@@ -116,6 +116,10 @@ enum class TextKey
     Level_Locked,
     Level_Complete,
 
+    // 通关界面
+    NextLevel,
+    BackToMenu,
+
     COUNT
 };
 

@@ -105,5 +105,8 @@
     "Shop_Desc_FireRate": "每级 +10% 攻速",
 
     "Level_Locked": "未解锁",
-    "Level_Complete": "已通关"
+    "Level_Complete": "已通关",
+
+    "NextLevel": "下一关",
+    "BackToMenu": "返回主页"
 }
