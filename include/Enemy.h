@@ -19,18 +19,25 @@ public:
 
     float getHP() const { return m_hp; }
     float getMaxHP() const { return m_maxHp; }
-    sf::Vector2f getPosition() const { return m_shape.getPosition(); }
-    void setPosition(sf::Vector2f pos) { m_shape.setPosition(pos); }
+    sf::Vector2f getPosition() const { return m_sprite.getPosition(); }
+    void setPosition(sf::Vector2f pos) { m_sprite.setPosition(pos); }
     float getSpeed() const { return m_baseSpeed; }
     int getReward() const { return m_reward; }
 
-    // 用于范围检�?
-    sf::FloatRect getBounds() const { return m_shape.getGlobalBounds(); }
+    sf::FloatRect getBounds() const { return m_sprite.getGlobalBounds(); }
+
+    static void loadTextures();
+    static void setEnemyVariant(int idx);
 
 private:
-    sf::CircleShape m_shape;
+    static sf::Texture s_textures[3];
+    static int s_currentVariant;
+    mutable sf::Sprite m_sprite;
     sf::RectangleShape m_hpBar;
     sf::RectangleShape m_hpBarBg;
+
+    float m_animTimer = 0;
+    int m_animFrame = 0;
 
     int m_currentWaypoint;
     float m_baseSpeed;

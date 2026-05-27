@@ -46,4 +46,10 @@ private:
     sf::Text m_startWaveText;
 
     sf::Text m_instructionText;
+
+    // 图标
+    sf::Texture m_goldTex;
+    sf::Texture m_lifeTex;
+    mutable sf::Sprite m_goldIcon;
+    mutable sf::Sprite m_lifeIcon;
 };

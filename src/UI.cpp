@@ -8,6 +8,12 @@ UI::UI() : m_messageTimer(0)
 {
     reloadFont();
 
+    // 图标纹理
+    m_goldTex.loadFromFile("textures/gold.png");
+    m_lifeTex.loadFromFile("textures/life.jpg");
+    m_goldIcon.setTexture(m_goldTex);
+    m_lifeIcon.setTexture(m_lifeTex);
+
     // 面板背景
     m_panelBg.setSize(sf::Vector2f(WINDOW_WIDTH, 100.0f));
     m_panelBg.setPosition(0, MAP_ROWS * TILE_SIZE);
@@ -19,19 +25,19 @@ UI::UI() : m_messageTimer(0)
     m_goldText.setFont(m_font);
     m_goldText.setCharacterSize(18);
     m_goldText.setFillColor(sf::Color::Yellow);
-    m_goldText.setPosition(15, MAP_ROWS * TILE_SIZE + 5);
+    m_goldText.setPosition(WINDOW_WIDTH - 275, MAP_ROWS * TILE_SIZE + 6);
 
     // 生命文字
     m_livesText.setFont(m_font);
     m_livesText.setCharacterSize(18);
     m_livesText.setFillColor(sf::Color::Red);
-    m_livesText.setPosition(15, MAP_ROWS * TILE_SIZE + 28);
+    m_livesText.setPosition(WINDOW_WIDTH - 275, MAP_ROWS * TILE_SIZE + 26);
 
     // 波次文字
     m_waveText.setFont(m_font);
     m_waveText.setCharacterSize(18);
     m_waveText.setFillColor(sf::Color::White);
-    m_waveText.setPosition(15, MAP_ROWS * TILE_SIZE + 51);
+    m_waveText.setPosition(WINDOW_WIDTH - 300, MAP_ROWS * TILE_SIZE + 48);
 
     // 消息文字
     m_messageText.setFont(m_font);
@@ -43,7 +49,7 @@ UI::UI() : m_messageTimer(0)
     m_instructionText.setFont(m_font);
     m_instructionText.setCharacterSize(14);
     m_instructionText.setFillColor(sf::Color(180, 180, 180));
-    m_instructionText.setPosition(WINDOW_WIDTH - 380, MAP_ROWS * TILE_SIZE + 5);
+    m_instructionText.setPosition(WINDOW_WIDTH - 300, MAP_ROWS * TILE_SIZE + 75);
     m_instructionText.setString(LangManager::get(TextKey::Instruction));
 
     // 塔选择按钮
@@ -77,9 +83,9 @@ UI::UI() : m_messageTimer(0)
         m_towerButtons.push_back(btn);
     }
 
-    // 开始波次按�?
+    // 开始波次按钮（左下）
     m_startWaveBtn.setSize(sf::Vector2f(130, 50));
-    m_startWaveBtn.setPosition(WINDOW_WIDTH - 160, MAP_ROWS * TILE_SIZE + 15);
+    m_startWaveBtn.setPosition(15, MAP_ROWS * TILE_SIZE + 25);
     m_startWaveBtn.setFillColor(sf::Color(50, 150, 50));
     m_startWaveBtn.setOutlineColor(sf::Color::White);
     m_startWaveBtn.setOutlineThickness(2);
@@ -88,7 +94,7 @@ UI::UI() : m_messageTimer(0)
     m_startWaveText.setCharacterSize(18);
     m_startWaveText.setFillColor(sf::Color::White);
     m_startWaveText.setString(LangManager::get(TextKey::StartWave));
-    m_startWaveText.setPosition(WINDOW_WIDTH - 148, MAP_ROWS * TILE_SIZE + 27);
+    m_startWaveText.setPosition(28, MAP_ROWS * TILE_SIZE + 38);
 }
 
 void UI::update(float dt, int gold, int lives, int currentWave,
@@ -96,8 +102,8 @@ void UI::update(float dt, int gold, int lives, int currentWave,
 {
 
     // 更新文字
-    m_goldText.setString(std::wstring(LangManager::get(TextKey::Gold)) + L": " + std::to_wstring(gold));
-    m_livesText.setString(std::wstring(LangManager::get(TextKey::Lives)) + L": " + std::to_wstring(lives));
+    m_goldText.setString(std::to_wstring(gold));
+    m_livesText.setString(std::to_wstring(lives));
     m_waveText.setString(std::wstring(LangManager::get(TextKey::Wave)) + L": " + std::to_wstring(currentWave) + L" / " + std::to_wstring(totalWaves));
 
     // 更新消息
@@ -129,6 +135,19 @@ void UI::update(float dt, int gold, int lives, int currentWave,
 void UI::draw(sf::RenderWindow &window) const
 {
     window.draw(m_panelBg);
+
+    // 金币图标
+    float gy = MAP_ROWS * TILE_SIZE + 6;
+    m_goldIcon.setPosition(WINDOW_WIDTH - 300, gy);
+    m_goldIcon.setScale(20.0f / m_goldTex.getSize().x, 20.0f / m_goldTex.getSize().y);
+    window.draw(m_goldIcon);
+
+    // 生命图标
+    float ly = MAP_ROWS * TILE_SIZE + 26;
+    m_lifeIcon.setPosition(WINDOW_WIDTH - 300, ly);
+    m_lifeIcon.setScale(20.0f / m_lifeTex.getSize().x, 20.0f / m_lifeTex.getSize().y);
+    window.draw(m_lifeIcon);
+
     window.draw(m_goldText);
     window.draw(m_livesText);
     window.draw(m_waveText);
