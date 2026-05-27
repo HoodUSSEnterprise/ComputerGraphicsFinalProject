@@ -30,6 +30,17 @@ public:
 
     bool canPlaceTower(int col, int row) const;
 
+    // 宝藏系统
+    int getTreasureHP(int col, int row) const;
+    int getTreasureMaxHP(int col, int row) const;
+    int getTreasureGold(int col, int row) const;
+    int damageTreasure(int col, int row);  // 返回金币（0=没死或不是宝藏）
+    bool isTreasure(int col, int row) const;
+    bool isTreasureShowingHP(int col, int row) const;
+    void initTreasureHP();
+    void updateTreasureTimers(float dt);
+    sf::Vector2f getTreasureWorldPos(int col, int row) const;
+
     const std::vector<Waypoint> &getWaypoints() const { return m_waypoints; }
 
 private:
@@ -45,9 +56,17 @@ private:
     int m_treasureCount = 0;
     bool m_hasTexture = false;
 
+    // 宝藏血量：每个格子独立
+    int m_treasureHP[MAP_COLS][MAP_ROWS] = {};
+    int m_treasureMaxHP[MAP_COLS][MAP_ROWS] = {};
+    int m_treasureIndex[MAP_COLS][MAP_ROWS] = {};  // 0/1/2 = 哪张图
+    mutable float m_treasureLastHit[MAP_COLS][MAP_ROWS] = {};  // 上次受击后经过的时间
+
     mutable sf::Sprite m_groundSprite;
     mutable sf::Sprite m_endSprite;
     mutable sf::Sprite m_birthSprite;
     mutable sf::Sprite m_treasureSprites[3];
     mutable sf::RectangleShape m_tileShape;
+    mutable sf::RectangleShape m_hpBarBg;
+    mutable sf::RectangleShape m_hpBar;
 };

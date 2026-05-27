@@ -95,6 +95,9 @@ private:
     void hidePopup();
     void drawPopup();
 
+    // 宝藏目标（点击后塔会攻击）
+    sf::Vector2i m_treasureTarget = {-1, -1};
+
     // ---- 作弊码系统（罪恶都市风格） ----
     char m_cheatBuffer[CheatCode::BUFFER_SIZE] = {};
     int  m_cheatBufLen = 0;

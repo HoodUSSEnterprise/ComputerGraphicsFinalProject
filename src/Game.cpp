@@ -76,6 +76,7 @@ void Game::newGame(const LevelConfig &cfg)
     m_map.loadEndTextures();
     m_map.loadBirthTexture();
     m_map.loadTreasureTextures();
+    m_map.initTreasureHP();
 
     // 应用商店加成
     applyShopBonuses(cfg, m_gold, m_lives);

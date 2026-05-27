@@ -3,7 +3,7 @@
 
 Projectile::Projectile(sf::Vector2f start, std::shared_ptr<Enemy> target,
                        float damage, float speed, TowerType towerType)
-    : m_position(start), m_target(target), m_damage(damage), m_speed(speed), m_towerType(towerType), m_hasHit(false)
+    : m_position(start), m_target(target), m_damage(damage), m_speed(speed), m_towerType(towerType), m_hasHit(false), m_isTreasureShot(false)
 {
 
     m_shape.setRadius(4);
@@ -26,19 +26,38 @@ Projectile::Projectile(sf::Vector2f start, std::shared_ptr<Enemy> target,
     }
 }
 
+// 攻击固定位置（宝藏）
+Projectile::Projectile(sf::Vector2f start, sf::Vector2f targetPos,
+                       float damage, float speed, TowerType towerType)
+    : m_position(start), m_targetPos(targetPos), m_damage(damage), m_speed(speed), m_towerType(towerType), m_hasHit(false), m_isTreasureShot(true)
+{
+    m_shape.setRadius(4);
+    m_shape.setOrigin(4, 4);
+    m_shape.setPosition(start);
+    m_shape.setFillColor(sf::Color(255, 200, 50));  // 金色子弹，区别于普通攻击
+}
+
 void Projectile::update(float dt)
 {
-    if (m_hasHit)
-        return;
+    if (m_hasHit) return;
 
-    auto target = m_target.lock();
-    if (!target || target->isDead() || target->hasReachedEnd())
+    sf::Vector2f targetPos;
+
+    if (m_isTreasureShot)
     {
-        m_hasHit = true;
-        return;
+        targetPos = m_targetPos;
+    }
+    else
+    {
+        auto target = m_target.lock();
+        if (!target || target->isDead() || target->hasReachedEnd())
+        {
+            m_hasHit = true;
+            return;
+        }
+        targetPos = target->getPosition();
     }
 
-    sf::Vector2f targetPos = target->getPosition();
     sf::Vector2f dir = targetPos - m_position;
     float dist = std::sqrt(dir.x * dir.x + dir.y * dir.y);
 
@@ -52,7 +71,6 @@ void Projectile::update(float dt)
         dir /= dist;
         m_position += dir * m_speed * dt;
     }
-
     m_shape.setPosition(m_position);
 }
 

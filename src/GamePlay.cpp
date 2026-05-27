@@ -140,6 +140,12 @@ void Game::processPlayingEvents(const sf::Event &event)
         {
             showBuildPopup(mx, my, grid.x, grid.y);
         }
+        else if (m_map.isTreasure(grid.x, grid.y))
+        {
+            // 标记宝藏为目标，塔会在 towerFindTargets 中攻击
+            m_treasureTarget = grid;
+            hidePopup();
+        }
         else
         {
             for (auto &t : m_towers)
@@ -170,6 +176,7 @@ void Game::update(float dt)
 {
     if (m_paused) return;  // 暂停时不更新游戏逻辑
 
+    m_map.updateTreasureTimers(dt);
     updateEnemies(dt);
     updateTowers(dt);
     towerFindTargets();
@@ -239,9 +246,32 @@ void Game::towerFindTargets()
         frMul = 1.0f + m_playerData.getFireRateBoost();
     }
 
+    // 如果宝藏被标记，让范围内塔向其开火
+    bool treasureAlive = m_map.isTreasure(m_treasureTarget.x, m_treasureTarget.y);
+
     for (auto &tower : m_towers)
     {
         if (!tower->canFire()) continue;
+
+        // 优先攻击宝藏（如果被标记且在范围内）
+        if (treasureAlive)
+        {
+            sf::Vector2f tpos = m_map.getTreasureWorldPos(m_treasureTarget.x, m_treasureTarget.y);
+            float dx = tower->getPosition().x - tpos.x;
+            float dy = tower->getPosition().y - tpos.y;
+            float dist = std::sqrt(dx * dx + dy * dy);
+            float range = tower->getRange() * rangeMul;
+            if (dist <= range)
+            {
+                m_projectiles.push_back(std::make_shared<Projectile>(
+                    tower->getPosition(), tpos + sf::Vector2f(0, TILE_SIZE/2),
+                    tower->getDamage() * dmgMul, 400.0f, tower->getType()));
+                tower->resetFireTimer();
+                if (frMul > 1.0f) tower->applyFireRateBoost(frMul);
+                continue;
+            }
+        }
+
         std::shared_ptr<Enemy> bestTarget = nullptr;
         float range = tower->getRange() * rangeMul;
         float bestDist = range;
@@ -271,13 +301,31 @@ void Game::checkProjectileCollisions()
     {
         if (proj->hasHit())
         {
-            auto target = proj->getTarget();
-            if (target && !target->isDead())
+            if (proj->isTreasureShot())
             {
-                float dmg = m_infiniteDamage ? 99999.0f : proj->getDamage();
-                target->takeDamage(dmg);
-                if (proj->getTowerType() == TowerType::Ice) target->applySlow(0.4f, 2.0f);
-                if (target->isDead()) m_gold += target->getReward();
+                // 宝藏弹丸命中
+                int gx = m_treasureTarget.x, gy = m_treasureTarget.y;
+                if (m_map.isTreasure(gx, gy))
+                {
+                    int gold = m_map.damageTreasure(gx, gy);
+                    if (gold > 0)
+                    {
+                        m_gold += gold;
+                        m_ui.showMessage(L"+ " + std::to_wstring(gold) + L" Gold!");
+                        m_treasureTarget = {-1, -1};
+                    }
+                }
+            }
+            else
+            {
+                auto target = proj->getTarget();
+                if (target && !target->isDead())
+                {
+                    float dmg = m_infiniteDamage ? 99999.0f : proj->getDamage();
+                    target->takeDamage(dmg);
+                    if (proj->getTowerType() == TowerType::Ice) target->applySlow(0.4f, 2.0f);
+                    if (target->isDead()) m_gold += target->getReward();
+                }
             }
         }
     }
