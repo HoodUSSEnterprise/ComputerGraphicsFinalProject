@@ -209,28 +209,22 @@ void Map::draw(sf::RenderWindow &window) const
                 break;
 
             case TileType::Blocked:
+                // 先画地面纹理填充背景
+                m_tileShape.setPosition(x, y);
+                m_tileShape.setTexture(nullptr);
+                m_tileShape.setFillColor(sf::Color::White);
+                window.draw(m_tileShape);
+                // 叠上宝藏
                 if (m_treasureCount > 0)
                 {
-                    // 伪随机：~30%概率显示宝藏，用坐标哈希选三张之一
-                    int seed = (c * 1337 + r * 7331) % 100;
-                    if (seed < 30)
-                    {
-                        int pick = (c * 7 + r * 13) % m_treasureCount;
-                        auto &spr = m_treasureSprites[pick];
-                        auto tsz = m_treasureTex[pick].getSize();
-                        float scale = TILE_SIZE * 0.7f / std::max(tsz.x, tsz.y);
-                        spr.setOrigin(tsz.x / 2.0f, tsz.y / 2.0f);
-                        spr.setScale(scale, scale);
-                        spr.setPosition(x + TILE_SIZE / 2.0f, y + TILE_SIZE / 2.0f);
-                        window.draw(spr);
-                    }
-                }
-                else
-                {
-                    m_tileShape.setPosition(x, y);
-                    m_tileShape.setTexture(nullptr);
-                    m_tileShape.setFillColor(sf::Color::Black);
-                    window.draw(m_tileShape);
+                    int pick = (c * 7 + r * 13) % m_treasureCount;
+                    auto &spr = m_treasureSprites[pick];
+                    auto tsz = m_treasureTex[pick].getSize();
+                    float scale = TILE_SIZE * 0.7f / std::max(tsz.x, tsz.y);
+                    spr.setOrigin(tsz.x / 2.0f, tsz.y / 2.0f);
+                    spr.setScale(scale, scale);
+                    spr.setPosition(x + TILE_SIZE / 2.0f, y + TILE_SIZE / 2.0f);
+                    window.draw(spr);
                 }
                 break;
             }
