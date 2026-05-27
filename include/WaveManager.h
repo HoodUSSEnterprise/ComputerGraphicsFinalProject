@@ -28,7 +28,7 @@ public:
     bool areAllWavesComplete() const { return m_allWavesComplete; }
     void startNextWave();
 
-    int getCurrentWave() const { return m_currentWave; }
+    int getCurrentWave() const { return m_currentWave + 1; }  // 1-based 显示
     int getTotalWaves() const { return static_cast<int>(m_waves.size()); }
     int getEnemiesRemaining() const { return m_remainingInWave; }
 
@@ -37,6 +37,9 @@ public:
 
     // 作弊：跳到最后一波
     void skipToLastWave();
+
+    // 作弊：强制完成所有波次
+    void forceAllComplete();
 
 private:
     std::vector<WaveData> m_waves;

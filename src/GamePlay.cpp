@@ -658,13 +658,8 @@ void Game::spawnBoss()
 void Game::clearLevel()
 {
     killAllEnemies();
-    // 快速推进所有波次到完成
-    while (m_waveManager.canStartWave())
-        m_waveManager.startNextWave();
-    // 如果还有波次没完成，强制标记
-    while (m_waveManager.canStartWave())
-        m_waveManager.startNextWave();
-    m_state = GameState::GameWon;
+    m_waveManager.forceAllComplete();
+    // 不直接设 GameWon，让 update() 检测到通关并执行解锁逻辑
 }
 
 // ============================================================

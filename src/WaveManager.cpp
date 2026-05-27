@@ -3,7 +3,7 @@
 #include <cmath>
 
 WaveManager::WaveManager()
-    : m_currentWave(0), m_spawnedInWave(0), m_remainingInWave(0), m_spawnTimer(0), m_waveActive(false), m_allWavesComplete(false), m_waveJustStarted(false)
+    : m_currentWave(-1), m_spawnedInWave(0), m_remainingInWave(0), m_spawnTimer(0), m_waveActive(false), m_allWavesComplete(false), m_waveJustStarted(false)
 {
 
     // 定义波次: 数量, 间隔, 速度, 血�? 奖励, 颜色
@@ -20,12 +20,11 @@ void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>> &enemies,
                          const std::vector<Waypoint> &waypoints)
 {
 
-    if (!m_waveActive || m_allWavesComplete)
+    if (!m_waveActive || m_allWavesComplete || m_currentWave < 0)
         return;
 
     if (m_spawnedInWave >= static_cast<int>(m_waves[m_currentWave].enemyCount))
     {
-        // 本波已全部生�?
         m_waveActive = false;
         return;
     }
@@ -34,7 +33,7 @@ void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>> &enemies,
     if (m_spawnTimer <= 0)
     {
         const auto &wd = m_waves[m_currentWave];
-        bool isLastWave = (m_currentWave == static_cast<int>(m_waves.size()));
+        bool isLastWave = (m_currentWave == static_cast<int>(m_waves.size()) - 1);
 
         // 最后一波首只怪 → 随机 BOSS，仅此一只
         int variant;
@@ -80,6 +79,7 @@ bool WaveManager::isWaveComplete() const
 
 void WaveManager::startNextWave()
 {
+    m_currentWave++;
     if (m_currentWave >= static_cast<int>(m_waves.size()))
     {
         m_allWavesComplete = true;
@@ -89,16 +89,15 @@ void WaveManager::startNextWave()
     const auto &wd = m_waves[m_currentWave];
     m_spawnedInWave = 0;
     m_remainingInWave = wd.enemyCount;
-    m_spawnTimer = 0.5f; // 第一只快速出�?
+    m_spawnTimer = 0.5f;
     m_waveActive = true;
     m_waveJustStarted = true;
-    m_currentWave++; // 推进到下一�?
 }
 
 void WaveManager::setCustomWaves(int waveCount, int enemiesPerWave, float speedMul, float hpMul)
 {
     m_waves.clear();
-    m_currentWave = 0;
+    m_currentWave = -1;
     m_spawnedInWave = 0;
     m_remainingInWave = 0;
     m_spawnTimer = 0;
@@ -143,4 +142,11 @@ void WaveManager::skipToLastWave()
     m_allWavesComplete = false;
     m_waveJustStarted = true;
     m_boss2Spawned = false;
+}
+
+void WaveManager::forceAllComplete()
+{
+    m_waveActive = false;
+    m_allWavesComplete = true;
+    m_currentWave = static_cast<int>(m_waves.size());  // 超过最大索引，标记全部完成
 }
