@@ -70,5 +70,40 @@
     "C1_Name": "Crossroads",
     "C1_Desc": "A community classic.",
     "C2_Name": "Serpentine",
-    "C2_Desc": "Twists and turns."
+    "C2_Desc": "Twists and turns.",
+
+    "CharSelect_Title": "Select Character",
+    "CharSelect_New": "New Character",
+    "CharSelect_Confirm": "Create",
+    "CharSelect_EnterName": "Enter name...",
+    "CharSelect_Empty": "No saved characters yet. Create one!",
+    "CharSelect_Delete": "Delete",
+    "CharSelect_Gold": "Gold",
+    "CharSelect_Progress": "Progress",
+
+    "ContinueGame": "Continue Game",
+    "NewGame_WarnTitle": "Warning!",
+    "NewGame_WarnMsg": "Starting a new game will overwrite your current save. Continue?",
+    "NewGame_ConfirmYes": "Yes, start over",
+    "NewGame_ConfirmNo": "Cancel",
+
+    "Shop_Title": "Shop",
+    "Shop_Gold": "Gold",
+    "Shop_Buy": "Buy",
+    "Shop_Max": "MAX",
+    "Shop_StartGold": "Start Gold Bonus",
+    "Shop_Discount": "Tower Discount",
+    "Shop_Damage": "Damage Boost",
+    "Shop_Range": "Range Boost",
+    "Shop_Lives": "Lives Bonus",
+    "Shop_FireRate": "Fire Rate Boost",
+    "Shop_Desc_StartGold": "+50 starting gold per level",
+    "Shop_Desc_Discount": "-10% tower cost per level",
+    "Shop_Desc_Damage": "+15% tower damage per level",
+    "Shop_Desc_Range": "+8% tower range per level",
+    "Shop_Desc_Lives": "+3 starting lives per level",
+    "Shop_Desc_FireRate": "+10% fire rate per level",
+
+    "Level_Locked": "LOCKED",
+    "Level_Complete": "CLEAR"
 }

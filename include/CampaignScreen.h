@@ -11,8 +11,8 @@ public:
     CampaignScreen();
 
     bool update(const sf::Event &event, sf::RenderWindow &window,
-                LevelConfig &outLevel);
-    void draw(sf::RenderWindow &window) const;
+                LevelConfig &outLevel, int unlockedCount);
+    void draw(sf::RenderWindow &window, int unlockedCount) const;
     void refreshTexts();
     void reloadFont();
 

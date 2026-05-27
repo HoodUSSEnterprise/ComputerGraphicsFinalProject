@@ -10,6 +10,7 @@
 #include "LevelData.h"
 #include "CampaignScreen.h"
 #include "CustomScreen.h"
+#include "PlayerData.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -19,10 +20,12 @@
 
 enum class GameState
 {
-    Menu,
+    CharSelect,         // 角色选择/创建
+    Menu,               // 主菜单
     Settings,
     CampaignSelect,
     CustomSetup,
+    Shop,               // 商店
     Playing,
     GameOver,
     GameWon
@@ -41,14 +44,18 @@ private:
     void saveGame();
     bool loadGame();
     void returnToMenu();
+    void enterMenu();       // 从角色选择进入主菜单
+    void applyShopBonuses(const LevelConfig &cfg, int &gold, int &lives) const;
 
     // ---- events ----
     void processEvents();
     void handleResize();
+    void processCharSelectEvents(const sf::Event &event);
     void processMenuEvents(const sf::Event &event);
     void processSettingsEvents(const sf::Event &event);
     void processCampaignEvents(const sf::Event &event);
     void processCustomSetupEvents(const sf::Event &event);
+    void processShopEvents(const sf::Event &event);
     void processPlayingEvents(const sf::Event &event);
 
     // ---- update ----
@@ -56,12 +63,15 @@ private:
 
     // ---- render ----
     void render();
+    void renderCharSelect();
     void renderMenu();
     void renderSettings();
     void renderCampaign();
     void renderCustomSetup();
+    void renderShop();
     void renderPlaying();
     void renderEndScreen();
+    void renderConfirmDialog();    // 确认覆盖存档对话框
 
     // ---- gameplay ----
     void handleTowerPlacement(float x, float y);
@@ -162,4 +172,54 @@ private:
     // ---- 战役 & 自定义模式 ----
     CampaignScreen m_campaignScreen;
     CustomScreen m_customScreen;
+
+    // ---- 角色系统 ----
+    PlayerData m_playerData;
+    bool m_hasCharacter = false;
+    // 角色选择界面
+    std::vector<PlayerData> m_charList;
+    std::string m_newCharName;
+    sf::Text m_charTitleText;
+    sf::Text m_charNameInput;      // 显示正在输入的名字
+    sf::Text m_charHintText;
+    struct CharButton {
+        sf::RectangleShape bg;
+        sf::Text nameText;
+        sf::Text infoText;
+        bool hovered = false;
+    };
+    std::vector<CharButton> m_charButtons;
+    sf::RectangleShape m_newCharBtn;
+    sf::Text m_newCharBtnLabel;
+    sf::RectangleShape m_confirmCharBtn;
+    sf::Text m_confirmCharBtnLabel;
+    void refreshCharList();
+    void buildCharSelectUI();
+
+    // ---- 商店系统 ----
+    struct ShopButton {
+        sf::RectangleShape bg;
+        sf::Text nameText;
+        sf::Text levelText;
+        sf::Text costText;
+        sf::RectangleShape buyBtn;
+        sf::Text buyLabel;
+        bool hovered = false;
+    };
+    std::vector<ShopButton> m_shopButtons;
+    sf::Text m_shopTitleText;
+    sf::Text m_shopGoldText;
+    sf::Text m_shopBackHint;
+    void buildShopUI();
+    void refreshShopTexts();
+
+    // ---- 确认对话框 ----
+    bool m_showConfirm = false;
+    sf::Text m_confirmTitleText;
+    sf::Text m_confirmMsgText;
+    sf::RectangleShape m_confirmYesBtn;
+    sf::Text m_confirmYesLabel;
+    sf::RectangleShape m_confirmNoBtn;
+    sf::Text m_confirmNoLabel;
+    void buildConfirmUI();
 };

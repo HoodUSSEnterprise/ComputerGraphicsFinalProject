@@ -70,5 +70,40 @@
     "C1_Name": "十字路口",
     "C1_Desc": "社区经典之作。",
     "C2_Name": "蜿蜒蛇行",
-    "C2_Desc": "曲折蜿蜒。"
+    "C2_Desc": "曲折蜿蜒。",
+
+    "CharSelect_Title": "选择角色",
+    "CharSelect_New": "新建角色",
+    "CharSelect_Confirm": "创建",
+    "CharSelect_EnterName": "输入名字...",
+    "CharSelect_Empty": "还没有存档角色，创建一个吧！",
+    "CharSelect_Delete": "删除",
+    "CharSelect_Gold": "金币",
+    "CharSelect_Progress": "进度",
+
+    "ContinueGame": "继续游戏",
+    "NewGame_WarnTitle": "警告！",
+    "NewGame_WarnMsg": "开始新游戏将覆盖当前存档，确定继续吗？",
+    "NewGame_ConfirmYes": "是的，重新开始",
+    "NewGame_ConfirmNo": "取消",
+
+    "Shop_Title": "商店",
+    "Shop_Gold": "金币",
+    "Shop_Buy": "购买",
+    "Shop_Max": "已满级",
+    "Shop_StartGold": "初始金币加成",
+    "Shop_Discount": "建塔折扣",
+    "Shop_Damage": "伤害加成",
+    "Shop_Range": "射程加成",
+    "Shop_Lives": "生命加成",
+    "Shop_FireRate": "攻速加成",
+    "Shop_Desc_StartGold": "每级 +50 初始金币",
+    "Shop_Desc_Discount": "每级 -10% 建塔费用",
+    "Shop_Desc_Damage": "每级 +15% 塔伤害",
+    "Shop_Desc_Range": "每级 +8% 塔射程",
+    "Shop_Desc_Lives": "每级 +3 初始生命",
+    "Shop_Desc_FireRate": "每级 +10% 攻速",
+
+    "Level_Locked": "未解锁",
+    "Level_Complete": "已通关"
 }

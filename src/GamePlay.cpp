@@ -71,7 +71,14 @@ void Game::processPlayingEvents(const sf::Event &event)
                 if (mx >= px && mx <= px + 140 && my >= py + i * 38 && my <= py + i * 38 + 34)
                 {
                     TowerType tt = static_cast<TowerType>(i);
-                    int cost = Tower::getStats(tt).cost;
+                    int baseCost = Tower::getStats(tt).cost;
+                    int cost = baseCost;
+                    if (m_hasCharacter)
+                    {
+                        float discount = m_playerData.getTowerDiscount();
+                        cost = static_cast<int>(baseCost * (1.0f - discount));
+                        if (cost < 1) cost = 1;
+                    }
                     if (!m_infiniteGold && m_gold < cost)
                     {
                         m_ui.showMessage(LangManager::get(TextKey::Msg_NoGold));
@@ -163,7 +170,26 @@ void Game::update(float dt)
     m_waveManager.update(dt, m_enemies, m_map.getWaypoints());
 
     if (m_waveManager.areAllWavesComplete() && m_enemies.empty())
+    {
+        // 通关：累计金币给玩家，解锁下一关，保存进度
+        if (m_state != GameState::GameWon)
+        {
+            int levelIdx = -1;
+            // 找到当前关卡的索引（用于解锁下一关）
+            // 简化：直接根据unlockedLevels判断
+            auto levels = getCampaignLevels();
+            if (m_hasCharacter)
+            {
+                m_playerData.totalGold += m_gold;
+                // 如果当前解锁数等于已通关数+1（即正在打最新解锁的关），通关后解锁下一关
+                int totalLevels = static_cast<int>(levels.size());
+                if (m_playerData.unlockedLevels < totalLevels)
+                    m_playerData.unlockedLevels++;
+                m_playerData.save(PlayerData::makeSavePath(m_playerData.name));
+            }
+        }
         m_state = GameState::GameWon;
+    }
 
     m_ui.update(dt, m_gold, m_lives,
                 m_waveManager.getCurrentWave(),
@@ -245,25 +271,38 @@ void Game::updateEnemies(float dt)
 
 void Game::towerFindTargets()
 {
+    float dmgMul = 1.0f;
+    float rangeMul = 1.0f;
+    float frMul = 1.0f;
+    if (m_hasCharacter)
+    {
+        dmgMul = 1.0f + m_playerData.getDamageBoost();
+        rangeMul = 1.0f + m_playerData.getRangeBoost();
+        frMul = 1.0f + m_playerData.getFireRateBoost();
+    }
+
     for (auto &tower : m_towers)
     {
         if (!tower->canFire()) continue;
         std::shared_ptr<Enemy> bestTarget = nullptr;
-        float bestDist = tower->getRange();
+        float range = tower->getRange() * rangeMul;
+        float bestDist = range;
         for (auto &enemy : m_enemies)
         {
             if (enemy->isDead() || enemy->hasReachedEnd()) continue;
             float dx = enemy->getPosition().x - tower->getPosition().x;
             float dy = enemy->getPosition().y - tower->getPosition().y;
             float dist = std::sqrt(dx * dx + dy * dy);
-            if (dist <= tower->getRange() && (!bestTarget || dist < bestDist))
+            if (dist <= range && (!bestTarget || dist < bestDist))
             { bestTarget = enemy; bestDist = dist; }
         }
         if (bestTarget)
         {
             m_projectiles.push_back(std::make_shared<Projectile>(
-                tower->getPosition(), bestTarget, tower->getDamage(), 300.0f, tower->getType()));
+                tower->getPosition(), bestTarget, tower->getDamage() * dmgMul, 300.0f, tower->getType()));
             tower->resetFireTimer();
+            if (frMul > 1.0f)
+                tower->applyFireRateBoost(frMul);
         }
     }
 }

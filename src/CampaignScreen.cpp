@@ -134,16 +134,23 @@ void CampaignScreen::refreshTexts()
 }
 
 bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
-                             LevelConfig &outLevel)
+                             LevelConfig &outLevel, int unlockedCount)
 {
     if (event.type == sf::Event::MouseMoved) {
         sf::Vector2f worldPos = window.mapPixelToCoords(
             sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
+        auto levels = getCampaignLevels();
         for (auto &row : m_rows) {
             bool inside = row.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
-            row.hovered = inside && row.levelIndex >= 0;
-            if (row.levelIndex >= 0)
-                row.bg.setFillColor(inside ? sf::Color(55, 55, 90) : sf::Color(35, 35, 55));
+            bool isLevel = row.levelIndex >= 0;
+            bool locked = isLevel && row.levelIndex >= unlockedCount;
+            row.hovered = inside && isLevel && !locked;
+            if (isLevel) {
+                if (locked)
+                    row.bg.setFillColor(sf::Color(25, 25, 35));
+                else
+                    row.bg.setFillColor(inside ? sf::Color(55, 55, 90) : sf::Color(35, 35, 55));
+            }
         }
         return false;
     }
@@ -155,6 +162,9 @@ bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
         int idx = getRowIndex(worldPos.x, worldPos.y);
         if (idx >= 0 && m_rows[idx].levelIndex >= 0) {
             int li = m_rows[idx].levelIndex;
+            // 检查是否已解锁
+            if (li >= unlockedCount)
+                return false;
             auto levels = getCampaignLevels();
             if (li < static_cast<int>(levels.size())) {
                 outLevel = levels[li];
@@ -165,16 +175,44 @@ bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
     return false;
 }
 
-void CampaignScreen::draw(sf::RenderWindow &window) const
+void CampaignScreen::draw(sf::RenderWindow &window, int unlockedCount) const
 {
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
     bg.setFillColor(sf::Color(15, 15, 30));
     window.draw(bg);
     window.draw(m_titleText);
 
+    auto levels = getCampaignLevels();
     for (const auto &row : m_rows) {
         window.draw(row.bg);
-        window.draw(row.label);
+
+        // 锁定关卡显示锁定标签
+        if (row.levelIndex >= 0 && row.levelIndex >= unlockedCount) {
+            window.draw(row.label);  // 显示关卡名（灰色）
+            sf::Text lockText;
+            lockText.setFont(m_font);
+            lockText.setCharacterSize(14);
+            lockText.setFillColor(sf::Color(180, 50, 50));
+            lockText.setString(LangManager::get(TextKey::Level_Locked));
+            lockText.setPosition(row.bg.getPosition().x + row.bg.getSize().x - 80,
+                                 row.bg.getPosition().y + 10);
+            window.draw(lockText);
+        }
+        // 已通关关卡显示完成标记
+        else if (row.levelIndex >= 0 && row.levelIndex < unlockedCount - 1) {
+            window.draw(row.label);
+            sf::Text doneText;
+            doneText.setFont(m_font);
+            doneText.setCharacterSize(14);
+            doneText.setFillColor(sf::Color(100, 200, 100));
+            doneText.setString(LangManager::get(TextKey::Level_Complete));
+            doneText.setPosition(row.bg.getPosition().x + row.bg.getSize().x - 80,
+                                 row.bg.getPosition().y + 10);
+            window.draw(doneText);
+        }
+        else {
+            window.draw(row.label);
+        }
     }
     window.draw(m_backHint);
 }

@@ -31,6 +31,7 @@ public:
 
     bool canFire() const;
     void resetFireTimer();
+    void applyFireRateBoost(float mult);  // 攻速加成
 
     sf::Vector2f getPosition() const { return m_position; }
     float getRange() const { return m_stats.range; }

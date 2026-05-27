@@ -76,6 +76,46 @@ enum class TextKey
     C1_Desc,
     C2_Name,
     C2_Desc,
+
+    // 角色系统
+    CharSelect_Title,
+    CharSelect_New,
+    CharSelect_Confirm,
+    CharSelect_EnterName,
+    CharSelect_Empty,
+    CharSelect_Delete,
+    CharSelect_Gold,
+    CharSelect_Progress,
+
+    // 主菜单（新）
+    ContinueGame,
+    NewGame_WarnTitle,
+    NewGame_WarnMsg,
+    NewGame_ConfirmYes,
+    NewGame_ConfirmNo,
+
+    // 商店
+    Shop_Title,
+    Shop_Gold,
+    Shop_Buy,
+    Shop_Max,
+    Shop_StartGold,
+    Shop_Discount,
+    Shop_Damage,
+    Shop_Range,
+    Shop_Lives,
+    Shop_FireRate,
+    Shop_Desc_StartGold,
+    Shop_Desc_Discount,
+    Shop_Desc_Damage,
+    Shop_Desc_Range,
+    Shop_Desc_Lives,
+    Shop_Desc_FireRate,
+
+    // 关卡锁定
+    Level_Locked,
+    Level_Complete,
+
     COUNT
 };
 

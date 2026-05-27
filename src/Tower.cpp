@@ -89,3 +89,9 @@ void Tower::resetFireTimer()
 {
     m_fireTimer = 1.0f / m_stats.fireRate;
 }
+
+void Tower::applyFireRateBoost(float mult)
+{
+    if (mult > 1.0f && m_fireTimer > 0)
+        m_fireTimer /= mult;  // 减少冷却时间
+}

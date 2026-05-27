@@ -8,7 +8,7 @@
 Game::Game()
     : m_window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT + 100),
                "Tower Defense - SFML", sf::Style::Default),
-      m_state(GameState::Menu), m_selectedTowerType(TowerType::Arrow), m_gold(200), m_lives(20),
+      m_state(GameState::CharSelect), m_selectedTowerType(TowerType::Arrow), m_gold(200), m_lives(20),
       m_volume(80.0f), m_bgmOn(true), m_draggingVol(false)
 {
     m_window.setFramerateLimit(60);
@@ -27,6 +27,11 @@ Game::Game()
         m_bgm.setVolume(m_volume);
         if (m_bgmOn) m_bgm.play();
     }
+    // 初始化角色选择界面
+    buildCharSelectUI();
+    refreshCharList();
+    // 初始化确认对话框UI
+    buildConfirmUI();
 }
 
 void Game::run()
@@ -60,7 +65,10 @@ void Game::newGame(const LevelConfig &cfg)
     int bIdx = static_cast<int>(cfg.biome);
     if (bIdx >= 0 && bIdx < 4) m_map.loadBiomeTextures(biomeNames[bIdx]);
     m_map.loadEndTextures();
-    m_gold = cfg.startGold; m_lives = cfg.startLives;
+
+    // 应用商店加成
+    applyShopBonuses(cfg, m_gold, m_lives);
+
     m_waveManager = WaveManager();
     m_waveManager.setCustomWaves(cfg.waveCount, cfg.baseEnemies, cfg.speedMul, cfg.hpMul);
     m_selectedTowerType = TowerType::Arrow;
@@ -109,6 +117,18 @@ bool Game::loadGame()
 
 void Game::returnToMenu() { m_state = GameState::Menu; }
 
+void Game::enterMenu()
+{
+    m_state = GameState::Menu;
+    // 重新加载角色信息以刷新菜单文本
+}
+
+void Game::applyShopBonuses(const LevelConfig &cfg, int &gold, int &lives) const
+{
+    gold = cfg.startGold + m_playerData.getStartGoldBonus();
+    lives = cfg.startLives + m_playerData.getLivesBonus();
+}
+
 // ============================================================
 //  事件分发
 // ============================================================
@@ -122,6 +142,7 @@ void Game::processEvents()
         if (event.type == sf::Event::Resized) { handleResize(); continue; }
         switch (m_state)
         {
+        case GameState::CharSelect:      processCharSelectEvents(event); break;
         case GameState::Menu:           processMenuEvents(event); break;
         case GameState::Settings:
             processSettingsEvents(event);
@@ -133,6 +154,10 @@ void Game::processEvents()
             break;
         case GameState::CustomSetup:
             processCustomSetupEvents(event);
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) m_state = GameState::Menu;
+            break;
+        case GameState::Shop:
+            processShopEvents(event);
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) m_state = GameState::Menu;
             break;
         case GameState::Playing:        processPlayingEvents(event); break;
@@ -170,10 +195,12 @@ void Game::render()
     m_window.setView(m_view);
     switch (m_state)
     {
+    case GameState::CharSelect:      renderCharSelect(); break;
     case GameState::Menu:           renderMenu(); break;
     case GameState::Settings:       renderSettings(); break;
     case GameState::CampaignSelect: renderCampaign(); break;
     case GameState::CustomSetup:    renderCustomSetup(); break;
+    case GameState::Shop:           renderShop(); break;
     case GameState::Playing:        renderPlaying(); break;
     case GameState::GameOver:
     case GameState::GameWon:        renderPlaying(); renderEndScreen(); break;
