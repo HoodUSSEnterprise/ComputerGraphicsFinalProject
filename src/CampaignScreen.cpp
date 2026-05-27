@@ -180,7 +180,7 @@ bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
 void CampaignScreen::draw(sf::RenderWindow &window, int unlockedCount) const
 {
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
-    bg.setFillColor(sf::Color(15, 15, 30));
+    bg.setFillColor(sf::Color(15, 15, 30, 180));
     window.draw(bg);
     window.draw(m_titleText);
 

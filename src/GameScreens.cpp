@@ -3,6 +3,12 @@
 #include "LangManager.h"
 #include <iostream>
 
+void Game::drawBackground()
+{
+    if (!m_bgSprites.empty() && m_bgIndex < static_cast<int>(m_bgSprites.size()))
+        m_window.draw(m_bgSprites[m_bgIndex]);
+}
+
 // ============================================================
 //  菜单画面
 // ============================================================
@@ -153,8 +159,9 @@ int Game::getMenuButtonIndex(float mx, float my) const
 
 void Game::renderMenu()
 {
+    drawBackground();
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
-    bg.setFillColor(sf::Color(15, 15, 30));
+    bg.setFillColor(sf::Color(15, 15, 30, 180));
     m_window.draw(bg);
     for (int i = 0; i < 10; ++i)
     {

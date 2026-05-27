@@ -166,6 +166,13 @@ private:
     sf::Texture m_arrowLeftTex;
     sf::Texture m_arrowRightTex;
     sf::Text m_titleText;
+
+    // 背景图片
+    std::vector<sf::Texture> m_bgTextures;
+    std::vector<sf::Sprite> m_bgSprites;
+    int m_bgIndex = 0;
+    void loadBackgrounds();
+    void drawBackground();
     sf::Text m_subtitleText;
 
     struct MenuButton

@@ -114,8 +114,9 @@ void Game::refreshCharList()
 
 void Game::renderCharSelect()
 {
+    drawBackground();
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
-    bg.setFillColor(sf::Color(15, 15, 30));
+    bg.setFillColor(sf::Color(15, 15, 30, 180));
     m_window.draw(bg);
 
     m_window.draw(m_charTitleText);
@@ -361,8 +362,9 @@ void Game::processCharSelectEvents(const sf::Event &event)
 
 void Game::renderCharLoad()
 {
+    drawBackground();
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
-    bg.setFillColor(sf::Color(15, 15, 30));
+    bg.setFillColor(sf::Color(15, 15, 30, 180));
     m_window.draw(bg);
 
     // 标题

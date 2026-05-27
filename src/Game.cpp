@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 Game::Game()
     : m_window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT + 100),
@@ -42,6 +43,48 @@ Game::Game()
     buildConfirmUI();
     // 初始化暂停菜单
     buildPauseMenu();
+    // 加载背景
+    loadBackgrounds();
+}
+
+void Game::loadBackgrounds()
+{
+    m_bgTextures.clear();
+    m_bgSprites.clear();
+    m_bgIndex = 0;
+
+    namespace fs = std::filesystem;
+    std::string dir = "textures/background";
+    std::error_code ec;
+    if (!fs::exists(dir, ec)) { fs::create_directories(dir, ec); return; }
+
+    // 先加载所有纹理
+    for (const auto &entry : fs::directory_iterator(dir, ec))
+    {
+        if (!entry.is_regular_file()) continue;
+        std::string ext = entry.path().extension().string();
+        if (ext != ".png" && ext != ".jpg" && ext != ".jpeg") continue;
+
+        sf::Texture tex;
+        if (tex.loadFromFile(entry.path().string()))
+        {
+            tex.setSmooth(true);
+            m_bgTextures.push_back(std::move(tex));
+            std::cout << "[BG] Loaded: " << entry.path().filename() << std::endl;
+        }
+    }
+
+    // 纹理全加载完后再创建精灵（避免 vector 扩容导致指针失效）
+    for (auto &tex : m_bgTextures)
+    {
+        sf::Sprite spr(tex);
+        auto sz = tex.getSize();
+        float sx = static_cast<float>(WINDOW_WIDTH) / sz.x;
+        float sy = static_cast<float>(WINDOW_HEIGHT) / sz.y;
+        spr.setScale(sx, sy);
+        m_bgSprites.push_back(std::move(spr));
+    }
+    std::cout << "[BG] Total backgrounds: " << m_bgTextures.size() << std::endl;
 }
 
 void Game::run()

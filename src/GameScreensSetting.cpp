@@ -59,11 +59,15 @@ void Game::buildSettingsUI()
     m_langValue.setCharacterSize(22);
     m_langValue.setFillColor(sf::Color::Yellow);
 
+    // 背景图片箭头（按钮2,3）
+    makeArrow(WINDOW_WIDTH / 2.0f - 180, 350, "<");
+    makeArrow(WINDOW_WIDTH / 2.0f + 180, 350, ">");
+
     {
         MenuButton btn;
         btn.bg.setSize(sf::Vector2f(280, 56));
         btn.bg.setOrigin(140, 28);
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 470);
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 510);
         btn.bg.setTexture(&m_buttonTex);
         btn.bg.setFillColor(sf::Color(200, 220, 255));
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
@@ -74,7 +78,7 @@ void Game::buildSettingsUI()
         btn.label.setFillColor(sf::Color::White);
         sf::FloatRect lb = btn.label.getLocalBounds();
         btn.label.setOrigin(lb.width / 2, lb.height / 2);
-        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 466);
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 506);
         btn.hovered = false;
         m_settingsButtons.push_back(btn);
     }
@@ -82,7 +86,7 @@ void Game::buildSettingsUI()
         MenuButton btn;
         btn.bg.setSize(sf::Vector2f(200, 50));
         btn.bg.setOrigin(100, 25);
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 580);
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 620);
         btn.bg.setTexture(&m_buttonTex);
         btn.bg.setFillColor(sf::Color(200, 200, 200));
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
@@ -93,7 +97,7 @@ void Game::buildSettingsUI()
         btn.label.setFillColor(sf::Color::White);
         sf::FloatRect lb = btn.label.getLocalBounds();
         btn.label.setOrigin(lb.width / 2, lb.height / 2);
-        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 576);
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 616);
         btn.hovered = false;
         m_settingsButtons.push_back(btn);
     }
@@ -101,8 +105,9 @@ void Game::buildSettingsUI()
 
 void Game::renderSettings()
 {
+    drawBackground();
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
-    bg.setFillColor(sf::Color(15, 15, 30));
+    bg.setFillColor(sf::Color(15, 15, 30, 180));
     m_window.draw(bg);
     for (int i = 0; i < 10; ++i)
     {
@@ -126,7 +131,18 @@ void Game::renderSettings()
     m_window.draw(m_langLabel);
     m_window.draw(m_langValue);
 
-    float trackX = WINDOW_WIDTH / 2.0f - 150, trackY = 390;
+    // 背景图片标签
+    sf::Text bgLabel;
+    bgLabel.setFont(m_menuFont);
+    bgLabel.setString(L"Background: " + std::to_wstring(m_bgIndex + 1) + L"/" + std::to_wstring(m_bgSprites.size()));
+    bgLabel.setCharacterSize(18);
+    bgLabel.setFillColor(sf::Color(180, 180, 200));
+    sf::FloatRect bglb = bgLabel.getLocalBounds();
+    bgLabel.setOrigin(bglb.width / 2, bglb.height / 2);
+    bgLabel.setPosition(WINDOW_WIDTH / 2.0f, 340);
+    m_window.draw(bgLabel);
+
+    float trackX = WINDOW_WIDTH / 2.0f - 150, trackY = 430;
     m_volTrack.setPosition(trackX, trackY);
     m_window.draw(m_volTrack);
     float knobX = trackX + (m_volume / 100.0f) * m_volTrack.getSize().x;
@@ -140,7 +156,7 @@ void Game::renderSettings()
     volLabel.setFillColor(sf::Color(180, 180, 200));
     sf::FloatRect vl = volLabel.getLocalBounds();
     volLabel.setOrigin(vl.width / 2, vl.height / 2);
-    volLabel.setPosition(WINDOW_WIDTH / 2.0f, 360);
+    volLabel.setPosition(WINDOW_WIDTH / 2.0f, 400);
     m_window.draw(volLabel);
     for (const auto &btn : m_settingsButtons)
     {
@@ -203,7 +219,16 @@ void Game::processSettingsEvents(const sf::Event &event)
             refreshAllTexts();
             break;
         }
-        case 2:
+        case 2: case 3:
+            // 背景切换
+            if (!m_bgSprites.empty())
+            {
+                m_bgIndex = (idx == 2) ? (m_bgIndex - 1 + m_bgSprites.size()) % m_bgSprites.size()
+                                        : (m_bgIndex + 1) % m_bgSprites.size();
+                buildSettingsUI();  // 刷新标签
+            }
+            break;
+        case 4:
             m_bgmOn = !m_bgmOn;
             if (m_bgmOn)
             {
@@ -214,7 +239,7 @@ void Game::processSettingsEvents(const sf::Event &event)
                 m_bgm.pause();
             m_bgmLabel.setString(std::wstring(L"BGM: ") + (m_bgmOn ? LangManager::get(TextKey::BGM_On) : LangManager::get(TextKey::BGM_Off)));
             break;
-        case 3:
+        case 5:
             m_state = m_stateBeforeSettings;
             m_stateBeforeSettings = GameState::Menu;
             break;

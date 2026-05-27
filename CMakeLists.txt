@@ -38,5 +38,7 @@ if(WIN32)
         "${CMAKE_SOURCE_DIR}/sound" "$<TARGET_FILE_DIR:tower_defense>/sound"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/textures" "$<TARGET_FILE_DIR:tower_defense>/textures"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/textures/background" "$<TARGET_FILE_DIR:tower_defense>/textures/background"
     )
 endif()

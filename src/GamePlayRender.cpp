@@ -10,6 +10,7 @@
 
 void Game::renderPlaying()
 {
+    drawBackground();
     m_map.draw(m_window);
     for (const auto &tower : m_towers) tower->draw(m_window);
     for (const auto &proj : m_projectiles) proj->draw(m_window);
