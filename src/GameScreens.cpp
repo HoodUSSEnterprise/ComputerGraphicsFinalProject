@@ -68,6 +68,34 @@ void Game::loadMenuFont()
     m_titleText.setFont(m_menuFont);
     m_subtitleText.setFont(m_menuFont);
     for (auto &btn : m_menuButtons) btn.label.setFont(m_menuFont);
+
+    // 角色选择界面
+    m_charTitleText.setFont(m_menuFont);
+    m_charNameInput.setFont(m_menuFont);
+    m_charHintText.setFont(m_menuFont);
+    m_newCharBtnLabel.setFont(m_menuFont);
+    m_confirmCharBtnLabel.setFont(m_menuFont);
+    for (auto &cb : m_charButtons) { cb.nameText.setFont(m_menuFont); cb.infoText.setFont(m_menuFont); }
+
+    // 商店界面
+    m_shopTitleText.setFont(m_menuFont);
+    m_shopGoldText.setFont(m_menuFont);
+    m_shopBackHint.setFont(m_menuFont);
+    for (auto &sb : m_shopButtons) {
+        sb.nameText.setFont(m_menuFont);
+        sb.levelText.setFont(m_menuFont);
+        sb.costText.setFont(m_menuFont);
+        sb.buyLabel.setFont(m_menuFont);
+    }
+
+    // 确认对话框
+    m_confirmTitleText.setFont(m_menuFont);
+    m_confirmMsgText.setFont(m_menuFont);
+    m_confirmYesLabel.setFont(m_menuFont);
+    m_confirmNoLabel.setFont(m_menuFont);
+
+    // 作弊消息
+    m_cheatMsgText.setFont(m_menuFont);
 }
 
 void Game::updateMenuHover(float mx, float my)

@@ -89,6 +89,45 @@ static const KeyEntry KEY_MAP[] = {
     {"C1_Desc", TextKey::C1_Desc},
     {"C2_Name", TextKey::C2_Name},
     {"C2_Desc", TextKey::C2_Desc},
+
+    // 角色系统
+    {"CharSelect_Title", TextKey::CharSelect_Title},
+    {"CharSelect_New", TextKey::CharSelect_New},
+    {"CharSelect_Confirm", TextKey::CharSelect_Confirm},
+    {"CharSelect_EnterName", TextKey::CharSelect_EnterName},
+    {"CharSelect_Empty", TextKey::CharSelect_Empty},
+    {"CharSelect_Delete", TextKey::CharSelect_Delete},
+    {"CharSelect_Gold", TextKey::CharSelect_Gold},
+    {"CharSelect_Progress", TextKey::CharSelect_Progress},
+
+    // 主菜单（新）
+    {"ContinueGame", TextKey::ContinueGame},
+    {"NewGame_WarnTitle", TextKey::NewGame_WarnTitle},
+    {"NewGame_WarnMsg", TextKey::NewGame_WarnMsg},
+    {"NewGame_ConfirmYes", TextKey::NewGame_ConfirmYes},
+    {"NewGame_ConfirmNo", TextKey::NewGame_ConfirmNo},
+
+    // 商店
+    {"Shop_Title", TextKey::Shop_Title},
+    {"Shop_Gold", TextKey::Shop_Gold},
+    {"Shop_Buy", TextKey::Shop_Buy},
+    {"Shop_Max", TextKey::Shop_Max},
+    {"Shop_StartGold", TextKey::Shop_StartGold},
+    {"Shop_Discount", TextKey::Shop_Discount},
+    {"Shop_Damage", TextKey::Shop_Damage},
+    {"Shop_Range", TextKey::Shop_Range},
+    {"Shop_Lives", TextKey::Shop_Lives},
+    {"Shop_FireRate", TextKey::Shop_FireRate},
+    {"Shop_Desc_StartGold", TextKey::Shop_Desc_StartGold},
+    {"Shop_Desc_Discount", TextKey::Shop_Desc_Discount},
+    {"Shop_Desc_Damage", TextKey::Shop_Desc_Damage},
+    {"Shop_Desc_Range", TextKey::Shop_Desc_Range},
+    {"Shop_Desc_Lives", TextKey::Shop_Desc_Lives},
+    {"Shop_Desc_FireRate", TextKey::Shop_Desc_FireRate},
+
+    // 关卡锁定
+    {"Level_Locked", TextKey::Level_Locked},
+    {"Level_Complete", TextKey::Level_Complete},
 };
 
 TextKey LangManager::keyFromString(const std::string &name)
