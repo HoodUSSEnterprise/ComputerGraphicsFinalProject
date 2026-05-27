@@ -21,6 +21,7 @@
 enum class GameState
 {
     CharSelect,         // 角色选择/创建
+    CharLoad,           // 加载已有角色
     Menu,               // 主菜单
     Settings,
     CampaignSelect,
@@ -51,6 +52,7 @@ private:
     void processEvents();
     void handleResize();
     void processCharSelectEvents(const sf::Event &event);
+    void processCharLoadEvents(const sf::Event &event);
     void processMenuEvents(const sf::Event &event);
     void processSettingsEvents(const sf::Event &event);
     void processCampaignEvents(const sf::Event &event);
@@ -64,6 +66,7 @@ private:
     // ---- render ----
     void render();
     void renderCharSelect();
+    void renderCharLoad();
     void renderMenu();
     void renderSettings();
     void renderCampaign();
@@ -157,6 +160,7 @@ private:
 
     // ---- menu / settings UI ----
     sf::Font m_menuFont;
+    sf::Texture m_buttonTex;
     sf::Text m_titleText;
     sf::Text m_subtitleText;
 
@@ -210,6 +214,9 @@ private:
     std::vector<CharButton> m_charButtons;
     sf::RectangleShape m_newCharBtn;
     sf::Text m_newCharBtnLabel;
+    sf::RectangleShape m_loadCharBtn;
+    sf::Text m_loadCharBtnLabel;
+    bool m_showCharList = false;  // 点击"加载角色"后显示列表
     sf::RectangleShape m_confirmCharBtn;
     sf::Text m_confirmCharBtnLabel;
     void refreshCharList();

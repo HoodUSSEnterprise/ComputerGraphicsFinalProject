@@ -25,7 +25,7 @@ void Game::buildPauseMenu()
     {
         PauseButton btn;
         btn.bg.setSize(sf::Vector2f(bw, 50));
-        btn.bg.setFillColor(sf::Color(40, 40, 60));
+        btn.bg.setTexture(&m_buttonTex);
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
         btn.bg.setOutlineThickness(2);
         btn.label.setFont(m_menuFont);
@@ -34,8 +34,7 @@ void Game::buildPauseMenu()
         btn.label.setFillColor(sf::Color::White);
         m_pauseButtons.push_back(btn);
     }
-    // 退出按钮标红
-    m_pauseButtons[2].bg.setFillColor(sf::Color(80, 30, 30));
+    // 退出按钮标红轮廓
     m_pauseButtons[2].bg.setOutlineColor(sf::Color(200, 80, 80));
 }
 
@@ -112,12 +111,10 @@ void Game::processPauseEvents(const sf::Event &event)
             m_pauseButtons[i].hovered = inside;
             if (i == 2)
             {
-                m_pauseButtons[i].bg.setFillColor(inside ? sf::Color(180, 50, 50) : sf::Color(80, 30, 30));
                 m_pauseButtons[i].bg.setOutlineColor(inside ? sf::Color(255, 100, 100) : sf::Color(200, 80, 80));
             }
             else
             {
-                m_pauseButtons[i].bg.setFillColor(inside ? sf::Color(60, 60, 100) : sf::Color(40, 40, 60));
                 m_pauseButtons[i].bg.setOutlineColor(inside ? sf::Color(255, 215, 0) : sf::Color(100, 100, 140));
             }
             m_pauseButtons[i].label.setFillColor(inside ? sf::Color(255, 215, 0) : sf::Color::White);

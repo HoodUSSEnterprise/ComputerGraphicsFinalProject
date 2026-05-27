@@ -21,6 +21,7 @@ Game::Game()
     initMenu();
     initSettings();
     Enemy::loadTextures();
+    m_buttonTex.loadFromFile("textures/button.png");
     if (m_bgm.openFromFile("sound/bgm.mp3"))
     {
         m_bgm.setLoop(true);
@@ -187,6 +188,11 @@ void Game::processEvents()
         case GameState::CharSelect:
             processCharSelectEvents(event);
             break;
+        case GameState::CharLoad:
+            processCharLoadEvents(event);
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                m_state = GameState::CharSelect;
+            break;
         case GameState::Menu:
             processMenuEvents(event);
             break;
@@ -305,6 +311,9 @@ void Game::render()
     {
     case GameState::CharSelect:
         renderCharSelect();
+        break;
+    case GameState::CharLoad:
+        renderCharLoad();
         break;
     case GameState::Menu:
         renderMenu();

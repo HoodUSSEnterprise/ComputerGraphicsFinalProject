@@ -24,7 +24,7 @@ void Game::buildConfirmUI()
 
     float bw = zh ? 240.0f : 200.0f;
     m_confirmYesBtn.setSize(sf::Vector2f(bw, 44));
-    m_confirmYesBtn.setFillColor(sf::Color(150, 40, 40));
+    m_confirmYesBtn.setTexture(&m_buttonTex);
     m_confirmYesBtn.setOutlineColor(sf::Color(255, 100, 100));
     m_confirmYesBtn.setOutlineThickness(2);
     m_confirmYesLabel.setFont(m_menuFont);
@@ -33,7 +33,7 @@ void Game::buildConfirmUI()
     m_confirmYesLabel.setFillColor(sf::Color::White);
 
     m_confirmNoBtn.setSize(sf::Vector2f(bw, 44));
-    m_confirmNoBtn.setFillColor(sf::Color(50, 50, 70));
+    m_confirmNoBtn.setTexture(&m_buttonTex);
     m_confirmNoBtn.setOutlineColor(sf::Color(100, 100, 140));
     m_confirmNoBtn.setOutlineThickness(2);
     m_confirmNoLabel.setFont(m_menuFont);

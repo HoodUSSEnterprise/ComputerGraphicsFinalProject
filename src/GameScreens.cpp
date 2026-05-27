@@ -43,7 +43,7 @@ void Game::initMenu()
         btn.bg.setSize(sf::Vector2f(bw, 52));
         btn.bg.setOrigin(bw / 2, 26);
         btn.bg.setPosition(WINDOW_WIDTH / 2.0f, startY + i * gap);
-        btn.bg.setFillColor(sf::Color(50, 50, 70));
+        btn.bg.setTexture(&m_buttonTex);
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
         btn.bg.setOutlineThickness(2);
         btn.label.setFont(m_menuFont);
@@ -87,6 +87,7 @@ void Game::loadMenuFont()
     m_charNameInput.setFont(m_menuFont);
     m_charHintText.setFont(m_menuFont);
     m_newCharBtnLabel.setFont(m_menuFont);
+    m_loadCharBtnLabel.setFont(m_menuFont);
     m_confirmCharBtnLabel.setFont(m_menuFont);
     for (auto &cb : m_charButtons)
     {
@@ -126,7 +127,6 @@ void Game::updateMenuHover(float mx, float my)
     {
         bool inside = btn.bg.getGlobalBounds().contains(mx, my);
         btn.hovered = inside;
-        btn.bg.setFillColor(inside ? sf::Color(70, 70, 100) : sf::Color(50, 50, 70));
         btn.bg.setOutlineColor(inside ? sf::Color(255, 215, 0) : sf::Color(100, 100, 140));
         btn.label.setFillColor(inside ? sf::Color(255, 215, 0) : sf::Color::White);
     }
@@ -214,8 +214,8 @@ void Game::processMenuEvents(const sf::Event &event)
             float mx = worldPos.x, my = worldPos.y;
             bool hoverYes = m_confirmYesBtn.getGlobalBounds().contains(mx, my);
             bool hoverNo = m_confirmNoBtn.getGlobalBounds().contains(mx, my);
-            m_confirmYesBtn.setFillColor(hoverYes ? sf::Color(200, 60, 60) : sf::Color(150, 40, 40));
-            m_confirmNoBtn.setFillColor(hoverNo ? sf::Color(70, 70, 100) : sf::Color(50, 50, 70));
+            m_confirmYesBtn.setOutlineColor(hoverYes ? sf::Color(255, 80, 40) : sf::Color(255, 100, 100));
+            m_confirmNoBtn.setOutlineColor(hoverNo ? sf::Color(255, 215, 0) : sf::Color(100, 100, 140));
             return;
         }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
