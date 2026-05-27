@@ -2,28 +2,52 @@
 #include "Map.h"
 #include <cmath>
 
-sf::Texture Enemy::s_textures[3];
-int Enemy::s_currentVariant = 0;
+sf::Texture Enemy::s_textures[Enemy::MAX_VARIANTS];
+int Enemy::s_variantCount = 0;
+Enemy::VariantCfg Enemy::s_variants[Enemy::MAX_VARIANTS];
 
 void Enemy::loadTextures()
 {
-    const char* paths[] = {"textures/enemy1.png","textures/enemy2.png","textures/enemy3.png"};
-    for (int i = 0; i < 3; ++i)
-        s_textures[i].loadFromFile(paths[i]);
+    // 纹理路径和对应属性: {文件, hpMul, spdMul, rewardMul, weight}
+    struct { const char* path; float hpMul; float spdMul; int rewardMul; int weight; } cfg[] = {
+        {"textures/enemy1.png", 1.0f, 1.0f, 1, 40},  // 绿色史莱姆
+        {"textures/enemy2.png", 1.6f, 1.0f, 1, 30},  // 黄色中型
+        {"textures/enemy3.png", 2.5f, 0.8f, 2, 20},  // 红色重型
+        {"textures/boss1.png",  5.0f, 0.5f, 3,  5},  // BOSS1
+        {"textures/boss2.png",  6.0f, 0.4f, 4,  5},  // BOSS2
+    };
+    s_variantCount = sizeof(cfg) / sizeof(cfg[0]);
+
+    for (int i = 0; i < s_variantCount; ++i)
+    {
+        s_textures[i].loadFromFile(cfg[i].path);
+        s_variants[i] = {cfg[i].hpMul, cfg[i].spdMul, cfg[i].rewardMul, cfg[i].weight};
+    }
 }
 
-void Enemy::setEnemyVariant(int idx)
+int Enemy::getRandomVariant()
 {
-    if (idx >= 0 && idx < 3) s_currentVariant = idx;
+    int totalW = 0;
+    for (int i = 0; i < s_variantCount; ++i) totalW += s_variants[i].weight;
+    int r = rand() % totalW;
+    for (int i = 0; i < s_variantCount; ++i)
+    {
+        r -= s_variants[i].weight;
+        if (r < 0) return i;
+    }
+    return 0;
 }
 
-Enemy::Enemy(int waypointIndex, float speed, float hp, int reward)
-    : m_currentWaypoint(waypointIndex + 1),
-      m_baseSpeed(speed), m_hp(hp), m_maxHp(hp), m_reward(reward),
+Enemy::Enemy(int waypointIndex, float speed, float hp, int reward, int variantIdx)
+    : m_currentWaypoint(waypointIndex + 1), m_variant(variantIdx % s_variantCount),
+      m_baseSpeed(speed * s_variants[m_variant].spdMul),
+      m_hp(hp * s_variants[m_variant].hpMul),
+      m_maxHp(hp * s_variants[m_variant].hpMul),
+      m_reward(reward * s_variants[m_variant].rewardMul),
       m_dead(false), m_reachedEnd(false), m_slowTimer(0), m_slowFactor(1.0f)
 {
-    m_sprite.setTexture(s_textures[s_currentVariant]);
-    auto sz = s_textures[s_currentVariant].getSize();
+    m_sprite.setTexture(s_textures[m_variant]);
+    auto sz = s_textures[m_variant].getSize();
     int fw = sz.x / 4;
     m_sprite.setTextureRect(sf::IntRect(0, 0, fw, sz.y));
     m_sprite.setOrigin(fw / 2.0f, sz.y / 2.0f);
@@ -40,11 +64,11 @@ void Enemy::update(float dt, const std::vector<Waypoint> &waypoints)
     if (m_dead || m_reachedEnd) return;
     m_animTimer += dt;
     if (m_animTimer >= 0.15f) { m_animTimer = 0; m_animFrame = (m_animFrame + 1) % 4; }
-    auto sz = s_textures[s_currentVariant].getSize();
+    auto sz = s_textures[m_variant].getSize();
     int fw = sz.x / 4;
+    float scl = TILE_SIZE * 0.7f / fw;
     m_sprite.setTextureRect(sf::IntRect(m_animFrame * fw, 0, fw, sz.y));
     m_sprite.setOrigin(fw / 2.0f, sz.y / 2.0f);
-    m_sprite.setScale(TILE_SIZE * 0.7f / fw, TILE_SIZE * 0.7f / fw);
 
     if (m_slowTimer > 0) { m_slowTimer -= dt; if (m_slowTimer <= 0) m_slowFactor = 1.0f; }
     float speed = m_baseSpeed * m_slowFactor;
@@ -54,6 +78,12 @@ void Enemy::update(float dt, const std::vector<Waypoint> &waypoints)
         sf::Vector2f current = m_sprite.getPosition();
         sf::Vector2f dir = target - current;
         float dist = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+
+        // 根据水平方向翻转精灵
+        float dirX = (dist < 1.0f) ? 1.0f : dir.x / dist;
+        if (dirX < 0) scl = -scl;
+        m_sprite.setScale(scl, TILE_SIZE * 0.7f / fw);
+
         if (dist < speed * dt + 2.0f) { m_sprite.setPosition(target); m_currentWaypoint++; }
         else { dir /= dist; m_sprite.move(dir * speed * dt); }
     }

@@ -6,7 +6,7 @@
 class Enemy
 {
 public:
-    Enemy(int waypointIndex, float speed, float hp, int reward);
+    Enemy(int waypointIndex, float speed, float hp, int reward, int variantIdx = 0);
 
     void update(float dt, const std::vector<struct Waypoint> &waypoints);
     void draw(sf::RenderWindow &window) const;
@@ -27,17 +27,24 @@ public:
     sf::FloatRect getBounds() const { return m_sprite.getGlobalBounds(); }
 
     static void loadTextures();
-    static void setEnemyVariant(int idx);
+    static int getRandomVariant();  // 随机选择敌人类型
 
 private:
-    static sf::Texture s_textures[3];
-    static int s_currentVariant;
+    // 纹理和变体配置
+    static const int MAX_VARIANTS = 8;
+    static sf::Texture s_textures[MAX_VARIANTS];
+    static int s_variantCount;
+    struct VariantCfg { float hpMul; float spdMul; int rewardMul; int weight; };
+    static VariantCfg s_variants[MAX_VARIANTS];
+    friend void initVariantConfig();
+
     mutable sf::Sprite m_sprite;
     sf::RectangleShape m_hpBar;
     sf::RectangleShape m_hpBarBg;
 
     float m_animTimer = 0;
     int m_animFrame = 0;
+    int m_variant = 0;
 
     int m_currentWaypoint;
     float m_baseSpeed;

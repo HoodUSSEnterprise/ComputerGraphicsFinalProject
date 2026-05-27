@@ -35,11 +35,11 @@ void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>> &enemies,
     {
         const auto &wd = m_waves[m_currentWave];
 
+        // 随机敌人类型（权重随机）
+        int variant = Enemy::getRandomVariant();
+
         auto enemy = std::make_shared<Enemy>(
-            0, // 第一个路径点索引
-            wd.speed,
-            wd.hp,
-            wd.reward);
+            0, wd.speed, wd.hp, wd.reward, variant);
 
         // 设置出生位置为起点
         if (!waypoints.empty())

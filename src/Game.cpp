@@ -59,7 +59,6 @@ void Game::newGame(const LevelConfig &cfg)
     static const char *biomeNames[] = {"grassland", "desert", "hell", "community"};
     int bIdx = static_cast<int>(cfg.biome);
     if (bIdx >= 0 && bIdx < 4) m_map.loadBiomeTextures(biomeNames[bIdx]);
-    Enemy::setEnemyVariant(bIdx % 3);
     m_map.loadEndTextures();
     m_gold = cfg.startGold; m_lives = cfg.startLives;
     m_waveManager = WaveManager();
