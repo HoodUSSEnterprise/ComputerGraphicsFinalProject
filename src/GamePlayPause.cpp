@@ -26,7 +26,8 @@ void Game::buildPauseMenu()
         PauseButton btn;
         btn.bg.setSize(sf::Vector2f(bw, 50));
         btn.bg.setTexture(&m_buttonTex);
-        btn.bg.setOutlineColor(sf::Color(100, 100, 140));
+        btn.bg.setFillColor(i == 2 ? sf::Color(255, 180, 180) : sf::Color(200, 220, 255));
+        btn.bg.setOutlineColor(i == 2 ? sf::Color(200, 80, 80) : sf::Color(100, 100, 140));
         btn.bg.setOutlineThickness(2);
         btn.label.setFont(m_menuFont);
         btn.label.setString(LangManager::get(keys[i]));

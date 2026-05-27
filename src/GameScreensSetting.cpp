@@ -40,16 +40,10 @@ void Game::buildSettingsUI()
         btn.bg.setSize(sf::Vector2f(50, 50));
         btn.bg.setOrigin(25, 25);
         btn.bg.setPosition(x, y);
-        btn.bg.setFillColor(sf::Color(50, 50, 70));
-        btn.bg.setOutlineColor(sf::Color(100, 100, 140));
-        btn.bg.setOutlineThickness(2);
+        btn.bg.setTexture(label == "<" ? &m_arrowLeftTex : &m_arrowRightTex);
+        btn.bg.setOutlineThickness(0);
         btn.label.setFont(m_menuFont);
-        btn.label.setString(label);
-        btn.label.setCharacterSize(30);
-        btn.label.setFillColor(sf::Color::White);
-        sf::FloatRect lb = btn.label.getLocalBounds();
-        btn.label.setOrigin(lb.width / 2, lb.height / 2);
-        btn.label.setPosition(x, y - 4);
+        btn.label.setString("");
         btn.hovered = false;
         m_settingsButtons.push_back(btn);
     };
@@ -70,7 +64,8 @@ void Game::buildSettingsUI()
         btn.bg.setSize(sf::Vector2f(280, 56));
         btn.bg.setOrigin(140, 28);
         btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 400);
-        btn.bg.setFillColor(sf::Color(50, 50, 70));
+        btn.bg.setTexture(&m_buttonTex);
+        btn.bg.setFillColor(sf::Color(200, 220, 255));
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
         btn.bg.setOutlineThickness(2);
         btn.label.setFont(m_menuFont);
@@ -88,7 +83,8 @@ void Game::buildSettingsUI()
         btn.bg.setSize(sf::Vector2f(200, 50));
         btn.bg.setOrigin(100, 25);
         btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 520);
-        btn.bg.setFillColor(sf::Color(50, 50, 70));
+        btn.bg.setTexture(&m_buttonTex);
+        btn.bg.setFillColor(sf::Color(200, 200, 200));
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
         btn.bg.setOutlineThickness(2);
         btn.label.setFont(m_menuFont);
@@ -171,8 +167,8 @@ void Game::processSettingsEvents(const sf::Event &event)
         {
             bool inside = btn.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
             btn.hovered = inside;
-            btn.bg.setFillColor(inside ? sf::Color(70, 70, 100) : sf::Color(50, 50, 70));
             btn.bg.setOutlineColor(inside ? sf::Color(255, 215, 0) : sf::Color(100, 100, 140));
+            btn.bg.setFillColor(inside ? sf::Color(255, 255, 240) : sf::Color(200, 200, 220));
             btn.label.setFillColor(inside ? sf::Color(255, 215, 0) : sf::Color::White);
         }
         if (m_draggingVol)

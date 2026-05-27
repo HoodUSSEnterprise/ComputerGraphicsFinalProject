@@ -32,6 +32,11 @@ void CustomScreen::buildUI()
 {
     m_buttons.clear();
 
+    // 加载按钮纹理
+    m_btnPlusTex.loadFromFile("textures/ButtonPlus.png");
+    m_btnMinusTex.loadFromFile("textures/ButtonMinus.png");
+    m_buttonTex.loadFromFile("textures/button.png");
+
     struct ParamDef
     {
         TextKey labelKey;
@@ -77,15 +82,10 @@ void CustomScreen::buildUI()
             ParamButton btn;
             btn.bg.setSize(sf::Vector2f(50, 40));
             btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 100, yPos);
-            btn.bg.setFillColor(sf::Color(50, 50, 70));
-            btn.bg.setOutlineColor(sf::Color(100, 100, 140));
-            btn.bg.setOutlineThickness(2);
+            btn.bg.setTexture(&m_btnMinusTex);
+            btn.bg.setOutlineThickness(0);
             btn.label.setFont(m_font);
-            btn.label.setString("-");
-            btn.label.setCharacterSize(26);
-            btn.label.setFillColor(sf::Color::White);
-            sf::FloatRect lb = btn.label.getLocalBounds();
-            btn.label.setPosition(WINDOW_WIDTH / 2.0f - 87, yPos + 2);
+            btn.label.setString("");
             m_buttons.push_back(btn);
         }
 
@@ -108,50 +108,47 @@ void CustomScreen::buildUI()
             ParamButton btn;
             btn.bg.setSize(sf::Vector2f(50, 40));
             btn.bg.setPosition(WINDOW_WIDTH / 2.0f + 80, yPos);
-            btn.bg.setFillColor(sf::Color(50, 50, 70));
-            btn.bg.setOutlineColor(sf::Color(100, 100, 140));
-            btn.bg.setOutlineThickness(2);
+            btn.bg.setTexture(&m_btnPlusTex);
+            btn.bg.setOutlineThickness(0);
             btn.label.setFont(m_font);
-            btn.label.setString("+");
-            btn.label.setCharacterSize(26);
-            btn.label.setFillColor(sf::Color::White);
-            sf::FloatRect lb = btn.label.getLocalBounds();
-            btn.label.setPosition(WINDOW_WIDTH / 2.0f + 93, yPos + 2);
+            btn.label.setString("");
             m_buttons.push_back(btn);
         }
     }
 
-    // 开始按钮 (index 24)
+    // 开始按钮
     {
         ParamButton btn;
         btn.bg.setSize(sf::Vector2f(250, 50));
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 125, 640);
-        btn.bg.setFillColor(sf::Color(50, 150, 50));
-        btn.bg.setOutlineColor(sf::Color::White);
-        btn.bg.setOutlineThickness(2);
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 125, 625);
+        btn.bg.setTexture(&m_buttonTex);
+        btn.bg.setFillColor(sf::Color(180, 255, 180));
+        btn.bg.setOutlineThickness(0);
         btn.label.setFont(m_font);
         btn.label.setString(LangManager::get(TextKey::CustomStart));
         btn.label.setCharacterSize(24);
         btn.label.setFillColor(sf::Color::White);
         sf::FloatRect lb = btn.label.getLocalBounds();
-        btn.label.setPosition(WINDOW_WIDTH / 2.0f - lb.width / 2, 650);
+        btn.label.setOrigin(lb.width / 2, lb.height / 2);
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 650);
         m_buttons.push_back(btn);
     }
 
-    // 返回按钮 (index 25)
+    // 返回按钮
     {
         ParamButton btn;
         btn.bg.setSize(sf::Vector2f(200, 50));
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 100, 710);
-        btn.bg.setFillColor(sf::Color(50, 50, 70));
-        btn.bg.setOutlineColor(sf::Color(100, 100, 140));
-        btn.bg.setOutlineThickness(2);
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f - 100, 695);
+        btn.bg.setTexture(&m_buttonTex);
+        btn.bg.setFillColor(sf::Color(200, 200, 220));
+        btn.bg.setOutlineThickness(0);
         btn.label.setFont(m_font);
         btn.label.setString(LangManager::get(TextKey::Back));
         btn.label.setCharacterSize(22);
         btn.label.setFillColor(sf::Color::White);
         sf::FloatRect lb = btn.label.getLocalBounds();
-        btn.label.setPosition(WINDOW_WIDTH / 2.0f - lb.width / 2, 722);
+        btn.label.setOrigin(lb.width / 2, lb.height / 2);
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 720);
         m_buttons.push_back(btn);
     }
 
@@ -228,10 +225,20 @@ void CustomScreen::refreshTexts()
             m_buttons[idx].label.setString(LangManager::get(paramKeys[i]));
     }
 
-    // 刷新开始/返回按钮
+    // 刷新开始/返回按钮（文字居中）
     int n = static_cast<int>(m_buttons.size());
-    if (n > 24) m_buttons[24].label.setString(LangManager::get(TextKey::CustomStart));
-    if (n > 25) m_buttons[25].label.setString(LangManager::get(TextKey::Back));
+    if (n > 24) {
+        m_buttons[24].label.setString(LangManager::get(TextKey::CustomStart));
+        sf::FloatRect lb = m_buttons[24].label.getLocalBounds();
+        m_buttons[24].label.setOrigin(lb.width / 2, lb.height / 2);
+        m_buttons[24].label.setPosition(WINDOW_WIDTH / 2.0f, 650);
+    }
+    if (n > 25) {
+        m_buttons[25].label.setString(LangManager::get(TextKey::Back));
+        sf::FloatRect lb = m_buttons[25].label.getLocalBounds();
+        m_buttons[25].label.setOrigin(lb.width / 2, lb.height / 2);
+        m_buttons[25].label.setPosition(WINDOW_WIDTH / 2.0f, 720);
+    }
 
     m_backHint.setString(L"ESC: Back to Menu");
     sf::FloatRect hb = m_backHint.getLocalBounds();

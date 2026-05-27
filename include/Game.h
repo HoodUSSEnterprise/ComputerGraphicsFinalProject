@@ -161,6 +161,8 @@ private:
     // ---- menu / settings UI ----
     sf::Font m_menuFont;
     sf::Texture m_buttonTex;
+    sf::Texture m_arrowLeftTex;
+    sf::Texture m_arrowRightTex;
     sf::Text m_titleText;
     sf::Text m_subtitleText;
 

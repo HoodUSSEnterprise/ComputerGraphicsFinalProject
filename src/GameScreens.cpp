@@ -34,8 +34,17 @@ void Game::initMenu()
     TextKey btnKeys[] = {TextKey::ContinueGame, TextKey::NewGame, TextKey::Shop_Title,
                          TextKey::CustomMode, TextKey::Settings, TextKey::Exit};
     float bw = zh ? 320.0f : 280.0f;   // 中文按钮更宽
-    float startY = zh ? 270.0f : 285.0f;
-    float gap = zh ? 56.0f : 60.0f;
+    float startY = zh ? 260.0f : 275.0f;
+    float gap = zh ? 70.0f : 72.0f;
+    // 按钮颜色：绿/蓝/金/紫/灰/红
+    sf::Color btnColors[] = {
+        sf::Color(180, 255, 180),  // 继续游戏 - 绿
+        sf::Color(180, 200, 255),  // 新游戏   - 蓝
+        sf::Color(255, 230, 150),  // 商店     - 金
+        sf::Color(220, 180, 255),  // 自定义   - 紫
+        sf::Color(200, 200, 200),  // 设置     - 灰
+        sf::Color(255, 160, 160),  // 退出     - 红
+    };
     m_menuButtons.clear();
     for (int i = 0; i < 6; ++i)
     {
@@ -44,6 +53,7 @@ void Game::initMenu()
         btn.bg.setOrigin(bw / 2, 26);
         btn.bg.setPosition(WINDOW_WIDTH / 2.0f, startY + i * gap);
         btn.bg.setTexture(&m_buttonTex);
+        btn.bg.setFillColor(btnColors[i]);
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
         btn.bg.setOutlineThickness(2);
         btn.label.setFont(m_menuFont);
@@ -215,7 +225,9 @@ void Game::processMenuEvents(const sf::Event &event)
             bool hoverYes = m_confirmYesBtn.getGlobalBounds().contains(mx, my);
             bool hoverNo = m_confirmNoBtn.getGlobalBounds().contains(mx, my);
             m_confirmYesBtn.setOutlineColor(hoverYes ? sf::Color(255, 80, 40) : sf::Color(255, 100, 100));
+            m_confirmYesBtn.setFillColor(hoverYes ? sf::Color(255, 200, 200) : sf::Color(255, 180, 180));
             m_confirmNoBtn.setOutlineColor(hoverNo ? sf::Color(255, 215, 0) : sf::Color(100, 100, 140));
+            m_confirmNoBtn.setFillColor(hoverNo ? sf::Color(220, 220, 255) : sf::Color(200, 200, 220));
             return;
         }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)

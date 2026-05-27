@@ -34,7 +34,7 @@ void Game::buildShopUI()
 
         sb.bg.setSize(sf::Vector2f(600, 56));
         sb.bg.setPosition(WINDOW_WIDTH / 2.0f - 300, y);
-        sb.bg.setFillColor(sf::Color(30, 30, 50));
+        sb.bg.setFillColor(sf::Color(30, 35, 55));
         sb.bg.setOutlineColor(sf::Color(70, 70, 100));
         sb.bg.setOutlineThickness(1);
 
@@ -51,7 +51,8 @@ void Game::buildShopUI()
         sb.costText.setFillColor(sf::Color(255, 215, 0));
 
         sb.buyBtn.setSize(sf::Vector2f(100, 34));
-        sb.buyBtn.setFillColor(sf::Color(40, 100, 40));
+        sb.buyBtn.setTexture(&m_buttonTex);
+        sb.buyBtn.setFillColor(sf::Color(180, 255, 180));
         sb.buyBtn.setOutlineColor(sf::Color(100, 200, 100));
         sb.buyBtn.setOutlineThickness(1);
 
@@ -96,7 +97,7 @@ void Game::refreshShopTexts()
         if (lv >= SHOP_MAX_LEVEL)
         {
             sb.costText.setString(LangManager::get(TextKey::Shop_Max));
-            sb.buyBtn.setFillColor(sf::Color(60, 60, 60));
+            sb.buyBtn.setFillColor(sf::Color(120, 120, 120));
             sb.buyLabel.setString(LangManager::get(TextKey::Shop_Max));
         }
         else
@@ -104,7 +105,7 @@ void Game::refreshShopTexts()
             sb.costText.setString(std::to_wstring(cost) + L" " +
                                   std::wstring(LangManager::get(TextKey::CharSelect_Gold)));
             bool canBuy = m_playerData.totalGold >= cost;
-            sb.buyBtn.setFillColor(canBuy ? sf::Color(40, 100, 40) : sf::Color(60, 40, 40));
+            sb.buyBtn.setFillColor(canBuy ? sf::Color(180, 255, 180) : sf::Color(255, 180, 180));
             sb.buyLabel.setString(LangManager::get(TextKey::Shop_Buy));
         }
     }

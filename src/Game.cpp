@@ -22,6 +22,8 @@ Game::Game()
     initSettings();
     Enemy::loadTextures();
     m_buttonTex.loadFromFile("textures/button.png");
+    m_arrowLeftTex.loadFromFile("textures/ArrowLeft.png");
+    m_arrowRightTex.loadFromFile("textures/ArrowRight.png");
     if (m_bgm.openFromFile("sound/bgm.mp3"))
     {
         m_bgm.setLoop(true);

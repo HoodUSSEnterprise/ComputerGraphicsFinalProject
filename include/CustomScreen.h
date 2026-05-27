@@ -26,6 +26,9 @@ private:
     };
 
     sf::Font m_font;
+    sf::Texture m_btnPlusTex;
+    sf::Texture m_btnMinusTex;
+    sf::Texture m_buttonTex;
     CustomParams m_params;
     std::vector<ParamButton> m_buttons;
     sf::Text m_titleText;
