@@ -24,11 +24,12 @@ enum class TileType : int
 // ============================================================
 //  作弊码（像罪恶都市一样用键盘输入）
 // ============================================================
-namespace CheatCode {
-    constexpr const char* InfiniteGold  = "money";           // 无限金钱
-    constexpr const char* InfiniteDamage = "morepower";      // 无限伤害
-    constexpr const char* KillAll       = "killall";         // 一键秒杀
-    constexpr const char* ClearLevel    = "winlevel";        // 一键通关
-    constexpr const char* SpawnBoss     = "boss";            // 生成Boss
+namespace CheatCode
+{
+    constexpr const char *InfiniteGold = "money";       // 无限金钱
+    constexpr const char *InfiniteDamage = "morepower"; // 无限伤害
+    constexpr const char *KillAll = "killall";          // 一键秒杀
+    constexpr const char *ClearLevel = "winlevel";      // 一键通关
+    constexpr const char *SpawnBoss = "boss";           // 生成Boss
     constexpr int BUFFER_SIZE = 64;
 }

@@ -57,17 +57,25 @@ void Game::loadMenuFont()
 {
     std::vector<std::string> paths = {LangManager::getFontPath()};
     std::string lang = LangManager::currentLangName();
-    if (lang == "zh") paths.push_back("fonts/simhei.ttf");
+    if (lang == "zh")
+        paths.push_back("fonts/simhei.ttf");
     paths.push_back("fonts/arial.ttf");
 
     bool loaded = false;
     for (const auto &p : paths)
-        if (m_menuFont.loadFromFile(p)) { std::cout << "[Font] menu loaded: " << p << std::endl; loaded = true; break; }
-    if (!loaded) std::cerr << "[Font] WARNING: menu font failed to load!" << std::endl;
+        if (m_menuFont.loadFromFile(p))
+        {
+            std::cout << "[Font] menu loaded: " << p << std::endl;
+            loaded = true;
+            break;
+        }
+    if (!loaded)
+        std::cerr << "[Font] WARNING: menu font failed to load!" << std::endl;
 
     m_titleText.setFont(m_menuFont);
     m_subtitleText.setFont(m_menuFont);
-    for (auto &btn : m_menuButtons) btn.label.setFont(m_menuFont);
+    for (auto &btn : m_menuButtons)
+        btn.label.setFont(m_menuFont);
 
     // 角色选择界面
     m_charTitleText.setFont(m_menuFont);
@@ -75,13 +83,18 @@ void Game::loadMenuFont()
     m_charHintText.setFont(m_menuFont);
     m_newCharBtnLabel.setFont(m_menuFont);
     m_confirmCharBtnLabel.setFont(m_menuFont);
-    for (auto &cb : m_charButtons) { cb.nameText.setFont(m_menuFont); cb.infoText.setFont(m_menuFont); }
+    for (auto &cb : m_charButtons)
+    {
+        cb.nameText.setFont(m_menuFont);
+        cb.infoText.setFont(m_menuFont);
+    }
 
     // 商店界面
     m_shopTitleText.setFont(m_menuFont);
     m_shopGoldText.setFont(m_menuFont);
     m_shopBackHint.setFont(m_menuFont);
-    for (auto &sb : m_shopButtons) {
+    for (auto &sb : m_shopButtons)
+    {
         sb.nameText.setFont(m_menuFont);
         sb.levelText.setFont(m_menuFont);
         sb.costText.setFont(m_menuFont);
@@ -96,6 +109,10 @@ void Game::loadMenuFont()
 
     // 作弊消息
     m_cheatMsgText.setFont(m_menuFont);
+
+    // 暂停菜单
+    m_pauseTitle.setFont(m_menuFont);
+    for (auto &btn : m_pauseButtons) btn.label.setFont(m_menuFont);
 }
 
 void Game::updateMenuHover(float mx, float my)
@@ -113,7 +130,8 @@ void Game::updateMenuHover(float mx, float my)
 int Game::getMenuButtonIndex(float mx, float my) const
 {
     for (size_t i = 0; i < m_menuButtons.size(); ++i)
-        if (m_menuButtons[i].bg.getGlobalBounds().contains(mx, my)) return static_cast<int>(i);
+        if (m_menuButtons[i].bg.getGlobalBounds().contains(mx, my))
+            return static_cast<int>(i);
     return -1;
 }
 
@@ -137,8 +155,8 @@ void Game::renderMenu()
         charText.setFont(m_menuFont);
         std::string cn = m_playerData.name;
         charText.setString(std::wstring(cn.begin(), cn.end()) + L"  |  " +
-            std::wstring(LangManager::get(TextKey::CharSelect_Gold)) + L": " +
-            std::to_wstring(m_playerData.totalGold));
+                           std::wstring(LangManager::get(TextKey::CharSelect_Gold)) + L": " +
+                           std::to_wstring(m_playerData.totalGold));
         charText.setCharacterSize(16);
         charText.setFillColor(sf::Color(100, 200, 100));
         sf::FloatRect cb = charText.getLocalBounds();
@@ -149,12 +167,17 @@ void Game::renderMenu()
 
     m_window.draw(m_titleText);
     m_window.draw(m_subtitleText);
-    for (const auto &btn : m_menuButtons) { m_window.draw(btn.bg); m_window.draw(btn.label); }
+    for (const auto &btn : m_menuButtons)
+    {
+        m_window.draw(btn.bg);
+        m_window.draw(btn.label);
+    }
 
     sf::Text langText;
     langText.setFont(m_menuFont);
     langText.setString(L"[" + std::wstring(LangManager::currentLangName().begin(), LangManager::currentLangName().end()) + L"]");
-    langText.setCharacterSize(16); langText.setFillColor(sf::Color(100, 200, 100));
+    langText.setCharacterSize(16);
+    langText.setFillColor(sf::Color(100, 200, 100));
     sf::FloatRect lb = langText.getLocalBounds();
     langText.setOrigin(lb.width / 2, lb.height / 2);
     langText.setPosition(WINDOW_WIDTH / 2.0f, 660);
@@ -163,14 +186,16 @@ void Game::renderMenu()
     sf::Text hint;
     hint.setFont(m_menuFont);
     hint.setString(LangManager::get(TextKey::MenuHint));
-    hint.setCharacterSize(14); hint.setFillColor(sf::Color(120, 120, 140));
+    hint.setCharacterSize(14);
+    hint.setFillColor(sf::Color(120, 120, 140));
     sf::FloatRect hb = hint.getLocalBounds();
     hint.setOrigin(hb.width / 2, hb.height / 2);
     hint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
     m_window.draw(hint);
 
     // 确认对话框
-    if (m_showConfirm) renderConfirmDialog();
+    if (m_showConfirm)
+        renderConfirmDialog();
 }
 
 void Game::processMenuEvents(const sf::Event &event)
@@ -183,7 +208,7 @@ void Game::processMenuEvents(const sf::Event &event)
             sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
             float mx = worldPos.x, my = worldPos.y;
             bool hoverYes = m_confirmYesBtn.getGlobalBounds().contains(mx, my);
-            bool hoverNo  = m_confirmNoBtn.getGlobalBounds().contains(mx, my);
+            bool hoverNo = m_confirmNoBtn.getGlobalBounds().contains(mx, my);
             m_confirmYesBtn.setFillColor(hoverYes ? sf::Color(200, 60, 60) : sf::Color(150, 40, 40));
             m_confirmNoBtn.setFillColor(hoverNo ? sf::Color(70, 70, 100) : sf::Color(50, 50, 70));
             return;
@@ -197,7 +222,8 @@ void Game::processMenuEvents(const sf::Event &event)
                 // 确认：重置存档，从第1关开始
                 m_playerData.unlockedLevels = 1;
                 m_playerData.totalGold = 0;
-                for (int i = 0; i < SHOP_ITEM_COUNT; ++i) m_playerData.shopLevels[i] = 0;
+                for (int i = 0; i < SHOP_ITEM_COUNT; ++i)
+                    m_playerData.shopLevels[i] = 0;
                 m_playerData.save(PlayerData::makeSavePath(m_playerData.name));
                 m_state = GameState::CampaignSelect;
                 m_showConfirm = false;
@@ -217,7 +243,8 @@ void Game::processMenuEvents(const sf::Event &event)
         updateMenuHover(worldPos.x, worldPos.y);
         return;
     }
-    if (event.type != sf::Event::MouseButtonPressed || event.mouseButton.button != sf::Mouse::Left) return;
+    if (event.type != sf::Event::MouseButtonPressed || event.mouseButton.button != sf::Mouse::Left)
+        return;
 
     sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     int idx = getMenuButtonIndex(worldPos.x, worldPos.y);
@@ -244,10 +271,18 @@ void Game::processMenuEvents(const sf::Event &event)
             m_state = GameState::Shop;
         }
         break;
-    case 3: m_state = GameState::CustomSetup; break;
-    case 4: m_state = GameState::Settings; buildSettingsUI(); break;
-    case 5: m_window.close(); break;
-    default: break;
+    case 3:
+        m_state = GameState::CustomSetup;
+        break;
+    case 4:
+        m_state = GameState::Settings;
+        buildSettingsUI();
+        break;
+    case 5:
+        m_window.close();
+        break;
+    default:
+        break;
     }
 }
 
@@ -261,9 +296,11 @@ void Game::initSettings()
     m_volTrack.setFillColor(sf::Color(60, 60, 80));
     m_volTrack.setOutlineColor(sf::Color(100, 100, 140));
     m_volTrack.setOutlineThickness(1);
-    m_volKnob.setRadius(12); m_volKnob.setOrigin(12, 12);
+    m_volKnob.setRadius(12);
+    m_volKnob.setOrigin(12, 12);
     m_volKnob.setFillColor(sf::Color(255, 215, 0));
-    m_bgmLabel.setFont(m_menuFont); m_bgmLabel.setCharacterSize(28);
+    m_bgmLabel.setFont(m_menuFont);
+    m_bgmLabel.setCharacterSize(28);
     m_bgmLabel.setFillColor(sf::Color::White);
 }
 
@@ -272,21 +309,31 @@ void Game::applyVolume() { m_bgm.setVolume(m_volume); }
 int Game::getSettingsButtonIndex(float mx, float my) const
 {
     for (size_t i = 0; i < m_settingsButtons.size(); ++i)
-        if (m_settingsButtons[i].bg.getGlobalBounds().contains(mx, my)) return static_cast<int>(i);
+        if (m_settingsButtons[i].bg.getGlobalBounds().contains(mx, my))
+            return static_cast<int>(i);
     return -1;
 }
 
 void Game::buildSettingsUI()
 {
     m_settingsButtons.clear();
-    auto makeArrow = [&](float x, float y, const std::string &label) {
-        MenuButton btn; btn.bg.setSize(sf::Vector2f(50, 50)); btn.bg.setOrigin(25, 25);
-        btn.bg.setPosition(x, y); btn.bg.setFillColor(sf::Color(50, 50, 70));
-        btn.bg.setOutlineColor(sf::Color(100, 100, 140)); btn.bg.setOutlineThickness(2);
-        btn.label.setFont(m_menuFont); btn.label.setString(label); btn.label.setCharacterSize(30);
+    auto makeArrow = [&](float x, float y, const std::string &label)
+    {
+        MenuButton btn;
+        btn.bg.setSize(sf::Vector2f(50, 50));
+        btn.bg.setOrigin(25, 25);
+        btn.bg.setPosition(x, y);
+        btn.bg.setFillColor(sf::Color(50, 50, 70));
+        btn.bg.setOutlineColor(sf::Color(100, 100, 140));
+        btn.bg.setOutlineThickness(2);
+        btn.label.setFont(m_menuFont);
+        btn.label.setString(label);
+        btn.label.setCharacterSize(30);
         btn.label.setFillColor(sf::Color::White);
-        sf::FloatRect lb = btn.label.getLocalBounds(); btn.label.setOrigin(lb.width / 2, lb.height / 2);
-        btn.label.setPosition(x, y - 4); btn.hovered = false;
+        sf::FloatRect lb = btn.label.getLocalBounds();
+        btn.label.setOrigin(lb.width / 2, lb.height / 2);
+        btn.label.setPosition(x, y - 4);
+        btn.hovered = false;
         m_settingsButtons.push_back(btn);
     };
     makeArrow(WINDOW_WIDTH / 2.0f - 180, 300, "<");
@@ -294,30 +341,47 @@ void Game::buildSettingsUI()
 
     m_langLabel.setFont(m_menuFont);
     m_langLabel.setString(LangManager::get(TextKey::Language_Label));
-    m_langLabel.setCharacterSize(24); m_langLabel.setFillColor(sf::Color(180, 180, 200));
+    m_langLabel.setCharacterSize(24);
+    m_langLabel.setFillColor(sf::Color(180, 180, 200));
     m_langValue.setFont(m_menuFont);
     m_langValue.setString(L"[" + std::wstring(LangManager::currentLangName().begin(), LangManager::currentLangName().end()) + L"]");
-    m_langValue.setCharacterSize(22); m_langValue.setFillColor(sf::Color::Yellow);
+    m_langValue.setCharacterSize(22);
+    m_langValue.setFillColor(sf::Color::Yellow);
 
     {
-        MenuButton btn; btn.bg.setSize(sf::Vector2f(280, 56)); btn.bg.setOrigin(140, 28);
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 400); btn.bg.setFillColor(sf::Color(50, 50, 70));
-        btn.bg.setOutlineColor(sf::Color(100, 100, 140)); btn.bg.setOutlineThickness(2);
+        MenuButton btn;
+        btn.bg.setSize(sf::Vector2f(280, 56));
+        btn.bg.setOrigin(140, 28);
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 400);
+        btn.bg.setFillColor(sf::Color(50, 50, 70));
+        btn.bg.setOutlineColor(sf::Color(100, 100, 140));
+        btn.bg.setOutlineThickness(2);
         btn.label.setFont(m_menuFont);
         btn.label.setString(std::wstring(L"BGM: ") + (m_bgmOn ? LangManager::get(TextKey::BGM_On) : LangManager::get(TextKey::BGM_Off)));
-        btn.label.setCharacterSize(24); btn.label.setFillColor(sf::Color::White);
-        sf::FloatRect lb = btn.label.getLocalBounds(); btn.label.setOrigin(lb.width / 2, lb.height / 2);
-        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 396); btn.hovered = false;
+        btn.label.setCharacterSize(24);
+        btn.label.setFillColor(sf::Color::White);
+        sf::FloatRect lb = btn.label.getLocalBounds();
+        btn.label.setOrigin(lb.width / 2, lb.height / 2);
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 396);
+        btn.hovered = false;
         m_settingsButtons.push_back(btn);
     }
     {
-        MenuButton btn; btn.bg.setSize(sf::Vector2f(200, 50)); btn.bg.setOrigin(100, 25);
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 520); btn.bg.setFillColor(sf::Color(50, 50, 70));
-        btn.bg.setOutlineColor(sf::Color(100, 100, 140)); btn.bg.setOutlineThickness(2);
-        btn.label.setFont(m_menuFont); btn.label.setString(LangManager::get(TextKey::Back));
-        btn.label.setCharacterSize(22); btn.label.setFillColor(sf::Color::White);
-        sf::FloatRect lb = btn.label.getLocalBounds(); btn.label.setOrigin(lb.width / 2, lb.height / 2);
-        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 516); btn.hovered = false;
+        MenuButton btn;
+        btn.bg.setSize(sf::Vector2f(200, 50));
+        btn.bg.setOrigin(100, 25);
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 520);
+        btn.bg.setFillColor(sf::Color(50, 50, 70));
+        btn.bg.setOutlineColor(sf::Color(100, 100, 140));
+        btn.bg.setOutlineThickness(2);
+        btn.label.setFont(m_menuFont);
+        btn.label.setString(LangManager::get(TextKey::Back));
+        btn.label.setCharacterSize(22);
+        btn.label.setFillColor(sf::Color::White);
+        sf::FloatRect lb = btn.label.getLocalBounds();
+        btn.label.setOrigin(lb.width / 2, lb.height / 2);
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 516);
+        btn.hovered = false;
         m_settingsButtons.push_back(btn);
     }
 }
@@ -325,23 +389,33 @@ void Game::buildSettingsUI()
 void Game::renderSettings()
 {
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
-    bg.setFillColor(sf::Color(15, 15, 30)); m_window.draw(bg);
-    for (int i = 0; i < 10; ++i) {
+    bg.setFillColor(sf::Color(15, 15, 30));
+    m_window.draw(bg);
+    for (int i = 0; i < 10; ++i)
+    {
         sf::RectangleShape line(sf::Vector2f(WINDOW_WIDTH, 2));
-        line.setFillColor(sf::Color(30, 30, 50)); line.setPosition(0, i * 80.0f); m_window.draw(line);
+        line.setFillColor(sf::Color(30, 30, 50));
+        line.setPosition(0, i * 80.0f);
+        m_window.draw(line);
     }
     sf::Text title;
-    title.setFont(m_menuFont); title.setString(LangManager::get(TextKey::Settings));
-    title.setCharacterSize(50); title.setFillColor(sf::Color(255, 215, 0)); title.setStyle(sf::Text::Bold);
+    title.setFont(m_menuFont);
+    title.setString(LangManager::get(TextKey::Settings));
+    title.setCharacterSize(50);
+    title.setFillColor(sf::Color(255, 215, 0));
+    title.setStyle(sf::Text::Bold);
     sf::FloatRect tb = title.getLocalBounds();
-    title.setOrigin(tb.width / 2, tb.height / 2); title.setPosition(WINDOW_WIDTH / 2.0f, 120);
+    title.setOrigin(tb.width / 2, tb.height / 2);
+    title.setPosition(WINDOW_WIDTH / 2.0f, 120);
     m_window.draw(title);
     m_langLabel.setPosition(WINDOW_WIDTH / 2.0f - 130, 290);
     m_langValue.setPosition(WINDOW_WIDTH / 2.0f - 30, 290);
-    m_window.draw(m_langLabel); m_window.draw(m_langValue);
+    m_window.draw(m_langLabel);
+    m_window.draw(m_langValue);
 
     float trackX = WINDOW_WIDTH / 2.0f - 150, trackY = 360;
-    m_volTrack.setPosition(trackX, trackY); m_window.draw(m_volTrack);
+    m_volTrack.setPosition(trackX, trackY);
+    m_window.draw(m_volTrack);
     float knobX = trackX + (m_volume / 100.0f) * m_volTrack.getSize().x;
     m_volKnob.setPosition(knobX, trackY + m_volTrack.getSize().y / 2.0f);
     m_window.draw(m_volKnob);
@@ -349,15 +423,25 @@ void Game::renderSettings()
     sf::Text volLabel;
     volLabel.setFont(m_menuFont);
     volLabel.setString(std::wstring(LangManager::get(TextKey::Volume)) + L": " + std::to_wstring(static_cast<int>(m_volume)) + L"%");
-    volLabel.setCharacterSize(20); volLabel.setFillColor(sf::Color(180, 180, 200));
+    volLabel.setCharacterSize(20);
+    volLabel.setFillColor(sf::Color(180, 180, 200));
     sf::FloatRect vl = volLabel.getLocalBounds();
-    volLabel.setOrigin(vl.width / 2, vl.height / 2); volLabel.setPosition(WINDOW_WIDTH / 2.0f, 330);
+    volLabel.setOrigin(vl.width / 2, vl.height / 2);
+    volLabel.setPosition(WINDOW_WIDTH / 2.0f, 330);
     m_window.draw(volLabel);
-    for (const auto &btn : m_settingsButtons) { m_window.draw(btn.bg); m_window.draw(btn.label); }
-    sf::Text hint; hint.setFont(m_menuFont); hint.setString("ESC: Back to Menu");
-    hint.setCharacterSize(14); hint.setFillColor(sf::Color(120, 120, 140));
+    for (const auto &btn : m_settingsButtons)
+    {
+        m_window.draw(btn.bg);
+        m_window.draw(btn.label);
+    }
+    sf::Text hint;
+    hint.setFont(m_menuFont);
+    hint.setString("ESC: Back to Menu");
+    hint.setCharacterSize(14);
+    hint.setFillColor(sf::Color(120, 120, 140));
     sf::FloatRect hb = hint.getLocalBounds();
-    hint.setOrigin(hb.width / 2, hb.height / 2); hint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
+    hint.setOrigin(hb.width / 2, hb.height / 2);
+    hint.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
     m_window.draw(hint);
 }
 
@@ -366,44 +450,67 @@ void Game::processSettingsEvents(const sf::Event &event)
     if (event.type == sf::Event::MouseMoved)
     {
         sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
-        for (auto &btn : m_settingsButtons) {
-            bool inside = btn.bg.getGlobalBounds().contains(worldPos.x, worldPos.y); btn.hovered = inside;
+        for (auto &btn : m_settingsButtons)
+        {
+            bool inside = btn.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
+            btn.hovered = inside;
             btn.bg.setFillColor(inside ? sf::Color(70, 70, 100) : sf::Color(50, 50, 70));
             btn.bg.setOutlineColor(inside ? sf::Color(255, 215, 0) : sf::Color(100, 100, 140));
             btn.label.setFillColor(inside ? sf::Color(255, 215, 0) : sf::Color::White);
         }
-        if (m_draggingVol) {
+        if (m_draggingVol)
+        {
             float nx = std::max(m_volTrack.getPosition().x, std::min(worldPos.x, m_volTrack.getPosition().x + m_volTrack.getSize().x));
             m_volume = (nx - m_volTrack.getPosition().x) / m_volTrack.getSize().x * 100.0f;
-            m_volKnob.setPosition(nx, m_volKnob.getPosition().y); applyVolume();
+            m_volKnob.setPosition(nx, m_volKnob.getPosition().y);
+            applyVolume();
         }
         return;
     }
     if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
     {
         sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-        if (m_volKnob.getGlobalBounds().contains(worldPos.x, worldPos.y)) { m_draggingVol = true; return; }
+        if (m_volKnob.getGlobalBounds().contains(worldPos.x, worldPos.y))
+        {
+            m_draggingVol = true;
+            return;
+        }
         int idx = getSettingsButtonIndex(worldPos.x, worldPos.y);
-        switch (idx) {
-        case 0: case 1: {
+        switch (idx)
+        {
+        case 0:
+        case 1:
+        {
             static const char *langs[] = {"assets/lang_en.json", "assets/lang_zh.json"};
             static int cur = 0;
             cur = (idx == 0) ? (cur - 1 + 2) % 2 : (cur + 1) % 2;
             LangManager::loadLanguage(langs[cur]);
-            loadMenuFont(); m_ui.reloadFont(); refreshAllTexts();
+            loadMenuFont();
+            m_ui.reloadFont();
+            refreshAllTexts();
             break;
         }
         case 2:
             m_bgmOn = !m_bgmOn;
-            if (m_bgmOn) { if (m_bgm.getStatus() != sf::Music::Playing) m_bgm.play(); }
-            else m_bgm.pause();
+            if (m_bgmOn)
+            {
+                if (m_bgm.getStatus() != sf::Music::Playing)
+                    m_bgm.play();
+            }
+            else
+                m_bgm.pause();
             m_bgmLabel.setString(std::wstring(L"BGM: ") + (m_bgmOn ? LangManager::get(TextKey::BGM_On) : LangManager::get(TextKey::BGM_Off)));
             break;
-        case 3: m_state = GameState::Menu; break;
-        default: break;
+        case 3:
+            m_state = m_stateBeforeSettings;
+            m_stateBeforeSettings = GameState::Menu;
+            break;
+        default:
+            break;
         }
     }
-    if (event.type == sf::Event::MouseButtonReleased) m_draggingVol = false;
+    if (event.type == sf::Event::MouseButtonReleased)
+        m_draggingVol = false;
 }
 
 // ============================================================
@@ -420,12 +527,15 @@ void Game::refreshAllTexts()
     m_subtitleText.setString(LangManager::get(TextKey::Subtitle));
     m_langLabel.setString(LangManager::get(TextKey::Language_Label));
     m_langValue.setString(L"[" + std::wstring(LangManager::currentLangName().begin(), LangManager::currentLangName().end()) + L"]");
-    if (!m_settingsButtons.empty()) {
+    if (!m_settingsButtons.empty())
+    {
         m_settingsButtons[2].label.setString(std::wstring(L"BGM: ") + (m_bgmOn ? LangManager::get(TextKey::BGM_On) : LangManager::get(TextKey::BGM_Off)));
         m_settingsButtons[3].label.setString(LangManager::get(TextKey::Back));
     }
-    m_campaignScreen.refreshTexts(); m_campaignScreen.reloadFont();
-    m_customScreen.refreshTexts(); m_customScreen.reloadFont();
+    m_campaignScreen.refreshTexts();
+    m_campaignScreen.reloadFont();
+    m_customScreen.refreshTexts();
+    m_customScreen.reloadFont();
 }
 
 // ============================================================
@@ -497,11 +607,11 @@ void Game::refreshCharList()
         cb.nameText.setPosition(WINDOW_WIDTH / 2.0f - 190, y + 4);
 
         std::string info = std::to_string(m_charList[i].unlockedLevels) + "/11 " +
-            std::string(LangManager::get(TextKey::CharSelect_Progress).begin(),
-                        LangManager::get(TextKey::CharSelect_Progress).end()) +
-            "  |  " + std::to_string(m_charList[i].totalGold) + " " +
-            std::string(LangManager::get(TextKey::CharSelect_Gold).begin(),
-                        LangManager::get(TextKey::CharSelect_Gold).end());
+                           std::string(LangManager::get(TextKey::CharSelect_Progress).begin(),
+                                       LangManager::get(TextKey::CharSelect_Progress).end()) +
+                           "  |  " + std::to_string(m_charList[i].totalGold) + " " +
+                           std::string(LangManager::get(TextKey::CharSelect_Gold).begin(),
+                                       LangManager::get(TextKey::CharSelect_Gold).end());
         cb.infoText.setFont(m_menuFont);
         cb.infoText.setString(std::wstring(info.begin(), info.end()));
         cb.infoText.setCharacterSize(14);
@@ -519,7 +629,7 @@ void Game::refreshCharList()
     sf::FloatRect hb = m_charHintText.getLocalBounds();
     m_charHintText.setOrigin(hb.width / 2, hb.height / 2);
     m_charHintText.setPosition(WINDOW_WIDTH / 2.0f,
-        m_charList.empty() ? 400.0f : y + 20);
+                               m_charList.empty() ? 400.0f : y + 20);
 }
 
 void Game::renderCharSelect()
@@ -582,7 +692,8 @@ void Game::renderCharSelect()
     sf::Text langText;
     langText.setFont(m_menuFont);
     langText.setString(L"[" + std::wstring(LangManager::currentLangName().begin(), LangManager::currentLangName().end()) + L"]");
-    langText.setCharacterSize(16); langText.setFillColor(sf::Color(100, 200, 100));
+    langText.setCharacterSize(16);
+    langText.setFillColor(sf::Color(100, 200, 100));
     sf::FloatRect lb = langText.getLocalBounds();
     langText.setOrigin(lb.width / 2, lb.height / 2);
     langText.setPosition(WINDOW_WIDTH / 2.0f, 660);
@@ -595,10 +706,11 @@ void Game::processCharSelectEvents(const sf::Event &event)
     if (event.type == sf::Event::TextEntered)
     {
         bool inputMode = (m_charNameInput.getFillColor() == sf::Color::White);
-        if (!inputMode) return;
+        if (!inputMode)
+            return;
 
         sf::Uint32 ch = event.text.unicode;
-        if (ch == '\b')  // 退格
+        if (ch == '\b') // 退格
         {
             if (!m_newCharName.empty())
                 m_newCharName.pop_back();
@@ -631,7 +743,7 @@ void Game::processCharSelectEvents(const sf::Event &event)
         if (display.empty())
             display = LangManager::get(TextKey::CharSelect_EnterName);
         else
-            display += L"_";  // 光标
+            display += L"_"; // 光标
         m_charNameInput.setString(display);
         return;
     }
@@ -683,7 +795,8 @@ void Game::processCharSelectEvents(const sf::Event &event)
         return;
     }
 
-    if (event.type != sf::Event::MouseButtonPressed || event.mouseButton.button != sf::Mouse::Left) return;
+    if (event.type != sf::Event::MouseButtonPressed || event.mouseButton.button != sf::Mouse::Left)
+        return;
 
     sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     float mx = worldPos.x, my = worldPos.y;
@@ -725,7 +838,7 @@ void Game::processCharSelectEvents(const sf::Event &event)
         {
             m_playerData = m_charList[i];
             m_hasCharacter = true;
-            m_playerData.save(PlayerData::makeSavePath(m_playerData.name));  // 更新存档
+            m_playerData.save(PlayerData::makeSavePath(m_playerData.name)); // 更新存档
             initMenu();
             m_state = GameState::Menu;
             return;
@@ -822,7 +935,7 @@ void Game::refreshShopTexts()
 
         sb.nameText.setString(LangManager::get(nameKeys[i]));
         sb.levelText.setString(std::wstring(LangManager::get(descKeys[i])) +
-            L"  [Lv" + std::to_wstring(lv) + L"/" + std::to_wstring(SHOP_MAX_LEVEL) + L"]");
+                               L"  [Lv" + std::to_wstring(lv) + L"/" + std::to_wstring(SHOP_MAX_LEVEL) + L"]");
 
         if (lv >= SHOP_MAX_LEVEL)
         {
@@ -833,7 +946,7 @@ void Game::refreshShopTexts()
         else
         {
             sb.costText.setString(std::to_wstring(cost) + L" " +
-                std::wstring(LangManager::get(TextKey::CharSelect_Gold)));
+                                  std::wstring(LangManager::get(TextKey::CharSelect_Gold)));
             bool canBuy = m_playerData.totalGold >= cost;
             sb.buyBtn.setFillColor(canBuy ? sf::Color(40, 100, 40) : sf::Color(60, 40, 40));
             sb.buyLabel.setString(LangManager::get(TextKey::Shop_Buy));
@@ -898,7 +1011,8 @@ void Game::processShopEvents(const sf::Event &event)
         }
         return;
     }
-    if (event.type != sf::Event::MouseButtonPressed || event.mouseButton.button != sf::Mouse::Left) return;
+    if (event.type != sf::Event::MouseButtonPressed || event.mouseButton.button != sf::Mouse::Left)
+        return;
 
     sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     float mx = worldPos.x, my = worldPos.y;
@@ -1017,14 +1131,22 @@ void Game::processCustomSetupEvents(const sf::Event &event)
 {
     CustomParams params;
     int result = m_customScreen.update(event, m_window, params);
-    if (result == 1) {
+    if (result == 1)
+    {
         LevelConfig cfg;
-        cfg.mapFile = "assets/maps/grassland/1-1.txt"; cfg.biome = Biome::Grassland;
-        cfg.startGold = params.startGold; cfg.startLives = params.startLives;
-        cfg.waveCount = params.waves; cfg.baseEnemies = params.enemiesPerWave;
-        cfg.speedMul = params.speedMul; cfg.hpMul = params.hpMul; cfg.id = "custom";
+        cfg.mapFile = "assets/maps/grassland/1-1.txt";
+        cfg.biome = Biome::Grassland;
+        cfg.startGold = params.startGold;
+        cfg.startLives = params.startLives;
+        cfg.waveCount = params.waves;
+        cfg.baseEnemies = params.enemiesPerWave;
+        cfg.speedMul = params.speedMul;
+        cfg.hpMul = params.hpMul;
+        cfg.id = "custom";
         newGame(cfg);
-    } else if (result == 2) {
+    }
+    else if (result == 2)
+    {
         m_state = GameState::Menu;
     }
 }

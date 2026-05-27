@@ -32,6 +32,8 @@ Game::Game()
     refreshCharList();
     // 初始化确认对话框UI
     buildConfirmUI();
+    // 初始化暂停菜单
+    buildPauseMenu();
 }
 
 void Game::run()
@@ -158,7 +160,10 @@ void Game::processEvents()
         case GameState::Menu:           processMenuEvents(event); break;
         case GameState::Settings:
             processSettingsEvents(event);
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) m_state = GameState::Menu;
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+                m_state = m_stateBeforeSettings;
+                m_stateBeforeSettings = GameState::Menu;
+            }
             break;
         case GameState::CampaignSelect:
             processCampaignEvents(event);

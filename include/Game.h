@@ -109,10 +109,24 @@ private:
     void spawnBoss();
     void clearLevel();
 
+    // ---- 暂停菜单 ----
+    bool m_paused = false;
+    struct PauseButton {
+        sf::RectangleShape bg;
+        sf::Text label;
+        bool hovered = false;
+    };
+    std::vector<PauseButton> m_pauseButtons;
+    sf::Text m_pauseTitle;
+    void buildPauseMenu();
+    void renderPauseMenu();
+    void processPauseEvents(const sf::Event &event);
+
     // ---- data ----
     sf::RenderWindow m_window;
     sf::View m_view;
     GameState m_state;
+    GameState m_stateBeforeSettings = GameState::Menu;  // 记录进入设置前的状态
 
     Map m_map;
     UI m_ui;
