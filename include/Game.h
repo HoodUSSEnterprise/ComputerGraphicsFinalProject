@@ -85,6 +85,20 @@ private:
     void hidePopup();
     void drawPopup();
 
+    // ---- 作弊码系统（罪恶都市风格） ----
+    char m_cheatBuffer[CheatCode::BUFFER_SIZE] = {};
+    int  m_cheatBufLen = 0;
+    bool m_infiniteGold   = false;
+    bool m_infiniteDamage = false;
+    sf::Clock m_cheatMsgClock;
+    sf::Text  m_cheatMsgText;
+    void processCheatInput(sf::Uint32 unicode);
+    void activateCheat(const std::string &code);
+    void clearCheatBuffer();
+    void killAllEnemies();
+    void spawnBoss();
+    void clearLevel();
+
     // ---- data ----
     sf::RenderWindow m_window;
     sf::View m_view;

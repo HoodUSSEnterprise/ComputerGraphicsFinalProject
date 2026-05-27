@@ -66,6 +66,10 @@ void Game::newGame(const LevelConfig &cfg)
     m_selectedTowerType = TowerType::Arrow;
     m_state = GameState::Playing;
     hidePopup();
+    // 重置作弊状态
+    m_infiniteGold = false;
+    m_infiniteDamage = false;
+    clearCheatBuffer();
 }
 
 void Game::saveGame()
