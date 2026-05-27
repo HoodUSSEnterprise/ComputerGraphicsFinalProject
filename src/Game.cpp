@@ -66,7 +66,6 @@ void Game::newGame(const LevelConfig &cfg)
     m_towers.clear();
     m_enemies.clear();
     m_projectiles.clear();
-    m_map = Map();
     m_map.loadFromFile(cfg.mapFile.c_str());
     static const char *biomeNames[] = {"grassland", "desert", "hell", "community"};
     int bIdx = static_cast<int>(cfg.biome);
@@ -75,6 +74,7 @@ void Game::newGame(const LevelConfig &cfg)
         m_map.loadBiomeTextures(biomeNames[bIdx]);
     }
     m_map.loadEndTextures();
+    m_map.loadTreasureTextures();
 
     // 应用商店加成
     applyShopBonuses(cfg, m_gold, m_lives);
@@ -132,7 +132,6 @@ bool Game::loadGame()
     size_t towerCount;
     file >> towerCount;
     m_towers.clear();
-    m_map = Map();
     for (size_t i = 0; i < towerCount; ++i)
     {
         int type;

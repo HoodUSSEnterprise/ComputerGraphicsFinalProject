@@ -7,8 +7,6 @@
 Map::Map()
 {
     m_tileShape.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-    m_groundSprite.setTextureRect({0, 0, TILE_SIZE, TILE_SIZE});
-    m_endSprite.setTextureRect({0, 0, TILE_SIZE, TILE_SIZE});
 }
 
 void Map::loadBiomeTextures(const std::string &biome)
@@ -28,9 +26,8 @@ void Map::loadBiomeTextures(const std::string &biome)
     m_hasTexture = m_groundTex.loadFromFile(path);
     if (m_hasTexture)
     {
-        m_groundTex.setRepeated(true);  // 16x16 纹理在 64x64 格子上重复
-        m_groundSprite.setTexture(m_groundTex);
-        m_groundSprite.setTextureRect({0, 0, TILE_SIZE, TILE_SIZE});
+        m_groundTex.setRepeated(true);
+        m_groundSprite = sf::Sprite(m_groundTex, sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
         std::cout << "[Map] Ground texture loaded: " << path
                   << " (" << m_groundTex.getSize().x << "x" << m_groundTex.getSize().y << ")" << std::endl;
     }
@@ -44,14 +41,33 @@ void Map::loadEndTextures()
 {
     if (m_endTex.loadFromFile("textures/endpoint.png"))
     {
-        m_endSprite.setTexture(m_endTex);
-        m_endSprite.setTextureRect({0, 0, TILE_SIZE, TILE_SIZE});
+        m_endSprite = sf::Sprite(m_endTex, sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
         std::cout << "[Map] endpoint.png loaded: "
                   << m_endTex.getSize().x << "x" << m_endTex.getSize().y << std::endl;
     }
     else
     {
         std::cerr << "[Map] endpoint.png FAILED to load" << std::endl;
+    }
+}
+
+void Map::loadTreasureTextures()
+{
+    const char *paths[] = {"textures/Treasure1.png", "textures/Treasure2.png", "textures/Treasure3.png"};
+    m_treasureCount = 0;
+    for (int i = 0; i < 3; ++i)
+    {
+        if (m_treasureTex[i].loadFromFile(paths[i]))
+        {
+            m_treasureSprites[i] = sf::Sprite(m_treasureTex[i]);
+            m_treasureCount++;
+            std::cout << "[Map] " << paths[i] << " loaded: "
+                      << m_treasureTex[i].getSize().x << "x" << m_treasureTex[i].getSize().y << std::endl;
+        }
+        else
+        {
+            std::cerr << "[Map] " << paths[i] << " FAILED to load" << std::endl;
+        }
     }
 }
 
@@ -163,10 +179,29 @@ void Map::draw(sf::RenderWindow &window) const
                 break;
 
             case TileType::Blocked:
-                m_tileShape.setPosition(x, y);
-                m_tileShape.setTexture(nullptr);
-                m_tileShape.setFillColor(sf::Color::Black);
-                window.draw(m_tileShape);
+                if (m_treasureCount > 0)
+                {
+                    // 伪随机：~30%概率显示宝藏，用坐标哈希选三张之一
+                    int seed = (c * 1337 + r * 7331) % 100;
+                    if (seed < 30)
+                    {
+                        int pick = (c * 7 + r * 13) % m_treasureCount;
+                        auto &spr = m_treasureSprites[pick];
+                        auto tsz = m_treasureTex[pick].getSize();
+                        float scale = TILE_SIZE * 0.7f / std::max(tsz.x, tsz.y);
+                        spr.setOrigin(tsz.x / 2.0f, tsz.y / 2.0f);
+                        spr.setScale(scale, scale);
+                        spr.setPosition(x + TILE_SIZE / 2.0f, y + TILE_SIZE / 2.0f);
+                        window.draw(spr);
+                    }
+                }
+                else
+                {
+                    m_tileShape.setPosition(x, y);
+                    m_tileShape.setTexture(nullptr);
+                    m_tileShape.setFillColor(sf::Color::Black);
+                    window.draw(m_tileShape);
+                }
                 break;
             }
         }
