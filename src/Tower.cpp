@@ -79,7 +79,9 @@ void Tower::applyStats()
     {
         m_sprite.setTexture(s_textures[t][lv]);
         auto sz = s_textures[t][lv].getSize();
-        float scale = TILE_SIZE * 0.85f / std::max(sz.x, sz.y);
+        float sx = TILE_SIZE * 0.85f / sz.x;
+        float sy = TILE_SIZE * 0.85f / sz.y;
+        float scale = std::min(sx, sy);  // 用较小缩放保证不截断
         m_sprite.setOrigin(sz.x / 2.0f, sz.y / 2.0f);
         m_sprite.setScale(scale, scale);
         m_sprite.setPosition(m_position);
@@ -95,6 +97,8 @@ void Tower::update(float dt)
 void Tower::draw(sf::RenderWindow &window) const
 {
     window.draw(m_rangeIndicator);
+    if (m_stats.type != TowerType::Ice)
+        m_sprite.setRotation(m_targetAngle);
     window.draw(m_sprite);
 }
 

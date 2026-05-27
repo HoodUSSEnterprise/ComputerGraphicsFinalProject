@@ -263,6 +263,12 @@ void Game::towerFindTargets()
             float range = tower->getRange() * rangeMul;
             if (dist <= range)
             {
+                if (tower->getType() != TowerType::Ice)
+                {
+                    float adx = tpos.x - tower->getPosition().x;
+                    float ady = tpos.y - tower->getPosition().y;
+                    tower->setTargetAngle(std::atan2(ady, adx) * 180.0f / 3.14159265f + 90.0f);
+                }
                 m_projectiles.push_back(std::make_shared<Projectile>(
                     tower->getPosition(), tpos + sf::Vector2f(0, TILE_SIZE/2),
                     tower->getDamage() * dmgMul, 400.0f, tower->getType()));
@@ -286,6 +292,14 @@ void Game::towerFindTargets()
         }
         if (bestTarget)
         {
+            // 计算炮口朝向角度（Ice除外）
+            if (tower->getType() != TowerType::Ice)
+            {
+                float dx = bestTarget->getPosition().x - tower->getPosition().x;
+                float dy = bestTarget->getPosition().y - tower->getPosition().y;
+                float angle = std::atan2(dy, dx) * 180.0f / 3.14159265f + 90.0f;
+                tower->setTargetAngle(angle);
+            }
             m_projectiles.push_back(std::make_shared<Projectile>(
                 tower->getPosition(), bestTarget, tower->getDamage() * dmgMul, 300.0f, tower->getType()));
             tower->resetFireTimer();

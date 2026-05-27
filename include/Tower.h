@@ -40,6 +40,7 @@ public:
     int getCost() const { return m_stats.cost; }
     float getFireTimer() const { return m_fireTimer; }
     float getFireCooldown() const { return 1.0f / m_stats.fireRate; }
+    void setTargetAngle(float angle) { m_targetAngle = angle; }
 
     // 升级系统
     int  getLevel() const { return m_level; }
@@ -60,8 +61,9 @@ private:
     static sf::Texture s_textures[3][3];  // [type][level-1]
     static bool s_texturesLoaded;
 
-    sf::Sprite m_sprite;
+    mutable sf::Sprite m_sprite;
     sf::CircleShape m_rangeIndicator;
+    mutable float m_targetAngle = 0;
 
     void applyStats();
 };
