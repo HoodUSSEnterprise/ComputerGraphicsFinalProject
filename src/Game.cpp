@@ -21,6 +21,7 @@ Game::Game()
     initMenu();
     initSettings();
     Enemy::loadTextures();
+    Tower::loadTextures();
     m_buttonTex.loadFromFile("textures/button.png");
     m_arrowLeftTex.loadFromFile("textures/ArrowLeft.png");
     m_arrowRightTex.loadFromFile("textures/ArrowRight.png");

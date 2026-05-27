@@ -49,6 +49,7 @@ public:
     void upgrade();
 
     static TowerStats getStats(TowerType type, int level = 1);
+    static void loadTextures();
 
 private:
     TowerStats m_stats;
@@ -56,9 +57,11 @@ private:
     float m_fireTimer;
     int m_level = 1;
 
-    sf::CircleShape m_base;
+    static sf::Texture s_textures[3][3];  // [type][level-1]
+    static bool s_texturesLoaded;
+
+    sf::Sprite m_sprite;
     sf::CircleShape m_rangeIndicator;
-    sf::RectangleShape m_turret;
 
     void applyStats();
 };

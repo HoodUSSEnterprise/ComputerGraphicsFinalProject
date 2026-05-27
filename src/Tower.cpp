@@ -1,5 +1,26 @@
 #include "Tower.h"
 #include <cmath>
+#include <iostream>
+
+sf::Texture Tower::s_textures[3][3];
+bool Tower::s_texturesLoaded = false;
+
+void Tower::loadTextures()
+{
+    const char *names[] = {"Arrow", "Cannon", "Ice"};
+    for (int t = 0; t < 3; ++t)
+    {
+        for (int lv = 1; lv <= 3; ++lv)
+        {
+            std::string path = "textures/" + std::string(names[t]) + "_level" + std::to_string(lv) + ".png";
+            if (s_textures[t][lv - 1].loadFromFile(path))
+                std::cout << "[Tower] " << path << " loaded" << std::endl;
+            else
+                std::cerr << "[Tower] " << path << " FAILED" << std::endl;
+        }
+    }
+    s_texturesLoaded = true;
+}
 
 TowerStats Tower::getStats(TowerType type, int level)
 {
@@ -52,32 +73,29 @@ Tower::Tower(TowerType type, sf::Vector2f position)
 
 void Tower::applyStats()
 {
-    m_base.setRadius(TILE_SIZE / 3.0f);
-    m_base.setOrigin(TILE_SIZE / 3.0f, TILE_SIZE / 3.0f);
-    m_base.setPosition(m_position);
-    m_base.setFillColor(m_stats.color);
-    m_base.setOutlineColor(sf::Color::White);
-    m_base.setOutlineThickness(2);
-
-    m_turret.setSize(sf::Vector2f(6, TILE_SIZE / 3.0f));
-    m_turret.setOrigin(3, TILE_SIZE / 3.0f);
-    m_turret.setPosition(m_position);
-    m_turret.setFillColor(sf::Color(50, 50, 50));
+    int t = static_cast<int>(m_stats.type);
+    int lv = m_level - 1;
+    if (s_texturesLoaded && s_textures[t][lv].getSize().x > 0)
+    {
+        m_sprite.setTexture(s_textures[t][lv]);
+        auto sz = s_textures[t][lv].getSize();
+        float scale = TILE_SIZE * 0.85f / std::max(sz.x, sz.y);
+        m_sprite.setOrigin(sz.x / 2.0f, sz.y / 2.0f);
+        m_sprite.setScale(scale, scale);
+        m_sprite.setPosition(m_position);
+    }
 }
 
 void Tower::update(float dt)
 {
     if (m_fireTimer > 0)
-    {
         m_fireTimer -= dt;
-    }
 }
 
 void Tower::draw(sf::RenderWindow &window) const
 {
     window.draw(m_rangeIndicator);
-    window.draw(m_base);
-    window.draw(m_turret);
+    window.draw(m_sprite);
 }
 
 bool Tower::canFire() const
@@ -93,5 +111,5 @@ void Tower::resetFireTimer()
 void Tower::applyFireRateBoost(float mult)
 {
     if (mult > 1.0f && m_fireTimer > 0)
-        m_fireTimer /= mult;  // 减少冷却时间
+        m_fireTimer /= mult;
 }
