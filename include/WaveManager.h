@@ -35,6 +35,9 @@ public:
     // 自定义模式：根据参数生成波次
     void setCustomWaves(int waveCount, int enemiesPerWave, float speedMul, float hpMul);
 
+    // 作弊：跳到最后一波
+    void skipToLastWave();
+
 private:
     std::vector<WaveData> m_waves;
     int m_currentWave;

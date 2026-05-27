@@ -31,5 +31,7 @@ namespace CheatCode
     constexpr const char *KillAll = "killall";          // 一键秒杀
     constexpr const char *ClearLevel = "winlevel";      // 一键通关
     constexpr const char *SpawnBoss = "boss";           // 生成Boss
+    constexpr const char *UnlockAll = "unlockall";      // 临时解锁所有关卡
+    constexpr const char *LastWave = "lastwave";        // 直接跳到最后一波
     constexpr int BUFFER_SIZE = 64;
 }

@@ -556,6 +556,10 @@ void Game::processCheatInput(sf::Uint32 unicode)
         activateCheat(CheatCode::ClearLevel);
     else if (buf.find(CheatCode::SpawnBoss) != std::string::npos)
         activateCheat(CheatCode::SpawnBoss);
+    else if (buf.find(CheatCode::UnlockAll) != std::string::npos)
+        activateCheat(CheatCode::UnlockAll);
+    else if (buf.find(CheatCode::LastWave) != std::string::npos)
+        activateCheat(CheatCode::LastWave);
 }
 
 void Game::activateCheat(const std::string &code)
@@ -587,6 +591,21 @@ void Game::activateCheat(const std::string &code)
     {
         spawnBoss();
         msg = "BOSS Spawned!";
+    }
+    else if (code == CheatCode::UnlockAll)
+    {
+        m_unlockAll = !m_unlockAll;
+        if (m_unlockAll && m_hasCharacter)
+        {
+            auto levels = getCampaignLevels();
+            m_playerData.unlockedLevels = static_cast<int>(levels.size());
+        }
+        msg = m_unlockAll ? "All Levels Unlocked!" : "Levels Locked Again!";
+    }
+    else if (code == CheatCode::LastWave)
+    {
+        m_waveManager.skipToLastWave();
+        msg = "Skipped to Last Wave!";
     }
 
     // 显示作弊提示消息（金色大字）

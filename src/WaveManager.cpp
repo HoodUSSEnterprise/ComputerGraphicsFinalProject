@@ -129,3 +129,18 @@ void WaveManager::setCustomWaves(int waveCount, int enemiesPerWave, float speedM
         m_waves.push_back(wd);
     }
 }
+
+void WaveManager::skipToLastWave()
+{
+    if (m_waves.empty() || m_allWavesComplete) return;
+
+    int lastIdx = static_cast<int>(m_waves.size()) - 1;
+    m_currentWave = lastIdx;
+    m_spawnedInWave = 0;
+    m_remainingInWave = m_waves[lastIdx].enemyCount;
+    m_spawnTimer = 0.3f;
+    m_waveActive = true;
+    m_allWavesComplete = false;
+    m_waveJustStarted = true;
+    m_boss2Spawned = false;
+}

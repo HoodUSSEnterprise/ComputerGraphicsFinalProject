@@ -320,13 +320,15 @@ void Game::refreshAllTexts()
 void Game::processCampaignEvents(const sf::Event &event)
 {
     LevelConfig chosen;
-    if (m_campaignScreen.update(event, m_window, chosen, m_playerData.unlockedLevels))
+    int unlocked = m_unlockAll ? static_cast<int>(getCampaignLevels().size()) : m_playerData.unlockedLevels;
+    if (m_campaignScreen.update(event, m_window, chosen, unlocked))
         newGame(chosen);
 }
 
 void Game::renderCampaign()
 {
-    m_campaignScreen.draw(m_window, m_playerData.unlockedLevels);
+    int unlocked = m_unlockAll ? static_cast<int>(getCampaignLevels().size()) : m_playerData.unlockedLevels;
+    m_campaignScreen.draw(m_window, unlocked);
 }
 
 void Game::processCustomSetupEvents(const sf::Event &event)

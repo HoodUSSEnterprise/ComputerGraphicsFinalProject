@@ -100,6 +100,7 @@ private:
     int  m_cheatBufLen = 0;
     bool m_infiniteGold   = false;
     bool m_infiniteDamage = false;
+    bool m_unlockAll      = false;  // 临时解锁所有关卡
     sf::Clock m_cheatMsgClock;
     sf::Text  m_cheatMsgText;
     void processCheatInput(sf::Uint32 unicode);
