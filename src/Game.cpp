@@ -25,7 +25,8 @@ Game::Game()
     {
         m_bgm.setLoop(true);
         m_bgm.setVolume(m_volume);
-        if (m_bgmOn) m_bgm.play();
+        if (m_bgmOn)
+            m_bgm.play();
     }
     // 初始化角色选择界面
     buildCharSelectUI();
@@ -41,9 +42,11 @@ void Game::run()
     while (m_window.isOpen())
     {
         float dt = m_clock.restart().asSeconds();
-        if (dt > 0.1f) dt = 0.1f;
+        if (dt > 0.1f)
+            dt = 0.1f;
         processEvents();
-        if (m_state == GameState::Playing) update(dt);
+        if (m_state == GameState::Playing)
+            update(dt);
         render();
     }
 }
@@ -60,12 +63,17 @@ void Game::newGame()
 
 void Game::newGame(const LevelConfig &cfg)
 {
-    m_towers.clear(); m_enemies.clear(); m_projectiles.clear();
+    m_towers.clear();
+    m_enemies.clear();
+    m_projectiles.clear();
     m_map = Map();
     m_map.loadFromFile(cfg.mapFile.c_str());
     static const char *biomeNames[] = {"grassland", "desert", "hell", "community"};
     int bIdx = static_cast<int>(cfg.biome);
-    if (bIdx >= 0 && bIdx < 4) m_map.loadBiomeTextures(biomeNames[bIdx]);
+    if (bIdx >= 0 && bIdx < 4)
+    {
+        m_map.loadBiomeTextures(biomeNames[bIdx]);
+    }
     m_map.loadEndTextures();
 
     // 应用商店加成
@@ -97,10 +105,13 @@ void Game::newGame(const LevelConfig &cfg)
 void Game::saveGame()
 {
     std::ofstream file("save.dat");
-    if (!file) return;
-    file << m_gold << '\n' << m_lives << '\n'
+    if (!file)
+        return;
+    file << m_gold << '\n'
+         << m_lives << '\n'
          << static_cast<int>(m_selectedTowerType) << '\n'
-         << m_waveManager.getCurrentWave() << '\n' << m_towers.size() << '\n';
+         << m_waveManager.getCurrentWave() << '\n'
+         << m_towers.size() << '\n';
     for (const auto &t : m_towers)
         file << static_cast<int>(t->getType()) << ' ' << t->getPosition().x << ' ' << t->getPosition().y << '\n';
 }
@@ -108,23 +119,31 @@ void Game::saveGame()
 bool Game::loadGame()
 {
     std::ifstream file("save.dat");
-    if (!file) return false;
+    if (!file)
+        return false;
     int gold, lives, selType, wave;
     file >> gold >> lives >> selType >> wave;
-    m_gold = gold; m_lives = lives;
+    m_gold = gold;
+    m_lives = lives;
     m_selectedTowerType = static_cast<TowerType>(selType);
     m_waveManager = WaveManager();
-    for (int i = 0; i < wave; ++i) m_waveManager.startNextWave();
-    size_t towerCount; file >> towerCount;
-    m_towers.clear(); m_map = Map();
+    for (int i = 0; i < wave; ++i)
+        m_waveManager.startNextWave();
+    size_t towerCount;
+    file >> towerCount;
+    m_towers.clear();
+    m_map = Map();
     for (size_t i = 0; i < towerCount; ++i)
     {
-        int type; float x, y; file >> type >> x >> y;
+        int type;
+        float x, y;
+        file >> type >> x >> y;
         m_towers.push_back(std::make_shared<Tower>(static_cast<TowerType>(type), sf::Vector2f(x, y)));
         auto grid = m_map.worldToGrid(x, y);
         m_map.setTile(grid.x, grid.y, TileType::Blocked);
     }
-    m_enemies.clear(); m_projectiles.clear();
+    m_enemies.clear();
+    m_projectiles.clear();
     m_state = GameState::Playing;
     return true;
 }
@@ -152,37 +171,58 @@ void Game::processEvents()
     sf::Event event;
     while (m_window.pollEvent(event))
     {
-        if (event.type == sf::Event::Closed) { m_window.close(); return; }
-        if (event.type == sf::Event::Resized) { handleResize(); continue; }
+        if (event.type == sf::Event::Closed)
+        {
+            m_window.close();
+            return;
+        }
+        if (event.type == sf::Event::Resized)
+        {
+            handleResize();
+            continue;
+        }
         switch (m_state)
         {
-        case GameState::CharSelect:      processCharSelectEvents(event); break;
-        case GameState::Menu:           processMenuEvents(event); break;
+        case GameState::CharSelect:
+            processCharSelectEvents(event);
+            break;
+        case GameState::Menu:
+            processMenuEvents(event);
+            break;
         case GameState::Settings:
             processSettingsEvents(event);
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+            {
                 m_state = m_stateBeforeSettings;
                 m_stateBeforeSettings = GameState::Menu;
             }
             break;
         case GameState::CampaignSelect:
             processCampaignEvents(event);
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) m_state = GameState::Menu;
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                m_state = GameState::Menu;
             break;
         case GameState::CustomSetup:
             processCustomSetupEvents(event);
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) m_state = GameState::Menu;
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                m_state = GameState::Menu;
             break;
         case GameState::Shop:
             processShopEvents(event);
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) m_state = GameState::Menu;
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                m_state = GameState::Menu;
             break;
-        case GameState::Playing:        processPlayingEvents(event); break;
+        case GameState::Playing:
+            processPlayingEvents(event);
+            break;
         case GameState::GameOver:
         case GameState::GameWon:
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::R) newGame();
-                else if (event.key.code == sf::Keyboard::Escape) returnToMenu();
+            if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::R)
+                    newGame();
+                else if (event.key.code == sf::Keyboard::Escape)
+                    returnToMenu();
             }
             else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
@@ -190,23 +230,28 @@ void Game::processEvents()
                     sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
                 float mx = worldPos.x, my = worldPos.y;
 
-                // "下一关"按钮区域
+                // "下一关" / "返回主页" 按钮区域（适配中英文布局）
                 if (m_state == GameState::GameWon && m_hasCharacter && m_currentCampaignIndex >= 0)
                 {
                     auto levels = getCampaignLevels();
                     bool hasNext = (m_currentCampaignIndex + 1 < m_playerData.unlockedLevels &&
                                     m_currentCampaignIndex + 1 < static_cast<int>(levels.size()));
+                    bool zh = (LangManager::currentLangName() == "zh");
+                    float btnW = zh ? 180.0f : 160.0f;
+                    float gap = zh ? 20.0f : 10.0f;
 
-                    // 下一关按钮: x=W/2-170, y=H/2+5, w=160, h=44
-                    if (hasNext && mx >= WINDOW_WIDTH / 2.0f - 170 && mx <= WINDOW_WIDTH / 2.0f - 10 &&
+                    // 下一关按钮
+                    if (hasNext && mx >= WINDOW_WIDTH / 2.0f - btnW - gap / 2 &&
+                        mx <= WINDOW_WIDTH / 2.0f - gap / 2 &&
                         my >= WINDOW_HEIGHT / 2.0f + 5 && my <= WINDOW_HEIGHT / 2.0f + 49)
                     {
                         newGame(levels[m_currentCampaignIndex + 1]);
                         return;
                     }
 
-                    // 返回主页按钮: x=W/2+10, y=H/2+5, w=160, h=44
-                    if (mx >= WINDOW_WIDTH / 2.0f + 10 && mx <= WINDOW_WIDTH / 2.0f + 170 &&
+                    // 返回主页按钮
+                    if (mx >= WINDOW_WIDTH / 2.0f + gap / 2 &&
+                        mx <= WINDOW_WIDTH / 2.0f + btnW + gap / 2 &&
                         my >= WINDOW_HEIGHT / 2.0f + 5 && my <= WINDOW_HEIGHT / 2.0f + 49)
                     {
                         returnToMenu();
@@ -220,7 +265,8 @@ void Game::processEvents()
                 }
             }
             break;
-        default: break;
+        default:
+            break;
         }
     }
 }
@@ -232,8 +278,16 @@ void Game::handleResize()
     float viewW = WINDOW_WIDTH, viewH = WINDOW_HEIGHT + 100;
     float windowRatio = winW / winH, viewRatio = viewW / viewH;
     float vpW, vpH;
-    if (windowRatio > viewRatio) { vpH = viewH; vpW = vpH * windowRatio; }
-    else                         { vpW = viewW; vpH = vpW / windowRatio; }
+    if (windowRatio > viewRatio)
+    {
+        vpH = viewH;
+        vpW = vpH * windowRatio;
+    }
+    else
+    {
+        vpW = viewW;
+        vpH = vpW / windowRatio;
+    }
     m_view.setSize(vpW, vpH);
     m_view.setCenter(viewW / 2.0f, viewH / 2.0f);
 }
@@ -248,16 +302,34 @@ void Game::render()
     m_window.setView(m_view);
     switch (m_state)
     {
-    case GameState::CharSelect:      renderCharSelect(); break;
-    case GameState::Menu:           renderMenu(); break;
-    case GameState::Settings:       renderSettings(); break;
-    case GameState::CampaignSelect: renderCampaign(); break;
-    case GameState::CustomSetup:    renderCustomSetup(); break;
-    case GameState::Shop:           renderShop(); break;
-    case GameState::Playing:        renderPlaying(); break;
+    case GameState::CharSelect:
+        renderCharSelect();
+        break;
+    case GameState::Menu:
+        renderMenu();
+        break;
+    case GameState::Settings:
+        renderSettings();
+        break;
+    case GameState::CampaignSelect:
+        renderCampaign();
+        break;
+    case GameState::CustomSetup:
+        renderCustomSetup();
+        break;
+    case GameState::Shop:
+        renderShop();
+        break;
+    case GameState::Playing:
+        renderPlaying();
+        break;
     case GameState::GameOver:
-    case GameState::GameWon:        renderPlaying(); renderEndScreen(); break;
-    default: break;
+    case GameState::GameWon:
+        renderPlaying();
+        renderEndScreen();
+        break;
+    default:
+        break;
     }
     m_window.display();
 }

@@ -40,5 +40,7 @@ private:
     sf::Texture m_endTex;
     bool m_hasTexture = false;
 
-    mutable sf::RectangleShape m_tileShape;
+    mutable sf::Sprite m_groundSprite;
+    mutable sf::Sprite m_endSprite;
+    mutable sf::RectangleShape m_tileShape;  // 用于纯色格子（起点/阻挡等）
 };

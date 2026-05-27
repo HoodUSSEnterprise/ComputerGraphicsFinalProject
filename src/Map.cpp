@@ -7,40 +7,36 @@
 Map::Map()
 {
     m_tileShape.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+    m_groundSprite.setTextureRect({0, 0, TILE_SIZE, TILE_SIZE});
+    m_endSprite.setTextureRect({0, 0, TILE_SIZE, TILE_SIZE});
 }
 
 void Map::loadBiomeTextures(const std::string &biome)
 {
     std::string path;
     if (biome == "grassland")
-    {
         path = "textures/ground1.png";
-    }
     else if (biome == "desert")
-    {
         path = "textures/ground2.png";
-    }
     else if (biome == "hell")
-    {
         path = "textures/ground3.png";
-    }
     else if (biome == "community")
-    {
         path = "textures/ground1.png";
-    }
     else
-    {
         path = "textures/ground1.png";
-    }
 
     m_hasTexture = m_groundTex.loadFromFile(path);
     if (m_hasTexture)
     {
-        std::cout << "[Map] Texture loaded: " << path << std::endl;
+        m_groundTex.setRepeated(true);  // 16x16 纹理在 64x64 格子上重复
+        m_groundSprite.setTexture(m_groundTex);
+        m_groundSprite.setTextureRect({0, 0, TILE_SIZE, TILE_SIZE});
+        std::cout << "[Map] Ground texture loaded: " << path
+                  << " (" << m_groundTex.getSize().x << "x" << m_groundTex.getSize().y << ")" << std::endl;
     }
     else
     {
-        std::cerr << "[Map] Texture FAILED: " << path << std::endl;
+        std::cerr << "[Map] Ground texture FAILED: " << path << std::endl;
     }
 }
 
@@ -48,8 +44,10 @@ void Map::loadEndTextures()
 {
     if (m_endTex.loadFromFile("textures/endpoint.png"))
     {
-        sf::Vector2u sz = m_endTex.getSize();
-        std::cout << "[Map] endpoint.png loaded: " << sz.x << "x" << sz.y << std::endl;
+        m_endSprite.setTexture(m_endTex);
+        m_endSprite.setTextureRect({0, 0, TILE_SIZE, TILE_SIZE});
+        std::cout << "[Map] endpoint.png loaded: "
+                  << m_endTex.getSize().x << "x" << m_endTex.getSize().y << std::endl;
     }
     else
     {
@@ -116,52 +114,61 @@ void Map::draw(sf::RenderWindow &window) const
         {
             float x = static_cast<float>(c * TILE_SIZE);
             float y = static_cast<float>(r * TILE_SIZE);
-            m_tileShape.setPosition(x, y);
 
             switch (m_grid[c][r])
             {
             case TileType::Grass:
+                // 纯白底色（Grass 不可见纹理）
+                m_tileShape.setPosition(x, y);
                 m_tileShape.setTexture(nullptr);
                 m_tileShape.setFillColor(sf::Color::White);
+                window.draw(m_tileShape);
                 break;
+
             case TileType::Path:
                 if (m_hasTexture)
                 {
-                    m_tileShape.setTexture(&m_groundTex);
-                    m_tileShape.setTextureRect(sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
-                    m_tileShape.setFillColor(sf::Color(220, 220, 220));
+                    m_groundSprite.setPosition(x, y);
+                    window.draw(m_groundSprite);
                 }
                 else
                 {
+                    m_tileShape.setPosition(x, y);
                     m_tileShape.setTexture(nullptr);
                     m_tileShape.setFillColor(sf::Color(194, 178, 128));
+                    window.draw(m_tileShape);
                 }
                 break;
+
             case TileType::Start:
+                m_tileShape.setPosition(x, y);
                 m_tileShape.setTexture(nullptr);
                 m_tileShape.setFillColor(sf::Color(0, 200, 0));
+                window.draw(m_tileShape);
                 break;
+
             case TileType::End:
                 if (m_endTex.getSize().x > 0)
                 {
-                    m_tileShape.setTexture(&m_endTex);
-                    m_tileShape.setTextureRect(sf::IntRect(0, 0,
-                        static_cast<int>(m_endTex.getSize().x),
-                        static_cast<int>(m_endTex.getSize().y)));
-                    m_tileShape.setFillColor(sf::Color::White);
+                    m_endSprite.setPosition(x, y);
+                    window.draw(m_endSprite);
                 }
                 else
                 {
+                    m_tileShape.setPosition(x, y);
                     m_tileShape.setTexture(nullptr);
                     m_tileShape.setFillColor(sf::Color(200, 0, 0));
+                    window.draw(m_tileShape);
                 }
                 break;
+
             case TileType::Blocked:
+                m_tileShape.setPosition(x, y);
                 m_tileShape.setTexture(nullptr);
                 m_tileShape.setFillColor(sf::Color::Black);
+                window.draw(m_tileShape);
                 break;
             }
-            window.draw(m_tileShape);
         }
     }
 }

@@ -234,14 +234,17 @@ void Game::renderPlaying()
 
 void Game::renderEndScreen()
 {
+    bool zh = (LangManager::currentLangName() == "zh");
+
     // 半透明遮罩
     sf::RectangleShape overlay(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
     overlay.setFillColor(sf::Color(0, 0, 0, 180));
     m_window.draw(overlay);
 
     // 对话框背景
-    sf::RectangleShape dlgBg(sf::Vector2f(420, 240));
-    dlgBg.setPosition(WINDOW_WIDTH / 2.0f - 210, WINDOW_HEIGHT / 2.0f - 120);
+    float dlgW = zh ? 460.0f : 420.0f;
+    sf::RectangleShape dlgBg(sf::Vector2f(dlgW, 240));
+    dlgBg.setPosition(WINDOW_WIDTH / 2.0f - dlgW / 2, WINDOW_HEIGHT / 2.0f - 120);
     dlgBg.setFillColor(sf::Color(25, 25, 45));
     dlgBg.setOutlineColor(m_state == GameState::GameWon ? sf::Color(255, 215, 0) : sf::Color(255, 80, 80));
     dlgBg.setOutlineThickness(3);
@@ -250,7 +253,7 @@ void Game::renderEndScreen()
     // 标题
     sf::Text title;
     title.setFont(m_menuFont);
-    title.setCharacterSize(44);
+    title.setCharacterSize(zh ? 40 : 44);
     title.setStyle(sf::Text::Bold);
     if (m_state == GameState::GameWon)
     { title.setString(LangManager::get(TextKey::Victory)); title.setFillColor(sf::Color::Yellow); }
@@ -268,10 +271,13 @@ void Game::renderEndScreen()
         bool hasNext = (m_currentCampaignIndex + 1 < m_playerData.unlockedLevels &&
                         m_currentCampaignIndex + 1 < static_cast<int>(levels.size()));
 
+        float btnW = zh ? 180.0f : 160.0f;
+        float gap = zh ? 20.0f : 10.0f;
+
         // 下一关按钮
         {
-            sf::RectangleShape btn(sf::Vector2f(160, 44));
-            btn.setPosition(WINDOW_WIDTH / 2.0f - 170, WINDOW_HEIGHT / 2.0f + 5);
+            sf::RectangleShape btn(sf::Vector2f(btnW, 44));
+            btn.setPosition(WINDOW_WIDTH / 2.0f - btnW - gap / 2, WINDOW_HEIGHT / 2.0f + 5);
             btn.setFillColor(hasNext ? sf::Color(40, 100, 40) : sf::Color(50, 50, 50));
             btn.setOutlineColor(hasNext ? sf::Color(100, 200, 100) : sf::Color(80, 80, 80));
             btn.setOutlineThickness(2);
@@ -280,18 +286,18 @@ void Game::renderEndScreen()
             sf::Text btnText;
             btnText.setFont(m_menuFont);
             btnText.setString(LangManager::get(TextKey::NextLevel));
-            btnText.setCharacterSize(20);
+            btnText.setCharacterSize(zh ? 18 : 20);
             btnText.setFillColor(hasNext ? sf::Color::White : sf::Color(120, 120, 120));
             sf::FloatRect bb = btnText.getLocalBounds();
             btnText.setOrigin(bb.width / 2, bb.height / 2);
-            btnText.setPosition(WINDOW_WIDTH / 2.0f - 90, WINDOW_HEIGHT / 2.0f + 27);
+            btnText.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2 - gap / 2, WINDOW_HEIGHT / 2.0f + 27);
             m_window.draw(btnText);
         }
 
         // 返回主页按钮
         {
-            sf::RectangleShape btn(sf::Vector2f(160, 44));
-            btn.setPosition(WINDOW_WIDTH / 2.0f + 10, WINDOW_HEIGHT / 2.0f + 5);
+            sf::RectangleShape btn(sf::Vector2f(btnW, 44));
+            btn.setPosition(WINDOW_WIDTH / 2.0f + gap / 2, WINDOW_HEIGHT / 2.0f + 5);
             btn.setFillColor(sf::Color(50, 50, 70));
             btn.setOutlineColor(sf::Color(100, 100, 140));
             btn.setOutlineThickness(2);
@@ -300,20 +306,19 @@ void Game::renderEndScreen()
             sf::Text btnText;
             btnText.setFont(m_menuFont);
             btnText.setString(LangManager::get(TextKey::BackToMenu));
-            btnText.setCharacterSize(20);
+            btnText.setCharacterSize(zh ? 18 : 20);
             btnText.setFillColor(sf::Color::White);
             sf::FloatRect bb = btnText.getLocalBounds();
             btnText.setOrigin(bb.width / 2, bb.height / 2);
-            btnText.setPosition(WINDOW_WIDTH / 2.0f + 90, WINDOW_HEIGHT / 2.0f + 27);
+            btnText.setPosition(WINDOW_WIDTH / 2.0f + btnW / 2 + gap / 2, WINDOW_HEIGHT / 2.0f + 27);
             m_window.draw(btnText);
         }
     }
     else if (m_state == GameState::GameOver)
     {
-        // 失败时的提示
         sf::Text hint;
         hint.setFont(m_menuFont);
-        hint.setCharacterSize(22);
+        hint.setCharacterSize(zh ? 20 : 22);
         hint.setFillColor(sf::Color::White);
         hint.setString(std::wstring(LangManager::get(TextKey::PressR)) + L"    |    " + std::wstring(LangManager::get(TextKey::EscToMenu)));
         sf::FloatRect hb = hint.getLocalBounds();
@@ -323,10 +328,9 @@ void Game::renderEndScreen()
     }
     else
     {
-        // 自定义模式通关
         sf::Text hint;
         hint.setFont(m_menuFont);
-        hint.setCharacterSize(22);
+        hint.setCharacterSize(zh ? 20 : 22);
         hint.setFillColor(sf::Color::White);
         hint.setString(LangManager::get(TextKey::BackToMenu));
         sf::FloatRect hb = hint.getLocalBounds();
@@ -650,24 +654,27 @@ void Game::clearLevel()
 
 void Game::buildPauseMenu()
 {
+    bool zh = (LangManager::currentLangName() == "zh");
+
     m_pauseTitle.setFont(m_menuFont);
-    m_pauseTitle.setString(L"PAUSED");
-    m_pauseTitle.setCharacterSize(48);
+    m_pauseTitle.setString(zh ? L"暂停" : L"PAUSED");
+    m_pauseTitle.setCharacterSize(zh ? 44 : 48);
     m_pauseTitle.setFillColor(sf::Color(255, 215, 0));
     m_pauseTitle.setStyle(sf::Text::Bold);
 
     TextKey keys[] = {TextKey::ContinueGame, TextKey::Settings, TextKey::Exit};
+    float bw = zh ? 300.0f : 260.0f;
     m_pauseButtons.clear();
     for (int i = 0; i < 3; ++i)
     {
         PauseButton btn;
-        btn.bg.setSize(sf::Vector2f(260, 50));
+        btn.bg.setSize(sf::Vector2f(bw, 50));
         btn.bg.setFillColor(sf::Color(40, 40, 60));
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
         btn.bg.setOutlineThickness(2);
         btn.label.setFont(m_menuFont);
         btn.label.setString(LangManager::get(keys[i]));
-        btn.label.setCharacterSize(24);
+        btn.label.setCharacterSize(zh ? 22 : 24);
         btn.label.setFillColor(sf::Color::White);
         m_pauseButtons.push_back(btn);
     }
@@ -678,14 +685,17 @@ void Game::buildPauseMenu()
 
 void Game::renderPauseMenu()
 {
+    bool zh = (LangManager::currentLangName() == "zh");
+
     // 半透明遮罩
     sf::RectangleShape overlay(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
     overlay.setFillColor(sf::Color(0, 0, 0, 160));
     m_window.draw(overlay);
 
     // 对话框背景
-    sf::RectangleShape dlgBg(sf::Vector2f(360, 320));
-    dlgBg.setPosition(WINDOW_WIDTH / 2.0f - 180, WINDOW_HEIGHT / 2.0f - 160);
+    float dlgW = zh ? 380.0f : 360.0f;
+    sf::RectangleShape dlgBg(sf::Vector2f(dlgW, 320));
+    dlgBg.setPosition(WINDOW_WIDTH / 2.0f - dlgW / 2, WINDOW_HEIGHT / 2.0f - 160);
     dlgBg.setFillColor(sf::Color(20, 20, 40));
     dlgBg.setOutlineColor(sf::Color(255, 215, 0));
     dlgBg.setOutlineThickness(3);
@@ -701,7 +711,8 @@ void Game::renderPauseMenu()
     for (int i = 0; i < 3; ++i)
     {
         auto &btn = m_pauseButtons[i];
-        btn.bg.setOrigin(130, 25);
+        float bw = zh ? 300.0f : 260.0f;
+        btn.bg.setOrigin(bw / 2, 25);
         btn.bg.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f - 30 + i * 65.0f);
         m_window.draw(btn.bg);
 
@@ -714,7 +725,7 @@ void Game::renderPauseMenu()
     // 提示
     sf::Text hint;
     hint.setFont(m_menuFont);
-    hint.setString(L"ESC: " + std::wstring(LangManager::get(TextKey::ContinueGame)));
+    hint.setString(std::wstring(L"ESC: ") + LangManager::get(TextKey::ContinueGame));
     hint.setCharacterSize(14);
     hint.setFillColor(sf::Color(120, 120, 140));
     sf::FloatRect hb = hint.getLocalBounds();
