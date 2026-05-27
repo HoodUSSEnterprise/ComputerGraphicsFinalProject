@@ -237,9 +237,12 @@ void Map::draw(sf::RenderWindow &window) const
                         m_hpBarBg.setPosition(x + TILE_SIZE * 0.2f, y + TILE_SIZE - 8);
                         m_hpBar.setSize(sf::Vector2f(TILE_SIZE * 0.6f * hpRatio, 4));
                         m_hpBar.setPosition(x + TILE_SIZE * 0.2f, y + TILE_SIZE - 8);
-                        if (hpRatio > 0.5f) m_hpBar.setFillColor(sf::Color::Green);
-                        else if (hpRatio > 0.25f) m_hpBar.setFillColor(sf::Color::Yellow);
-                        else m_hpBar.setFillColor(sf::Color::Red);
+                        if (hpRatio > 0.5f)
+                            m_hpBar.setFillColor(sf::Color::Green);
+                        else if (hpRatio > 0.25f)
+                            m_hpBar.setFillColor(sf::Color::Yellow);
+                        else
+                            m_hpBar.setFillColor(sf::Color::Red);
                         window.draw(m_hpBarBg);
                         window.draw(m_hpBar);
                     }
@@ -278,7 +281,9 @@ sf::Vector2i Map::worldToGrid(float x, float y) const
 bool Map::canPlaceTower(int col, int row) const
 {
     if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS)
+    {
         return false;
+    }
     return m_grid[col][row] == TileType::Grass;
 }
 
@@ -289,7 +294,7 @@ bool Map::canPlaceTower(int col, int row) const
 void Map::initTreasureHP()
 {
     int golds[] = {50, 100, 150};
-    int hps[]   = {3, 5, 8};
+    int hps[] = {3, 5, 8};
 
     for (int r = 0; r < MAP_ROWS; ++r)
     {
@@ -312,44 +317,60 @@ void Map::initTreasureHP()
 
 bool Map::isTreasure(int col, int row) const
 {
-    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS) return false;
+    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS)
+    {
+        return false;
+    }
     return m_grid[col][row] == TileType::Blocked && m_treasureHP[col][row] > 0;
 }
 
 int Map::getTreasureHP(int col, int row) const
 {
-    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS) return 0;
+    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS)
+    {
+        return 0;
+    }
     return m_treasureHP[col][row];
 }
 
 int Map::getTreasureMaxHP(int col, int row) const
 {
-    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS) return 0;
+    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS)
+        return 0;
     return m_treasureMaxHP[col][row];
 }
 
 int Map::getTreasureGold(int col, int row) const
 {
-    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS) return 0;
+    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS)
+    {
+        return 0;
+    }
     int idx = m_treasureIndex[col][row];
-    if (idx < 0) return 0;
+    if (idx < 0)
+    {
+        return 0;
+    }
     int golds[] = {50, 100, 150};
     return golds[idx];
 }
 
 int Map::damageTreasure(int col, int row)
 {
-    if (!isTreasure(col, row)) return 0;
+    if (!isTreasure(col, row))
+    {
+        return 0;
+    }
 
     m_treasureHP[col][row]--;
-    m_treasureLastHit[col][row] = 0;  // 重置计时器
+    m_treasureLastHit[col][row] = 0; // 重置计时器
 
     if (m_treasureHP[col][row] <= 0)
     {
         int gold = getTreasureGold(col, row);
         m_grid[col][row] = TileType::Grass;
         m_treasureHP[col][row] = 0;
-        m_treasureLastHit[col][row] = 99;  // 销毁后不再显示
+        m_treasureLastHit[col][row] = 99; // 销毁后不再显示
         return gold;
     }
     return 0;
@@ -357,16 +378,25 @@ int Map::damageTreasure(int col, int row)
 
 bool Map::isTreasureShowingHP(int col, int row) const
 {
-    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS) return false;
+    if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS)
+    {
+        return false;
+    }
     return m_treasureHP[col][row] > 0 && m_treasureLastHit[col][row] < 3.0f;
 }
 
 void Map::updateTreasureTimers(float dt)
 {
     for (int r = 0; r < MAP_ROWS; ++r)
+    {
         for (int c = 0; c < MAP_COLS; ++c)
+        {
             if (m_treasureHP[c][r] > 0 && m_treasureLastHit[c][r] < 99)
+            {
                 m_treasureLastHit[c][r] += dt;
+            }
+        }
+    }
 }
 
 sf::Vector2f Map::getTreasureWorldPos(int col, int row) const

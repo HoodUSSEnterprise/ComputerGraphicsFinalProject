@@ -147,7 +147,8 @@ private:
     TowerType m_selectedTowerType;
     int m_gold;
     int m_lives;
-    int m_currentCampaignIndex = -1;  // 当前正在玩的战役关卡索引，-1=自定义
+    int m_currentCampaignIndex = -1;
+    float m_waveCountdown = 0;  // 下一波倒计时
 
     sf::Clock m_clock;
 
@@ -161,6 +162,7 @@ private:
     // ---- menu / settings UI ----
     sf::Font m_menuFont;
     sf::Texture m_buttonTex;
+    sf::Texture m_infoTex;
     sf::Texture m_arrowLeftTex;
     sf::Texture m_arrowRightTex;
     sf::Text m_titleText;

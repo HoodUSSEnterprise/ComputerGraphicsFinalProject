@@ -43,7 +43,7 @@ void Game::buildCharSelectUI()
 
     // 加载角色按钮
     m_loadCharBtn.setSize(sf::Vector2f(btnW, 44));
-    m_loadCharBtn.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2, 256);
+    m_loadCharBtn.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2, 290);
     m_loadCharBtn.setTexture(&m_buttonTex);
     m_loadCharBtn.setOutlineColor(sf::Color(100, 150, 200));
     m_loadCharBtn.setOutlineThickness(2);
@@ -69,22 +69,22 @@ void Game::refreshCharList()
     m_charList = PlayerData::listCharacters("saves");
     m_charButtons.clear();
 
-    float y = 310.0f;
+    float y = 160.0f;
     for (size_t i = 0; i < m_charList.size(); ++i)
     {
         CharButton cb;
-        cb.bg.setSize(sf::Vector2f(400, 50));
-        cb.bg.setPosition(WINDOW_WIDTH / 2.0f - 200, y);
-        cb.bg.setFillColor(sf::Color(35, 35, 55));
-        cb.bg.setOutlineColor(sf::Color(70, 70, 100));
-        cb.bg.setOutlineThickness(1);
+        // 大卡片背景（information.png）
+        cb.bg.setSize(sf::Vector2f(560, 60));
+        cb.bg.setPosition(WINDOW_WIDTH / 2.0f - 280, y);
+        cb.bg.setTexture(&m_infoTex);
+        cb.bg.setOutlineThickness(0);
 
         std::string nm = m_charList[i].name;
         cb.nameText.setFont(m_menuFont);
         cb.nameText.setString(std::wstring(nm.begin(), nm.end()));
-        cb.nameText.setCharacterSize(18);
+        cb.nameText.setCharacterSize(20);
         cb.nameText.setFillColor(sf::Color(255, 215, 0));
-        cb.nameText.setPosition(WINDOW_WIDTH / 2.0f - 190, y + 4);
+        cb.nameText.setPosition(WINDOW_WIDTH / 2.0f - 265, y + 6);
 
         std::string info = std::to_string(m_charList[i].unlockedLevels) + "/11 " +
                            std::string(LangManager::get(TextKey::CharSelect_Progress).begin(),
@@ -94,12 +94,12 @@ void Game::refreshCharList()
                                        LangManager::get(TextKey::CharSelect_Gold).end());
         cb.infoText.setFont(m_menuFont);
         cb.infoText.setString(std::wstring(info.begin(), info.end()));
-        cb.infoText.setCharacterSize(14);
-        cb.infoText.setFillColor(sf::Color(180, 180, 200));
-        cb.infoText.setPosition(WINDOW_WIDTH / 2.0f - 190, y + 26);
+        cb.infoText.setCharacterSize(15);
+        cb.infoText.setFillColor(sf::Color(160, 180, 200));
+        cb.infoText.setPosition(WINDOW_WIDTH / 2.0f - 265, y + 32);
 
         m_charButtons.push_back(cb);
-        y += 56.0f;
+        y += 72.0f;
     }
 
     m_charHintText.setString(
@@ -109,7 +109,7 @@ void Game::refreshCharList()
     sf::FloatRect hb = m_charHintText.getLocalBounds();
     m_charHintText.setOrigin(hb.width / 2, hb.height / 2);
     m_charHintText.setPosition(WINDOW_WIDTH / 2.0f,
-                               m_charList.empty() ? 400.0f : y + 20);
+                               m_charList.empty() ? 350.0f : y + 20);
 }
 
 void Game::renderCharSelect()
@@ -310,6 +310,7 @@ void Game::processCharSelectEvents(const sf::Event &event)
     if (m_loadCharBtn.getGlobalBounds().contains(mx, my))
     {
         m_showCharList = false;
+        loadMenuFont();   // 确保字体正确加载
         refreshCharList();
         m_state = GameState::CharLoad;
         return;
@@ -415,7 +416,7 @@ void Game::processCharLoadEvents(const sf::Event &event)
         {
             bool inside = m_charButtons[i].bg.getGlobalBounds().contains(mx, my);
             m_charButtons[i].hovered = inside;
-            m_charButtons[i].bg.setFillColor(inside ? sf::Color(55, 55, 90) : sf::Color(35, 35, 55));
+            m_charButtons[i].bg.setFillColor(inside ? sf::Color(255, 255, 255, 40) : sf::Color(255, 255, 255, 0));
         }
         return;
     }

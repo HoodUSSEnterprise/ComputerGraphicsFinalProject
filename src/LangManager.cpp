@@ -4,7 +4,7 @@
 #include <iostream>
 
 std::string LangManager::s_currentLang = "English";
-std::string LangManager::s_fontPath = "C:/Windows/Fonts/arial.ttf";
+std::string LangManager::s_fontPath = "fonts/arial.ttf";
 std::wstring LangManager::s_texts[static_cast<int>(TextKey::COUNT)];
 bool LangManager::s_loaded = false;
 

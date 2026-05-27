@@ -30,7 +30,10 @@ void Game::processPlayingEvents(const sf::Event &event)
         {
         case sf::Keyboard::Space:
             if (m_waveManager.canStartWave())
+            {
                 m_waveManager.startNextWave();
+                m_waveCountdown = 10.0f;
+            }
             break;
         case sf::Keyboard::Escape:
             m_paused = true;
@@ -58,6 +61,7 @@ void Game::processPlayingEvents(const sf::Event &event)
                 if (m_waveManager.canStartWave())
                 {
                     m_waveManager.startNextWave();
+                    m_waveCountdown = 10.0f;
                     int waveIdx = m_waveManager.getCurrentWave();
                     if (waveIdx > 1)
                         m_gold += 50 + (waveIdx - 1) * 10;
@@ -206,10 +210,24 @@ void Game::update(float dt)
         m_state = GameState::GameWon;
     }
 
+    // 波次倒计时（自动出怪）
+    if (m_waveManager.canStartWave())
+    {
+        if (m_waveCountdown <= 0)
+        {
+            m_waveManager.startNextWave();
+            m_waveCountdown = 10.0f;
+        }
+        else
+        {
+            m_waveCountdown -= dt;
+        }
+    }
+
     m_ui.update(dt, m_gold, m_lives,
                 m_waveManager.getCurrentWave(),
                 m_waveManager.getTotalWaves(),
-                m_selectedTowerType);
+                m_selectedTowerType, m_waveCountdown);
 
     if (m_lives <= 0)
         m_state = GameState::GameOver;

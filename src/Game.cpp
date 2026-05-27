@@ -14,15 +14,18 @@ Game::Game()
     m_window.setFramerateLimit(60);
     m_view = sf::View(sf::FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT + 100));
     m_window.setView(m_view);
-    LangManager::loadLanguage("assets/lang_en.json");
+    LangManager::loadLanguage("assets/lang_zh.json");
     m_ui.reloadFont();
+    m_campaignScreen.reloadFont();
     m_campaignScreen.refreshTexts();
+    m_customScreen.reloadFont();
     m_customScreen.refreshTexts();
     initMenu();
     initSettings();
     Enemy::loadTextures();
     Tower::loadTextures();
     m_buttonTex.loadFromFile("textures/button.png");
+    m_infoTex.loadFromFile("textures/information.png");
     m_arrowLeftTex.loadFromFile("textures/ArrowLeft.png");
     m_arrowRightTex.loadFromFile("textures/ArrowRight.png");
     if (m_bgm.openFromFile("sound/bgm.mp3"))
@@ -94,6 +97,7 @@ void Game::newGame(const LevelConfig &cfg)
     m_infiniteGold = false;
     m_infiniteDamage = false;
     clearCheatBuffer();
+    m_waveCountdown = 10.0f;  // 第一波10秒倒计时
 
     // 记录当前战役关卡索引（用于通关后解锁下一关）
     auto levels = getCampaignLevels();

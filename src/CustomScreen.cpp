@@ -12,11 +12,12 @@ CustomScreen::CustomScreen() : m_params()
 
 void CustomScreen::loadFont()
 {
-    std::vector<std::string> paths = {LangManager::getFontPath()};
     std::string lang = LangManager::currentLangName();
+    std::vector<std::string> paths;
     if (lang == "zh")
-        paths.push_back("fonts/simhei.ttf");
-    paths.push_back("fonts/arial.ttf");
+        paths = {"fonts/simhei.ttf", "fonts/arial.ttf"};
+    else
+        paths = {"fonts/arial.ttf"};
 
     for (const auto &p : paths)
     {

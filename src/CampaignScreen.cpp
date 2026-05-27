@@ -16,10 +16,12 @@ CampaignScreen::CampaignScreen()
 
 void CampaignScreen::loadFont()
 {
-    std::vector<std::string> paths = {LangManager::getFontPath()};
     std::string lang = LangManager::currentLangName();
-    if (lang == "zh") paths.push_back("fonts/simhei.ttf");
-    paths.push_back("fonts/arial.ttf");
+    std::vector<std::string> paths;
+    if (lang == "zh")
+        paths = {"fonts/simhei.ttf", "fonts/arial.ttf"};
+    else
+        paths = {"fonts/arial.ttf"};
     for (const auto &p : paths)
         if (m_font.loadFromFile(p)) { std::cout << "[Font] Campaign loaded: " << p << std::endl; break; }
 }

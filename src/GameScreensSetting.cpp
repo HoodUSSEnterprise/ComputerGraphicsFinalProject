@@ -63,7 +63,7 @@ void Game::buildSettingsUI()
         MenuButton btn;
         btn.bg.setSize(sf::Vector2f(280, 56));
         btn.bg.setOrigin(140, 28);
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 400);
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 470);
         btn.bg.setTexture(&m_buttonTex);
         btn.bg.setFillColor(sf::Color(200, 220, 255));
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
@@ -74,7 +74,7 @@ void Game::buildSettingsUI()
         btn.label.setFillColor(sf::Color::White);
         sf::FloatRect lb = btn.label.getLocalBounds();
         btn.label.setOrigin(lb.width / 2, lb.height / 2);
-        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 396);
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 466);
         btn.hovered = false;
         m_settingsButtons.push_back(btn);
     }
@@ -82,7 +82,7 @@ void Game::buildSettingsUI()
         MenuButton btn;
         btn.bg.setSize(sf::Vector2f(200, 50));
         btn.bg.setOrigin(100, 25);
-        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 520);
+        btn.bg.setPosition(WINDOW_WIDTH / 2.0f, 580);
         btn.bg.setTexture(&m_buttonTex);
         btn.bg.setFillColor(sf::Color(200, 200, 200));
         btn.bg.setOutlineColor(sf::Color(100, 100, 140));
@@ -93,7 +93,7 @@ void Game::buildSettingsUI()
         btn.label.setFillColor(sf::Color::White);
         sf::FloatRect lb = btn.label.getLocalBounds();
         btn.label.setOrigin(lb.width / 2, lb.height / 2);
-        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 516);
+        btn.label.setPosition(WINDOW_WIDTH / 2.0f, 576);
         btn.hovered = false;
         m_settingsButtons.push_back(btn);
     }
@@ -121,12 +121,12 @@ void Game::renderSettings()
     title.setOrigin(tb.width / 2, tb.height / 2);
     title.setPosition(WINDOW_WIDTH / 2.0f, 120);
     m_window.draw(title);
-    m_langLabel.setPosition(WINDOW_WIDTH / 2.0f - 130, 290);
-    m_langValue.setPosition(WINDOW_WIDTH / 2.0f - 30, 290);
+    m_langLabel.setPosition(WINDOW_WIDTH / 2.0f - 130, 280);
+    m_langValue.setPosition(WINDOW_WIDTH / 2.0f - 30, 280);
     m_window.draw(m_langLabel);
     m_window.draw(m_langValue);
 
-    float trackX = WINDOW_WIDTH / 2.0f - 150, trackY = 360;
+    float trackX = WINDOW_WIDTH / 2.0f - 150, trackY = 390;
     m_volTrack.setPosition(trackX, trackY);
     m_window.draw(m_volTrack);
     float knobX = trackX + (m_volume / 100.0f) * m_volTrack.getSize().x;
@@ -140,7 +140,7 @@ void Game::renderSettings()
     volLabel.setFillColor(sf::Color(180, 180, 200));
     sf::FloatRect vl = volLabel.getLocalBounds();
     volLabel.setOrigin(vl.width / 2, vl.height / 2);
-    volLabel.setPosition(WINDOW_WIDTH / 2.0f, 330);
+    volLabel.setPosition(WINDOW_WIDTH / 2.0f, 360);
     m_window.draw(volLabel);
     for (const auto &btn : m_settingsButtons)
     {

@@ -11,7 +11,7 @@ public:
     UI();
 
     void update(float dt, int gold, int lives, int currentWave,
-                int totalWaves, TowerType selectedTower);
+                int totalWaves, TowerType selectedTower, float waveCountdown);
     void draw(sf::RenderWindow &window) const;
 
     // 检查是否点击了 UI 面板

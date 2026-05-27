@@ -98,13 +98,23 @@ UI::UI() : m_messageTimer(0)
 }
 
 void UI::update(float dt, int gold, int lives, int currentWave,
-                int totalWaves, TowerType selectedTower)
+                int totalWaves, TowerType selectedTower, float waveCountdown)
 {
 
     // 更新文字
     m_goldText.setString(std::to_wstring(gold));
     m_livesText.setString(std::to_wstring(lives));
     m_waveText.setString(std::wstring(LangManager::get(TextKey::Wave)) + L": " + std::to_wstring(currentWave) + L" / " + std::to_wstring(totalWaves));
+
+    // 更新波次按钮：显示倒计时或"开始出怪"
+    if (waveCountdown > 0)
+    {
+        m_startWaveText.setString(std::to_wstring(static_cast<int>(waveCountdown + 0.999f)) + L"s");
+    }
+    else
+    {
+        m_startWaveText.setString(LangManager::get(TextKey::StartWave));
+    }
 
     // 更新消息
     if (m_messageTimer > 0)
