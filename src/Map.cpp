@@ -41,13 +41,35 @@ void Map::loadEndTextures()
 {
     if (m_endTex.loadFromFile("textures/endpoint.png"))
     {
-        m_endSprite = sf::Sprite(m_endTex, sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
+        m_endSprite = sf::Sprite(m_endTex);
+        auto sz = m_endTex.getSize();
+        float scale = TILE_SIZE * 0.9f / std::max(sz.x, sz.y);
+        m_endSprite.setOrigin(sz.x / 2.0f, sz.y / 2.0f);
+        m_endSprite.setScale(scale, scale);
         std::cout << "[Map] endpoint.png loaded: "
-                  << m_endTex.getSize().x << "x" << m_endTex.getSize().y << std::endl;
+                  << sz.x << "x" << sz.y << std::endl;
     }
     else
     {
         std::cerr << "[Map] endpoint.png FAILED to load" << std::endl;
+    }
+}
+
+void Map::loadBirthTexture()
+{
+    if (m_birthTex.loadFromFile("textures/birth.png"))
+    {
+        m_birthSprite = sf::Sprite(m_birthTex);
+        auto sz = m_birthTex.getSize();
+        float scale = TILE_SIZE * 0.9f / std::max(sz.x, sz.y);
+        m_birthSprite.setOrigin(sz.x / 2.0f, sz.y / 2.0f);
+        m_birthSprite.setScale(scale, scale);
+        std::cout << "[Map] birth.png loaded: "
+                  << sz.x << "x" << sz.y << std::endl;
+    }
+    else
+    {
+        std::cerr << "[Map] birth.png FAILED to load" << std::endl;
     }
 }
 
@@ -157,24 +179,32 @@ void Map::draw(sf::RenderWindow &window) const
                 break;
 
             case TileType::Start:
-                m_tileShape.setPosition(x, y);
-                m_tileShape.setTexture(nullptr);
-                m_tileShape.setFillColor(sf::Color(0, 200, 0));
-                window.draw(m_tileShape);
+                // 先画地面纹理
+                if (m_hasTexture)
+                {
+                    m_groundSprite.setPosition(x, y);
+                    window.draw(m_groundSprite);
+                }
+                // 叠上出生点精灵
+                if (m_birthTex.getSize().x > 0)
+                {
+                    m_birthSprite.setPosition(x + TILE_SIZE / 2.0f, y + TILE_SIZE / 2.0f);
+                    window.draw(m_birthSprite);
+                }
                 break;
 
             case TileType::End:
+                // 先画地面纹理
+                if (m_hasTexture)
+                {
+                    m_groundSprite.setPosition(x, y);
+                    window.draw(m_groundSprite);
+                }
+                // 叠上终点精灵
                 if (m_endTex.getSize().x > 0)
                 {
-                    m_endSprite.setPosition(x, y);
+                    m_endSprite.setPosition(x + TILE_SIZE / 2.0f, y + TILE_SIZE / 2.0f);
                     window.draw(m_endSprite);
-                }
-                else
-                {
-                    m_tileShape.setPosition(x, y);
-                    m_tileShape.setTexture(nullptr);
-                    m_tileShape.setFillColor(sf::Color(200, 0, 0));
-                    window.draw(m_tileShape);
                 }
                 break;
 

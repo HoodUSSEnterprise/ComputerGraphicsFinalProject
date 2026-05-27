@@ -17,6 +17,7 @@ public:
     bool loadFromFile(const char *path);
     void loadBiomeTextures(const std::string &biome);
     void loadEndTextures();
+    void loadBirthTexture();
     void loadTreasureTextures();
 
     void draw(sf::RenderWindow &window) const;
@@ -39,12 +40,14 @@ private:
 
     sf::Texture m_groundTex;
     sf::Texture m_endTex;
+    sf::Texture m_birthTex;
     sf::Texture m_treasureTex[3];
     int m_treasureCount = 0;
     bool m_hasTexture = false;
 
     mutable sf::Sprite m_groundSprite;
     mutable sf::Sprite m_endSprite;
+    mutable sf::Sprite m_birthSprite;
     mutable sf::Sprite m_treasureSprites[3];
     mutable sf::RectangleShape m_tileShape;
 };

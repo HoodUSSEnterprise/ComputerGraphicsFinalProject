@@ -74,6 +74,7 @@ void Game::newGame(const LevelConfig &cfg)
         m_map.loadBiomeTextures(biomeNames[bIdx]);
     }
     m_map.loadEndTextures();
+    m_map.loadBirthTexture();
     m_map.loadTreasureTextures();
 
     // 应用商店加成
