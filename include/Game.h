@@ -20,7 +20,8 @@
 
 enum class GameState
 {
-    CharSelect,         // 角色选择/创建
+    CharSelect,         // 角色选择
+    CharCreate,         // 角色创建
     CharLoad,           // 加载已有角色
     Menu,               // 主菜单
     Settings,
@@ -54,6 +55,7 @@ private:
     void processEvents();
     void handleResize();
     void processCharSelectEvents(const sf::Event &event);
+    void processCharCreateEvents(const sf::Event &event);
     void processCharLoadEvents(const sf::Event &event);
     void processMenuEvents(const sf::Event &event);
     void processSettingsEvents(const sf::Event &event);
@@ -69,6 +71,7 @@ private:
     // ---- render ----
     void render();
     void renderCharSelect();
+    void renderCharCreate();
     void renderCharLoad();
     void renderMenu();
     void renderSettings();
@@ -244,6 +247,7 @@ private:
     sf::Text m_confirmCharBtnLabel;
     void refreshCharList();
     void buildCharSelectUI();
+    void buildCharCreateUI();
 
     // ---- 商店系统 ----
     struct ShopButton {
