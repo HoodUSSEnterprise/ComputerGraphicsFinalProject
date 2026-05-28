@@ -27,6 +27,7 @@ enum class GameState
     CampaignSelect,
     CustomSetup,
     Shop,               // 商店
+    MapEditor,          // 地图编辑器
     Playing,
     GameOver,
     GameWon
@@ -58,6 +59,7 @@ private:
     void processCampaignEvents(const sf::Event &event);
     void processCustomSetupEvents(const sf::Event &event);
     void processShopEvents(const sf::Event &event);
+    void processMapEditorEvents(const sf::Event &event);
     void processPlayingEvents(const sf::Event &event);
 
     // ---- update ----
@@ -72,6 +74,7 @@ private:
     void renderCampaign();
     void renderCustomSetup();
     void renderShop();
+    void renderMapEditor();
     void renderPlaying();
     void renderEndScreen();
     void renderConfirmDialog();    // 确认覆盖存档对话框
@@ -128,6 +131,21 @@ private:
     void buildPauseMenu();
     void renderPauseMenu();
     void processPauseEvents(const sf::Event &event);
+
+    // 地图编辑器
+    Map m_editMap;
+    TileType m_editTool = TileType::Path;
+    sf::Text m_editTitleText;
+    sf::Text m_editToolText;
+    struct EditToolBtn { sf::RectangleShape bg; sf::Text label; TileType type; };
+    std::vector<EditToolBtn> m_editToolBtns;
+    sf::RectangleShape m_editSaveBtn;
+    sf::Text m_editSaveLabel;
+    sf::RectangleShape m_editBackBtn;
+    sf::Text m_editBackLabel;
+    sf::Texture m_editKongTex;
+    sf::Sprite m_editKongSprite;
+    void buildMapEditorUI();
 
     // ---- data ----
     sf::RenderWindow m_window;

@@ -32,21 +32,21 @@ void Game::initMenu()
 
     // 按钮布局: 继续游戏/新游戏/商店/自定义/设置/退出
     TextKey btnKeys[] = {TextKey::ContinueGame, TextKey::NewGame, TextKey::Shop_Title,
-                         TextKey::CustomMode, TextKey::Settings, TextKey::Exit};
-    float bw = zh ? 320.0f : 280.0f;   // 中文按钮更宽
-    float startY = zh ? 260.0f : 275.0f;
-    float gap = zh ? 70.0f : 72.0f;
-    // 按钮颜色：绿/蓝/金/紫/灰/红
+                         TextKey::CustomMode, TextKey::Settings, TextKey::MapEditor, TextKey::Exit};
+    float bw = zh ? 320.0f : 280.0f;
+    float startY = zh ? 240.0f : 255.0f;
+    float gap = zh ? 62.0f : 64.0f;
     sf::Color btnColors[] = {
-        sf::Color(180, 255, 180),  // 继续游戏 - 绿
-        sf::Color(180, 200, 255),  // 新游戏   - 蓝
-        sf::Color(255, 230, 150),  // 商店     - 金
-        sf::Color(220, 180, 255),  // 自定义   - 紫
-        sf::Color(200, 200, 200),  // 设置     - 灰
-        sf::Color(255, 160, 160),  // 退出     - 红
+        sf::Color(180, 255, 180),  // 继续游戏
+        sf::Color(180, 200, 255),  // 新游戏
+        sf::Color(255, 230, 150),  // 商店
+        sf::Color(220, 180, 255),  // 自定义
+        sf::Color(200, 200, 200),  // 设置
+        sf::Color(255, 200, 150),  // 地图编辑器 - 橙
+        sf::Color(255, 160, 160),  // 退出
     };
     m_menuButtons.clear();
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 7; ++i)
     {
         MenuButton btn;
         btn.bg.setSize(sf::Vector2f(bw, 52));
@@ -280,7 +280,11 @@ void Game::processMenuEvents(const sf::Event &event)
         m_state = GameState::Settings;
         buildSettingsUI();
         break;
-    case 5:
+    case 5: // 地图编辑器
+        buildMapEditorUI();
+        m_state = GameState::MapEditor;
+        break;
+    case 6:
         m_window.close();
         break;
     default:

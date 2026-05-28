@@ -37,6 +37,7 @@ enum class TextKey
     BGM_On,
     BGM_Off,
     CustomMode,
+    MapEditor,
     CustomWaves,
     CustomEnemies,
     CustomGold,

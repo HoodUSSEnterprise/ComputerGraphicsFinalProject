@@ -270,6 +270,9 @@ void Game::processEvents()
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                 m_state = GameState::Menu;
             break;
+        case GameState::MapEditor:
+            processMapEditorEvents(event);
+            break;
         case GameState::Playing:
             processPlayingEvents(event);
             break;
@@ -380,6 +383,9 @@ void Game::render()
         break;
     case GameState::Shop:
         renderShop();
+        break;
+    case GameState::MapEditor:
+        renderMapEditor();
         break;
     case GameState::Playing:
         renderPlaying();
