@@ -157,13 +157,6 @@ void Game::renderMenu()
     sf::RectangleShape bg(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT + 100));
     bg.setFillColor(sf::Color(15, 15, 30, 180));
     m_window.draw(bg);
-    for (int i = 0; i < 10; ++i)
-    {
-        sf::RectangleShape line(sf::Vector2f(WINDOW_WIDTH, 2));
-        line.setFillColor(sf::Color(30, 30, 50));
-        line.setPosition(0, i * 80.0f);
-        m_window.draw(line);
-    }
 
     // 显示当前角色名
     if (m_hasCharacter)

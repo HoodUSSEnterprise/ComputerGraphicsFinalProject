@@ -122,6 +122,7 @@ void Game::newGame(const LevelConfig &cfg)
     if (bIdx >= 0 && bIdx < 4)
     {
         m_map.loadBiomeTextures(biomeNames[bIdx]);
+        m_map.loadKongTexture(biomeNames[bIdx]);
     }
     m_map.loadEndTextures();
     m_map.loadBirthTexture();

@@ -97,6 +97,28 @@ void Map::loadTreasureTextures()
     }
 }
 
+void Map::loadKongTexture(const std::string &biome)
+{
+    int idx = 1;
+    if (biome == "grassland") idx = 1;
+    else if (biome == "desert") idx = 2;
+    else if (biome == "hell") idx = 3;
+    else if (biome == "community") idx = 1;
+
+    std::string path = "textures/kong" + std::to_string(idx) + ".png";
+    m_hasKongTex = m_kongTex.loadFromFile(path);
+    if (m_hasKongTex)
+    {
+        m_kongTex.setRepeated(true);
+        m_kongSprite = sf::Sprite(m_kongTex, sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
+        std::cout << "[Map] " << path << " loaded" << std::endl;
+    }
+    else
+    {
+        std::cerr << "[Map] " << path << " FAILED" << std::endl;
+    }
+}
+
 bool Map::loadFromFile(const char *path)
 {
     FILE *fp = fopen(path, "r");
@@ -160,11 +182,18 @@ void Map::draw(sf::RenderWindow &window) const
             switch (m_grid[c][r])
             {
             case TileType::Grass:
-                // 纯白底色（Grass 不可见纹理）
-                m_tileShape.setPosition(x, y);
-                m_tileShape.setTexture(nullptr);
-                m_tileShape.setFillColor(sf::Color::White);
-                window.draw(m_tileShape);
+                if (m_hasKongTex)
+                {
+                    m_kongSprite.setPosition(x, y);
+                    window.draw(m_kongSprite);
+                }
+                else
+                {
+                    m_tileShape.setPosition(x, y);
+                    m_tileShape.setTexture(nullptr);
+                    m_tileShape.setFillColor(sf::Color::White);
+                    window.draw(m_tileShape);
+                }
                 break;
 
             case TileType::Path:
@@ -183,13 +212,11 @@ void Map::draw(sf::RenderWindow &window) const
                 break;
 
             case TileType::Start:
-                // 先画地面纹理
                 if (m_hasTexture)
                 {
                     m_groundSprite.setPosition(x, y);
                     window.draw(m_groundSprite);
                 }
-                // 叠上出生点精灵
                 if (m_birthTex.getSize().x > 0)
                 {
                     m_birthSprite.setPosition(x + TILE_SIZE / 2.0f, y + TILE_SIZE / 2.0f);
@@ -198,13 +225,11 @@ void Map::draw(sf::RenderWindow &window) const
                 break;
 
             case TileType::End:
-                // 先画地面纹理
                 if (m_hasTexture)
                 {
                     m_groundSprite.setPosition(x, y);
                     window.draw(m_groundSprite);
                 }
-                // 叠上终点精灵
                 if (m_endTex.getSize().x > 0)
                 {
                     m_endSprite.setPosition(x + TILE_SIZE / 2.0f, y + TILE_SIZE / 2.0f);
@@ -213,11 +238,11 @@ void Map::draw(sf::RenderWindow &window) const
                 break;
 
             case TileType::Blocked:
-                // 白色底色
-                m_tileShape.setPosition(x, y);
-                m_tileShape.setTexture(nullptr);
-                m_tileShape.setFillColor(sf::Color::White);
-                window.draw(m_tileShape);
+                if (m_hasKongTex)
+                {
+                    m_kongSprite.setPosition(x, y);
+                    window.draw(m_kongSprite);
+                }
                 // 叠上宝藏（有血量才画）
                 if (m_treasureCount > 0 && m_treasureHP[c][r] > 0)
                 {

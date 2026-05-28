@@ -19,6 +19,7 @@ public:
     void loadEndTextures();
     void loadBirthTexture();
     void loadTreasureTextures();
+    void loadKongTexture(const std::string &biome);
 
     void draw(sf::RenderWindow &window) const;
 
@@ -52,9 +53,11 @@ private:
     sf::Texture m_groundTex;
     sf::Texture m_endTex;
     sf::Texture m_birthTex;
+    sf::Texture m_kongTex;
     sf::Texture m_treasureTex[3];
     int m_treasureCount = 0;
     bool m_hasTexture = false;
+    bool m_hasKongTex = false;
 
     // 宝藏血量：每个格子独立
     int m_treasureHP[MAP_COLS][MAP_ROWS] = {};
@@ -65,6 +68,7 @@ private:
     mutable sf::Sprite m_groundSprite;
     mutable sf::Sprite m_endSprite;
     mutable sf::Sprite m_birthSprite;
+    mutable sf::Sprite m_kongSprite;
     mutable sf::Sprite m_treasureSprites[3];
     mutable sf::RectangleShape m_tileShape;
     mutable sf::RectangleShape m_hpBarBg;

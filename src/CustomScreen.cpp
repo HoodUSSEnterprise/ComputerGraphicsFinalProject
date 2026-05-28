@@ -364,14 +364,6 @@ void CustomScreen::draw(sf::RenderWindow &window) const
     bg.setFillColor(sf::Color(15, 15, 30, 180));
     window.draw(bg);
 
-    for (int i = 0; i < 10; ++i)
-    {
-        sf::RectangleShape line(sf::Vector2f(WINDOW_WIDTH, 2));
-        line.setFillColor(sf::Color(30, 30, 50));
-        line.setPosition(0, i * 80.0f);
-        window.draw(line);
-    }
-
     window.draw(m_titleText);
     for (const auto &btn : m_buttons)
     {
