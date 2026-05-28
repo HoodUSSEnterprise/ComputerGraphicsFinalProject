@@ -307,7 +307,7 @@ void Game::processMapEditorEvents(const sf::Event &event)
 
 // 调用bat/sh脚本
 #ifdef _WIN32
-        std::string cmd = "../tools/script/sync.bat " + name + ".txt";
+        std::string cmd = "..\\tools\\script\\sync.bat " + name + ".txt";
 #elif __APPLE__
         std::string cmd = "../tools/script/sync.sh " + name + ".txt";
 #elif __linux__
