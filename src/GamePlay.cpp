@@ -196,10 +196,13 @@ void Game::update(float dt)
             if (m_hasCharacter && m_currentCampaignIndex >= 0)
             {
                 m_playerData.totalGold += m_gold;
-                // 只有当前关卡是最后解锁的关卡时，才解锁下一关
+                // 只有当前关卡是最后解锁的关卡时，才解锁下一关（社区关卡不计入）
                 auto levels = getCampaignLevels();
                 int totalLevels = static_cast<int>(levels.size());
-                if (m_currentCampaignIndex + 1 == m_playerData.unlockedLevels &&
+                bool isCommunity = (m_currentCampaignIndex >= 0 && m_currentCampaignIndex < totalLevels &&
+                                    levels[m_currentCampaignIndex].biome == Biome::Community);
+                if (!isCommunity &&
+                    m_currentCampaignIndex + 1 == m_playerData.unlockedLevels &&
                     m_playerData.unlockedLevels < totalLevels)
                 {
                     m_playerData.unlockedLevels++;

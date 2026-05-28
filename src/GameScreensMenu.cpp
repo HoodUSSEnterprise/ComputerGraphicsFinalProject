@@ -34,16 +34,17 @@ void Game::initMenu()
     TextKey btnKeys[] = {TextKey::ContinueGame, TextKey::NewGame, TextKey::Shop_Title,
                          TextKey::CustomMode, TextKey::Settings, TextKey::MapEditor, TextKey::Exit};
     float bw = zh ? 320.0f : 280.0f;
-    float startY = zh ? 240.0f : 255.0f;
+    float startY = zh ? 245.0f : 260.0f;
     float gap = zh ? 62.0f : 64.0f;
+    // 按钮颜色
     sf::Color btnColors[] = {
-        sf::Color(180, 255, 180),  // 继续游戏
-        sf::Color(180, 200, 255),  // 新游戏
-        sf::Color(255, 230, 150),  // 商店
-        sf::Color(220, 180, 255),  // 自定义
-        sf::Color(200, 200, 200),  // 设置
-        sf::Color(255, 200, 150),  // 地图编辑器 - 橙
-        sf::Color(255, 160, 160),  // 退出
+        sf::Color(180, 255, 180),
+        sf::Color(180, 200, 255),
+        sf::Color(255, 230, 150),
+        sf::Color(220, 180, 255),
+        sf::Color(200, 200, 200),
+        sf::Color(180, 255, 220),
+        sf::Color(255, 160, 160),
     };
     m_menuButtons.clear();
     for (int i = 0; i < 7; ++i)
@@ -280,9 +281,8 @@ void Game::processMenuEvents(const sf::Event &event)
         m_state = GameState::Settings;
         buildSettingsUI();
         break;
-    case 5: // 地图编辑器
-        buildMapEditorUI();
-        m_state = GameState::MapEditor;
+    case 5:
+        enterMapEditor();
         break;
     case 6:
         m_window.close();

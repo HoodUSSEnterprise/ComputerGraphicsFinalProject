@@ -32,7 +32,6 @@
     "BGM_On": "开",
     "BGM_Off": "关",
     "CustomMode": "自定义模式",
-    "MapEditor": "地图编辑器",
     "CustomWaves": "波次数",
     "CustomEnemies": "每波敌人",
     "CustomGold": "初始金币",
@@ -110,5 +109,6 @@
     "Level_Complete": "已通关",
 
     "NextLevel": "下一关",
-    "BackToMenu": "返回主页"
+    "BackToMenu": "返回主页",
+    "MapEditor": "地图编辑器"
 }

@@ -46,7 +46,8 @@ private:
     void saveGame();
     bool loadGame();
     void returnToMenu();
-    void enterMenu();       // 从角色选择进入主菜单
+    void enterMenu();
+    void enterMapEditor();       // 从角色选择进入主菜单
     void applyShopBonuses(const LevelConfig &cfg, int &gold, int &lives) const;
 
     // ---- events ----
@@ -104,6 +105,12 @@ private:
     // 宝藏目标（点击后塔会攻击）
     sf::Vector2i m_treasureTarget = {-1, -1};
 
+    // 地图编辑器
+    TileType m_editGrid[MAP_COLS][MAP_ROWS] = {};
+    int m_editMode = 1;
+    std::wstring m_editorMsg;
+    mutable sf::RectangleShape m_tileShape;
+
     // ---- 作弊码系统（罪恶都市风格） ----
     char m_cheatBuffer[CheatCode::BUFFER_SIZE] = {};
     int  m_cheatBufLen = 0;
@@ -131,21 +138,6 @@ private:
     void buildPauseMenu();
     void renderPauseMenu();
     void processPauseEvents(const sf::Event &event);
-
-    // 地图编辑器
-    Map m_editMap;
-    TileType m_editTool = TileType::Path;
-    sf::Text m_editTitleText;
-    sf::Text m_editToolText;
-    struct EditToolBtn { sf::RectangleShape bg; sf::Text label; TileType type; };
-    std::vector<EditToolBtn> m_editToolBtns;
-    sf::RectangleShape m_editSaveBtn;
-    sf::Text m_editSaveLabel;
-    sf::RectangleShape m_editBackBtn;
-    sf::Text m_editBackLabel;
-    sf::Texture m_editKongTex;
-    sf::Sprite m_editKongSprite;
-    void buildMapEditorUI();
 
     // ---- data ----
     sf::RenderWindow m_window;

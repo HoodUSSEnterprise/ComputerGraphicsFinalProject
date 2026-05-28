@@ -3,11 +3,43 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include <filesystem>
 
 CustomScreen::CustomScreen() : m_params()
 {
     loadFont();
+    scanMaps();
     buildUI();
+}
+
+void CustomScreen::scanMaps()
+{
+    m_mapList.clear();
+    namespace fs = std::filesystem;
+    std::error_code ec;
+
+    auto addDir = [&](const std::string &dir) {
+        if (!fs::exists(dir, ec)) return;
+        for (const auto &entry : fs::directory_iterator(dir, ec))
+        {
+            if (!entry.is_regular_file()) continue;
+            if (entry.path().extension() == ".txt")
+                m_mapList.push_back(entry.path().string());
+        }
+    };
+
+    addDir("../assets/maps/grassland");
+    addDir("../assets/maps/desert");
+    addDir("../assets/maps/hell");
+    addDir("../assets/maps/community");
+    // 也扫描自定义编辑器地图
+    std::string customPath = "../assets/maps/custom_editor.txt";
+    if (fs::exists(customPath, ec))
+        m_mapList.push_back(customPath);
+
+    if (m_mapList.empty())
+        m_mapList.push_back("../assets/maps/grassland/1-1.txt");
+    m_params.mapFile = m_mapList[0];
 }
 
 void CustomScreen::loadFont()
@@ -38,6 +70,52 @@ void CustomScreen::buildUI()
     m_btnMinusTex.loadFromFile("textures/ButtonMinus.png");
     m_buttonTex.loadFromFile("textures/button.png");
 
+    // 地图选择行
+    {
+        float yPos = 140.0f;
+        // 标签
+        ParamButton labelBtn;
+        labelBtn.bg.setSize(sf::Vector2f(180, 40));
+        labelBtn.bg.setPosition(WINDOW_WIDTH / 2.0f - 300, yPos);
+        labelBtn.bg.setFillColor(sf::Color(40, 40, 55));
+        labelBtn.label.setFont(m_font);
+        labelBtn.label.setString("Map");
+        labelBtn.label.setCharacterSize(20);
+        labelBtn.label.setFillColor(sf::Color(180, 180, 200));
+        labelBtn.label.setPosition(WINDOW_WIDTH / 2.0f - 295, yPos + 6);
+        m_buttons.push_back(labelBtn);
+
+        // 左箭头
+        ParamButton leftBtn;
+        leftBtn.bg.setSize(sf::Vector2f(50, 40));
+        leftBtn.bg.setPosition(WINDOW_WIDTH / 2.0f - 100, yPos);
+        leftBtn.bg.setTexture(&m_btnMinusTex);
+        leftBtn.label.setFont(m_font);
+        leftBtn.label.setString("");
+        m_buttons.push_back(leftBtn);
+
+        // 地图名
+        ParamButton nameBtn;
+        nameBtn.bg.setSize(sf::Vector2f(200, 40));
+        nameBtn.bg.setPosition(WINDOW_WIDTH / 2.0f - 45, yPos);
+        nameBtn.bg.setFillColor(sf::Color(30, 30, 45));
+        nameBtn.bg.setOutlineColor(sf::Color(80, 80, 100));
+        nameBtn.bg.setOutlineThickness(1);
+        nameBtn.label.setFont(m_font);
+        nameBtn.label.setCharacterSize(14);
+        nameBtn.label.setFillColor(sf::Color::Yellow);
+        m_buttons.push_back(nameBtn);
+
+        // 右箭头
+        ParamButton rightBtn;
+        rightBtn.bg.setSize(sf::Vector2f(50, 40));
+        rightBtn.bg.setPosition(WINDOW_WIDTH / 2.0f + 160, yPos);
+        rightBtn.bg.setTexture(&m_btnPlusTex);
+        rightBtn.label.setFont(m_font);
+        rightBtn.label.setString("");
+        m_buttons.push_back(rightBtn);
+    }
+
     struct ParamDef
     {
         TextKey labelKey;
@@ -61,7 +139,7 @@ void CustomScreen::buildUI()
 
     for (int i = 0; i < paramCount; ++i)
     {
-        float yPos = 180.0f + i * 72.0f;
+        float yPos = 230.0f + i * 60.0f;
 
         // 标签
         {
@@ -180,7 +258,7 @@ void CustomScreen::refreshValueLabels()
 
     for (int i = 0; i < 6; ++i)
     {
-        int idx = i * 4 + 2;
+        int idx = i * 4 + 2 + 4;  // +4 for map row
         if (idx < static_cast<int>(m_buttons.size()))
         {
             if (vals[i].isFloat)
@@ -221,24 +299,35 @@ void CustomScreen::refreshTexts()
         TextKey::CustomSpeed, TextKey::CustomHP
     };
     for (int i = 0; i < 6; ++i) {
-        int idx = i * 4;  // 标签按钮索引
+        int idx = i * 4 + 4;  // +4 for map row
         if (idx < static_cast<int>(m_buttons.size()))
             m_buttons[idx].label.setString(LangManager::get(paramKeys[i]));
     }
 
-    // 刷新开始/返回按钮（文字居中）
+    // 刷新开始/返回按钮
     int n = static_cast<int>(m_buttons.size());
-    if (n > 24) {
-        m_buttons[24].label.setString(LangManager::get(TextKey::CustomStart));
-        sf::FloatRect lb = m_buttons[24].label.getLocalBounds();
-        m_buttons[24].label.setOrigin(lb.width / 2, lb.height / 2);
-        m_buttons[24].label.setPosition(WINDOW_WIDTH / 2.0f, 650);
+    if (n > 28) {
+        m_buttons[28].label.setString(LangManager::get(TextKey::CustomStart));
+        sf::FloatRect lb = m_buttons[28].label.getLocalBounds();
+        m_buttons[28].label.setOrigin(lb.width / 2, lb.height / 2);
+        m_buttons[28].label.setPosition(WINDOW_WIDTH / 2.0f, 650);
     }
-    if (n > 25) {
-        m_buttons[25].label.setString(LangManager::get(TextKey::Back));
-        sf::FloatRect lb = m_buttons[25].label.getLocalBounds();
-        m_buttons[25].label.setOrigin(lb.width / 2, lb.height / 2);
-        m_buttons[25].label.setPosition(WINDOW_WIDTH / 2.0f, 720);
+    if (n > 29) {
+        m_buttons[29].label.setString(LangManager::get(TextKey::Back));
+        sf::FloatRect lb = m_buttons[29].label.getLocalBounds();
+        m_buttons[29].label.setOrigin(lb.width / 2, lb.height / 2);
+        m_buttons[29].label.setPosition(WINDOW_WIDTH / 2.0f, 720);
+    }
+
+    // 地图名
+    if (!m_mapList.empty())
+    {
+        std::string name = m_mapList[m_mapIndex];
+        auto pos = name.rfind('/');
+        if (pos != std::string::npos) name = name.substr(pos + 1);
+        pos = name.rfind('\\');
+        if (pos != std::string::npos) name = name.substr(pos + 1);
+        m_buttons[2].label.setString(std::wstring(name.begin(), name.end()));
     }
 
     m_backHint.setString(L"ESC: Back to Menu");
@@ -283,11 +372,30 @@ int CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
     sf::Vector2f worldPos = window.mapPixelToCoords(
         sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     int idx = getButtonIndex(worldPos.x, worldPos.y);
-    if (idx < 0)
-        return 0;
+    if (idx < 0) return 0;
 
-    int paramIdx = idx / 4;
-    int btnType = idx % 4;
+    // 地图选择行 (0-3)
+    if (idx >= 0 && idx <= 3)
+    {
+        if (idx == 1 && !m_mapList.empty()) // 左箭头
+        {
+            m_mapIndex = (m_mapIndex - 1 + m_mapList.size()) % m_mapList.size();
+            m_params.mapFile = m_mapList[m_mapIndex];
+            refreshTexts();
+        }
+        else if (idx == 3 && !m_mapList.empty()) // 右箭头
+        {
+            m_mapIndex = (m_mapIndex + 1) % m_mapList.size();
+            m_params.mapFile = m_mapList[m_mapIndex];
+            refreshTexts();
+        }
+        return 0;
+    }
+
+    // 参数行 (偏移4)
+    int paramBase = idx - 4;
+    int paramIdx = paramBase / 4;
+    int btnType = paramBase % 4;
 
     if (paramIdx < 6)
     {
@@ -345,12 +453,12 @@ int CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
             break;
         }
     }
-    else if (idx == 24)
+    else if (idx == 28)
     {
         outParams = m_params;
         return 1; // 开始
     }
-    else if (idx == 25)
+    else if (idx == 29)
     {
         return 2; // 返回
     }

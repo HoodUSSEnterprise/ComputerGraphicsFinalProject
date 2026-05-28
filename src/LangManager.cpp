@@ -50,7 +50,6 @@ static const KeyEntry KEY_MAP[] = {
     {"BGM_On", TextKey::BGM_On},
     {"BGM_Off", TextKey::BGM_Off},
     {"CustomMode", TextKey::CustomMode},
-    {"MapEditor", TextKey::MapEditor},
     {"CustomWaves", TextKey::CustomWaves},
     {"CustomEnemies", TextKey::CustomEnemies},
     {"CustomGold", TextKey::CustomGold},
@@ -134,6 +133,7 @@ static const KeyEntry KEY_MAP[] = {
     // 通关界面
     {"NextLevel", TextKey::NextLevel},
     {"BackToMenu", TextKey::BackToMenu},
+    {"MapEditor", TextKey::MapEditor},
 };
 
 TextKey LangManager::keyFromString(const std::string &name)

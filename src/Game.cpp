@@ -16,6 +16,8 @@ Game::Game()
     m_view = sf::View(sf::FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT + 100));
     m_window.setView(m_view);
     LangManager::loadLanguage("assets/lang_zh.json");
+    m_tileShape.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+
     m_ui.reloadFont();
     m_campaignScreen.reloadFont();
     m_campaignScreen.refreshTexts();

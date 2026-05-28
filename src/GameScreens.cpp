@@ -55,8 +55,12 @@ void Game::processCustomSetupEvents(const sf::Event &event)
     if (result == 1)
     {
         LevelConfig cfg;
-        cfg.mapFile = "assets/maps/grassland/1-1.txt";
-        cfg.biome = Biome::Grassland;
+        cfg.mapFile = params.mapFile;
+        // 从路径推断群系
+        if (cfg.mapFile.find("desert") != std::string::npos) cfg.biome = Biome::Desert;
+        else if (cfg.mapFile.find("hell") != std::string::npos) cfg.biome = Biome::Hell;
+        else if (cfg.mapFile.find("community") != std::string::npos) cfg.biome = Biome::Community;
+        else cfg.biome = Biome::Grassland;
         cfg.startGold = params.startGold;
         cfg.startLives = params.startLives;
         cfg.waveCount = params.waves;

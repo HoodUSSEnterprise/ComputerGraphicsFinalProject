@@ -145,7 +145,9 @@ bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
         for (auto &row : m_rows) {
             bool inside = row.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
             bool isLevel = row.levelIndex >= 0;
-            bool locked = isLevel && row.levelIndex >= unlockedCount;
+            bool isCommunity = isLevel && row.levelIndex < static_cast<int>(levels.size()) &&
+                               levels[row.levelIndex].biome == Biome::Community;
+            bool locked = isLevel && row.levelIndex >= unlockedCount && !isCommunity;
             row.hovered = inside && isLevel && !locked;
             if (isLevel) {
                 if (locked)
@@ -164,10 +166,12 @@ bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
         int idx = getRowIndex(worldPos.x, worldPos.y);
         if (idx >= 0 && m_rows[idx].levelIndex >= 0) {
             int li = m_rows[idx].levelIndex;
-            // 检查是否已解锁
-            if (li >= unlockedCount)
-                return false;
             auto levels = getCampaignLevels();
+            // 社区关卡不受锁限制
+            bool isCommunity = li < static_cast<int>(levels.size()) &&
+                               levels[li].biome == Biome::Community;
+            if (li >= unlockedCount && !isCommunity)
+                return false;
             if (li < static_cast<int>(levels.size())) {
                 outLevel = levels[li];
                 return true;
@@ -188,9 +192,11 @@ void CampaignScreen::draw(sf::RenderWindow &window, int unlockedCount) const
     for (const auto &row : m_rows) {
         window.draw(row.bg);
 
-        // 锁定关卡显示锁定标签
-        if (row.levelIndex >= 0 && row.levelIndex >= unlockedCount) {
-            window.draw(row.label);  // 显示关卡名（灰色）
+        bool isCommunity = row.levelIndex >= 0 && row.levelIndex < static_cast<int>(levels.size()) &&
+                           levels[row.levelIndex].biome == Biome::Community;
+        // 社区关卡不显示锁定/完成标记
+        if (!isCommunity && row.levelIndex >= 0 && row.levelIndex >= unlockedCount) {
+            window.draw(row.label);
             sf::Text lockText;
             lockText.setFont(m_font);
             lockText.setCharacterSize(14);
@@ -200,8 +206,7 @@ void CampaignScreen::draw(sf::RenderWindow &window, int unlockedCount) const
                                  row.bg.getPosition().y + 10);
             window.draw(lockText);
         }
-        // 已通关关卡显示完成标记
-        else if (row.levelIndex >= 0 && row.levelIndex < unlockedCount - 1) {
+        else if (!isCommunity && row.levelIndex >= 0 && row.levelIndex < unlockedCount - 1) {
             window.draw(row.label);
             sf::Text doneText;
             doneText.setFont(m_font);

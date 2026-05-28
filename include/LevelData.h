@@ -33,6 +33,7 @@ struct CustomParams
     int startLives = 20;
     float speedMul = 1.0f;
     float hpMul = 1.0f;
+    std::string mapFile = "assets/maps/grassland/1-1.txt";
 };
 
 // 所有战役关卡

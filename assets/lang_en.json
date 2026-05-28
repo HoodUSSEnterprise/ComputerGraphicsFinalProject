@@ -32,7 +32,6 @@
     "BGM_On": "ON",
     "BGM_Off": "OFF",
     "CustomMode": "Custom Mode",
-    "MapEditor": "Map Editor",
     "CustomWaves": "Waves",
     "CustomEnemies": "Enemies/Wave",
     "CustomGold": "Start Gold",
@@ -110,5 +109,6 @@
     "Level_Complete": "CLEAR",
 
     "NextLevel": "Next Level",
-    "BackToMenu": "Back to Menu"
+    "BackToMenu": "Back to Menu",
+    "MapEditor": "Map Editor"
 }

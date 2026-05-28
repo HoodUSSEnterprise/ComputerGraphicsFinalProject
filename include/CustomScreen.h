@@ -34,8 +34,13 @@ private:
     sf::Text m_titleText;
     sf::Text m_backHint;
 
+    // 地图选择
+    std::vector<std::string> m_mapList;
+    int m_mapIndex = 0;
+
     int getButtonIndex(float mx, float my) const;
     void loadFont();
     void buildUI();
     void refreshValueLabels();
+    void scanMaps();
 };

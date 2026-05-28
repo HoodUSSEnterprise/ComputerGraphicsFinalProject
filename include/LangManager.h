@@ -37,7 +37,6 @@ enum class TextKey
     BGM_On,
     BGM_Off,
     CustomMode,
-    MapEditor,
     CustomWaves,
     CustomEnemies,
     CustomGold,
@@ -121,6 +120,7 @@ enum class TextKey
     // 通关界面
     NextLevel,
     BackToMenu,
+    MapEditor,
 
     COUNT
 };
