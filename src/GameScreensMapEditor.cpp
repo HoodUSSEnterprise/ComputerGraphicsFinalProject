@@ -120,8 +120,7 @@ void Game::renderMapEditor()
         sf::Color(160, 140, 100),
         sf::Color(0, 200, 0),
         sf::Color(200, 0, 0),
-        sf::Color(80, 60, 40)
-    };
+        sf::Color(80, 60, 40)};
 
     for (int i = 0; i < 4; ++i)
     {
@@ -209,21 +208,35 @@ void Game::processMapEditorEvents(const sf::Event &event)
         if (event.type == sf::Event::TextEntered)
         {
             sf::Uint32 ch = event.text.unicode;
-            if (ch == '\b') { if (!m_editorFileName.empty()) m_editorFileName.pop_back(); }
-            else if (ch == '\r' || ch == '\n') { m_editorEditingName = false; }
+            if (ch == '\b')
+            {
+                if (!m_editorFileName.empty())
+                    m_editorFileName.pop_back();
+            }
+            else if (ch == '\r' || ch == '\n')
+            {
+                m_editorEditingName = false;
+            }
             else if (ch >= 32 && ch < 127 && m_editorFileName.size() < 20)
                 m_editorFileName += static_cast<wchar_t>(ch);
             return;
         }
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-        { m_editorEditingName = false; return; }
+        {
+            m_editorEditingName = false;
+            return;
+        }
     }
 
     if (event.type == sf::Event::KeyPressed)
     {
         if (event.key.code == sf::Keyboard::Escape)
         {
-            if (m_editorEditingName) { m_editorEditingName = false; return; }
+            if (m_editorEditingName)
+            {
+                m_editorEditingName = false;
+                return;
+            }
             m_state = GameState::Menu;
             return;
         }
@@ -243,12 +256,18 @@ void Game::processMapEditorEvents(const sf::Event &event)
 
     // 点击文件名输入框
     if (mx >= panelX && mx <= panelX + 180 && my >= panelY + 20 && my <= panelY + 48)
-    { m_editorEditingName = true; return; }
+    {
+        m_editorEditingName = true;
+        return;
+    }
 
     // 模式按钮
     for (int i = 0; i < 4; ++i)
         if (mx >= panelX && mx <= panelX + 180 && my >= modeY + i * 42 && my <= modeY + i * 42 + 36)
-        { m_editMode = i + 1; return; }
+        {
+            m_editMode = i + 1;
+            return;
+        }
 
     // 保存按钮
     if (mx >= panelX && mx <= panelX + 180 && my >= modeY + 190 && my <= modeY + 230)
@@ -257,17 +276,27 @@ void Game::processMapEditorEvents(const sf::Event &event)
         for (int r = 0; r < EDITOR_ROWS; ++r)
             for (int c = 0; c < EDITOR_COLS; ++c)
             {
-                if (m_editGrid[c][r] == TileType::Start) startCount++;
-                if (m_editGrid[c][r] == TileType::End) endCount++;
+                if (m_editGrid[c][r] == TileType::Start)
+                    startCount++;
+                if (m_editGrid[c][r] == TileType::End)
+                    endCount++;
             }
         if (startCount != 1 || endCount != 1)
-        { m_editorMsg = L"Need exactly 1 Start and 1 End!"; return; }
+        {
+            m_editorMsg = L"Need exactly 1 Start and 1 End!";
+            return;
+        }
 
         std::string name(m_editorFileName.begin(), m_editorFileName.end());
-        if (name.empty()) name = "custom_editor";
-        std::string path = "../assets/maps/" + name + ".txt";
+        if (name.empty())
+            name = "custom_editor";
+        std::string path = "../assets/maps/community/" + name + ".txt";
         std::ofstream f(path);
-        if (!f) { m_editorMsg = L"Save failed!"; return; }
+        if (!f)
+        {
+            m_editorMsg = L"Save failed!";
+            return;
+        }
         for (int r = 0; r < EDITOR_ROWS; ++r)
         {
             for (int c = 0; c < EDITOR_COLS; ++c)
@@ -275,13 +304,29 @@ void Game::processMapEditorEvents(const sf::Event &event)
             f << "\n";
         }
         f.close();
+
+// 调用bat/sh脚本
+#ifdef _WIN32
+        std::string cmd = "../tools/script/sync.bat " + name + ".txt";
+#elif __APPLE__
+        std::string cmd = "../tools/script/sync.sh " + name + ".txt";
+#elif __linux__
+        std::string cmd = "../tools/script/sync.sh " + name + ".txt";
+#elif __unix__
+        std::string cmd = "../tools/script/sync.sh " + name + ".txt";
+#endif
+        system(cmd.c_str());
+
         m_editorMsg = std::wstring(L"Saved! maps/") + std::wstring(name.begin(), name.end()) + L".txt";
         return;
     }
 
     // 返回按钮
     if (mx >= panelX && mx <= panelX + 180 && my >= modeY + 240 && my <= modeY + 280)
-    { m_state = GameState::Menu; return; }
+    {
+        m_state = GameState::Menu;
+        return;
+    }
 
     // 点击地图网格
     int col = static_cast<int>(mx / TILE_SIZE);
@@ -293,13 +338,15 @@ void Game::processMapEditorEvents(const sf::Event &event)
         {
             for (int r = 0; r < EDITOR_ROWS; ++r)
                 for (int c = 0; c < EDITOR_COLS; ++c)
-                    if (m_editGrid[c][r] == TileType::Start) m_editGrid[c][r] = TileType::Grass;
+                    if (m_editGrid[c][r] == TileType::Start)
+                        m_editGrid[c][r] = TileType::Grass;
         }
         else if (m_editMode == 3) // End
         {
             for (int r = 0; r < EDITOR_ROWS; ++r)
                 for (int c = 0; c < EDITOR_COLS; ++c)
-                    if (m_editGrid[c][r] == TileType::End) m_editGrid[c][r] = TileType::Grass;
+                    if (m_editGrid[c][r] == TileType::End)
+                        m_editGrid[c][r] = TileType::Grass;
         }
         m_editGrid[col][row] = static_cast<TileType>(m_editMode);
         m_editorMsg.clear();
