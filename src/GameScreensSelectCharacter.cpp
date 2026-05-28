@@ -20,11 +20,6 @@ void Game::buildCharSelectUI()
     m_charTitleText.setOrigin(tb.width / 2, tb.height / 2);
     m_charTitleText.setPosition(WINDOW_WIDTH / 2.0f, 120);
 
-    m_charNameInput.setFont(m_menuFont);
-    m_charNameInput.setString(LangManager::get(TextKey::CharSelect_EnterName));
-    m_charNameInput.setCharacterSize(zh ? 20 : 22);
-    m_charNameInput.setFillColor(sf::Color(150, 150, 170));
-
     m_charHintText.setFont(m_menuFont);
     m_charHintText.setCharacterSize(14);
     m_charHintText.setFillColor(sf::Color(120, 120, 140));
@@ -32,7 +27,7 @@ void Game::buildCharSelectUI()
     // 新建角色按钮
     float btnW = zh ? 380.0f : 340.0f;
     m_newCharBtn.setSize(sf::Vector2f(btnW, 80));
-    m_newCharBtn.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2, 200);
+    m_newCharBtn.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2, 250);  // 调整位置，两个按钮居中
     m_newCharBtn.setTexture(&m_buttonTex);
     m_newCharBtn.setOutlineColor(sf::Color(100, 180, 100));
     m_newCharBtn.setOutlineThickness(2);
@@ -43,7 +38,7 @@ void Game::buildCharSelectUI()
 
     // 加载角色按钮
     m_loadCharBtn.setSize(sf::Vector2f(btnW, 80));
-    m_loadCharBtn.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2, 400);
+    m_loadCharBtn.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2, 360);
     m_loadCharBtn.setTexture(&m_buttonTex);
     m_loadCharBtn.setOutlineColor(sf::Color(100, 150, 200));
     m_loadCharBtn.setOutlineThickness(2);
@@ -51,17 +46,6 @@ void Game::buildCharSelectUI()
     m_loadCharBtnLabel.setString(LangManager::get(TextKey::LoadGame));
     m_loadCharBtnLabel.setCharacterSize(zh ? 36 : 40);
     m_loadCharBtnLabel.setFillColor(sf::Color::White);
-
-    // 确认创建按钮
-    float confW = zh ? 140.0f : 120.0f;
-    m_confirmCharBtn.setSize(sf::Vector2f(confW, 34));
-    m_confirmCharBtn.setTexture(&m_buttonTex);
-    m_confirmCharBtn.setOutlineColor(sf::Color(100, 180, 100));
-    m_confirmCharBtn.setOutlineThickness(1);
-    m_confirmCharBtnLabel.setFont(m_menuFont);
-    m_confirmCharBtnLabel.setString(LangManager::get(TextKey::CharSelect_Confirm));
-    m_confirmCharBtnLabel.setCharacterSize(zh ? 14 : 16);
-    m_confirmCharBtnLabel.setFillColor(sf::Color::White);
 }
 
 void Game::refreshCharList()
@@ -119,11 +103,7 @@ void Game::renderCharSelect()
 
     m_window.draw(m_charTitleText);
 
-    // 新建角色区域
-    bool isCreating = !m_newCharName.empty() || m_charNameInput.getString().getSize() > 0;
-    // 判断是否处于输入名字模式
-    bool inputMode = (m_charNameInput.getFillColor() == sf::Color::White);
-
+    // 新建角色按钮
     m_window.draw(m_newCharBtn);
     sf::FloatRect nlb = m_newCharBtnLabel.getLocalBounds();
     m_newCharBtnLabel.setOrigin(nlb.width / 2, nlb.height / 2);
@@ -139,111 +119,31 @@ void Game::renderCharSelect()
                                    m_loadCharBtn.getPosition().y + m_loadCharBtn.getSize().y / 2);
     m_window.draw(m_loadCharBtnLabel);
 
-    // 名字输入框
-    if (inputMode)
-    {
-        bool zh = (LangManager::currentLangName() == "zh");
-        sf::RectangleShape inputBox(sf::Vector2f(zh ? 320.0f : 300.0f, 36));
-        inputBox.setPosition(WINDOW_WIDTH / 2.0f - (zh ? 160.0f : 150.0f), 210);
-        inputBox.setFillColor(sf::Color(30, 30, 45));
-        inputBox.setOutlineColor(sf::Color(255, 215, 0));
-        inputBox.setOutlineThickness(2);
-        m_window.draw(inputBox);
-
-        m_charNameInput.setPosition(WINDOW_WIDTH / 2.0f - (zh ? 150.0f : 140.0f), 215);
-        m_window.draw(m_charNameInput);
-
-        m_confirmCharBtn.setPosition(WINDOW_WIDTH / 2.0f + (zh ? 170.0f : 160.0f), 212);
-        sf::FloatRect clb = m_confirmCharBtnLabel.getLocalBounds();
-        m_confirmCharBtnLabel.setOrigin(clb.width / 2, clb.height / 2);
-        m_confirmCharBtnLabel.setPosition(m_confirmCharBtn.getPosition().x + m_confirmCharBtn.getSize().x / 2,
-                                          m_confirmCharBtn.getPosition().y + m_confirmCharBtn.getSize().y / 2);
-        m_window.draw(m_confirmCharBtn);
-        m_window.draw(m_confirmCharBtnLabel);
-    }
-
     // ESC 提示
     if (!m_charList.empty())
     {
-        m_charHintText.setString(L"ESC: Exit");
+        m_charHintText.setString(L"ESC: " + std::wstring(LangManager::get(TextKey::Back)));
         sf::FloatRect hb = m_charHintText.getLocalBounds();
         m_charHintText.setOrigin(hb.width / 2, hb.height / 2);
-        m_charHintText.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT + 80);
+        m_charHintText.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT - 30);  // 放在底部可见位置
     }
     else
     {
         m_charHintText.setString(LangManager::get(TextKey::CharSelect_Empty));
         sf::FloatRect hb = m_charHintText.getLocalBounds();
         m_charHintText.setOrigin(hb.width / 2, hb.height / 2);
-        m_charHintText.setPosition(WINDOW_WIDTH / 2.0f, 430);
+        m_charHintText.setPosition(WINDOW_WIDTH / 2.0f, 350);
     }
     m_window.draw(m_charHintText);
 }
 
 void Game::processCharSelectEvents(const sf::Event &event)
 {
-    // TextEntered 用于输入角色名
-    if (event.type == sf::Event::TextEntered)
-    {
-        bool inputMode = (m_charNameInput.getFillColor() == sf::Color::White);
-        if (!inputMode)
-            return;
-
-        sf::Uint32 ch = event.text.unicode;
-        if (ch == '\b') // 退格
-        {
-            if (!m_newCharName.empty())
-                m_newCharName.pop_back();
-        }
-        else if (ch == '\r' || ch == '\n')
-        {
-            // 回车确认创建
-            if (!m_newCharName.empty())
-            {
-                m_playerData = PlayerData();
-                m_playerData.name = m_newCharName;
-                m_playerData.unlockedLevels = 1;
-                m_playerData.save(PlayerData::makeSavePath(m_newCharName));
-                m_hasCharacter = true;
-                m_newCharName.clear();
-                m_charNameInput.setFillColor(sf::Color(150, 150, 170));
-                std::wstring placeholder = LangManager::get(TextKey::CharSelect_EnterName);
-                m_charNameInput.setString(placeholder);
-                refreshCharList();
-                initMenu();
-                m_state = GameState::Menu;
-            }
-        }
-        else if (ch >= 32 && ch < 127 && m_newCharName.size() < 16)
-        {
-            m_newCharName += static_cast<char>(ch);
-        }
-
-        std::wstring display = std::wstring(m_newCharName.begin(), m_newCharName.end());
-        if (display.empty())
-            display = LangManager::get(TextKey::CharSelect_EnterName);
-        else
-            display += L"_"; // 光标
-        m_charNameInput.setString(display);
-        return;
-    }
-
     if (event.type == sf::Event::KeyPressed)
     {
         if (event.key.code == sf::Keyboard::Escape)
         {
-            bool inputMode = (m_charNameInput.getFillColor() == sf::Color::White);
-            if (inputMode)
-            {
-                // 取消输入
-                m_newCharName.clear();
-                m_charNameInput.setFillColor(sf::Color(150, 150, 170));
-                m_charNameInput.setString(LangManager::get(TextKey::CharSelect_EnterName));
-            }
-            else
-            {
-                m_window.close();
-            }
+            m_window.close();
         }
         return;
     }
@@ -261,15 +161,7 @@ void Game::processCharSelectEvents(const sf::Event &event)
         bool hoverLoad = m_loadCharBtn.getGlobalBounds().contains(mx, my);
         m_loadCharBtn.setOutlineColor(hoverLoad ? sf::Color(255, 215, 0) : sf::Color(100, 150, 200));
 
-        // 确认按钮 hover
-        bool inputMode = (m_charNameInput.getFillColor() == sf::Color::White);
-        if (inputMode)
-        {
-            bool hoverConfirm = m_confirmCharBtn.getGlobalBounds().contains(mx, my);
-            m_confirmCharBtn.setFillColor(hoverConfirm ? sf::Color(60, 140, 60) : sf::Color(40, 100, 40));
-        }
-
-        // 角色列表 hover
+        // 角色列表 hover（仅在显示列表时）
         for (size_t i = 0; i < m_charButtons.size(); ++i)
         {
             bool inside = m_charButtons[i].bg.getGlobalBounds().contains(mx, my);
@@ -285,61 +177,35 @@ void Game::processCharSelectEvents(const sf::Event &event)
     sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     float mx = worldPos.x, my = worldPos.y;
 
-    // 点击新建按钮 → 进入输入模式
+    // 点击新建按钮 → 切换到独立的新建角色页面
     if (m_newCharBtn.getGlobalBounds().contains(mx, my))
     {
-        m_showCharList = false;
-        m_charNameInput.setFillColor(sf::Color::White);
         m_newCharName.clear();
         m_charNameInput.setString(LangManager::get(TextKey::CharSelect_EnterName));
+        m_state = GameState::CharCreate;  // 切换到新建角色页面
         return;
     }
 
     // 点击加载角色按钮 → 进入独立加载角色界面
     if (m_loadCharBtn.getGlobalBounds().contains(mx, my))
     {
-        m_showCharList = false;
         loadMenuFont(); // 确保字体正确加载
         refreshCharList();
         m_state = GameState::CharLoad;
         return;
     }
 
-    // 点击确认按钮 → 创建角色
-    bool inputMode = (m_charNameInput.getFillColor() == sf::Color::White);
-    if (inputMode && m_confirmCharBtn.getGlobalBounds().contains(mx, my))
+    // 点击已有角色 → 加载并进入菜单
+    for (size_t i = 0; i < m_charButtons.size(); ++i)
     {
-        if (!m_newCharName.empty())
+        if (m_charButtons[i].bg.getGlobalBounds().contains(mx, my))
         {
-            m_playerData = PlayerData();
-            m_playerData.name = m_newCharName;
-            m_playerData.unlockedLevels = 1;
-            m_playerData.save(PlayerData::makeSavePath(m_newCharName));
+            m_playerData = m_charList[i];
             m_hasCharacter = true;
-            m_newCharName.clear();
-            m_charNameInput.setFillColor(sf::Color(150, 150, 170));
-            m_charNameInput.setString(LangManager::get(TextKey::CharSelect_EnterName));
-            refreshCharList();
+            m_playerData.save(PlayerData::makeSavePath(m_playerData.name));
             initMenu();
             m_state = GameState::Menu;
-        }
-        return;
-    }
-
-    // 点击已有角色 → 加载并进入菜单（仅在列表显示时）
-    if (m_showCharList)
-    {
-        for (size_t i = 0; i < m_charButtons.size(); ++i)
-        {
-            if (m_charButtons[i].bg.getGlobalBounds().contains(mx, my))
-            {
-                m_playerData = m_charList[i];
-                m_hasCharacter = true;
-                m_playerData.save(PlayerData::makeSavePath(m_playerData.name));
-                initMenu();
-                m_state = GameState::Menu;
-                return;
-            }
+            return;
         }
     }
 }

@@ -40,6 +40,7 @@ Game::Game()
     }
     // 初始化角色选择界面
     buildCharSelectUI();
+    buildCharCreateUI();
     refreshCharList();
     // 初始化确认对话框UI
     buildConfirmUI();
@@ -58,14 +59,20 @@ void Game::loadBackgrounds()
     namespace fs = std::filesystem;
     std::string dir = "textures/background";
     std::error_code ec;
-    if (!fs::exists(dir, ec)) { fs::create_directories(dir, ec); return; }
+    if (!fs::exists(dir, ec))
+    {
+        fs::create_directories(dir, ec);
+        return;
+    }
 
     // 先加载所有纹理
     for (const auto &entry : fs::directory_iterator(dir, ec))
     {
-        if (!entry.is_regular_file()) continue;
+        if (!entry.is_regular_file())
+            continue;
         std::string ext = entry.path().extension().string();
-        if (ext != ".png" && ext != ".jpg" && ext != ".jpeg") continue;
+        if (ext != ".png" && ext != ".jpg" && ext != ".jpeg")
+            continue;
 
         sf::Texture tex;
         if (tex.loadFromFile(entry.path().string()))
@@ -143,7 +150,7 @@ void Game::newGame(const LevelConfig &cfg)
     m_infiniteGold = false;
     m_infiniteDamage = false;
     clearCheatBuffer();
-    m_waveCountdown = 10.0f;  // 第一波10秒倒计时
+    m_waveCountdown = 10.0f; // 第一波10秒倒计时
 
     // 记录当前战役关卡索引（用于通关后解锁下一关）
     auto levels = getCampaignLevels();
@@ -240,6 +247,11 @@ void Game::processEvents()
         {
         case GameState::CharSelect:
             processCharSelectEvents(event);
+            break;
+        case GameState::CharCreate:
+            processCharCreateEvents(event);
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                m_state = GameState::CharSelect;
             break;
         case GameState::CharLoad:
             processCharLoadEvents(event);
@@ -367,6 +379,9 @@ void Game::render()
     {
     case GameState::CharSelect:
         renderCharSelect();
+        break;
+    case GameState::CharCreate:
+        renderCharCreate();
         break;
     case GameState::CharLoad:
         renderCharLoad();

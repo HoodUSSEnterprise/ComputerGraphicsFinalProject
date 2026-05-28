@@ -229,6 +229,7 @@ private:
     std::vector<PlayerData> m_charList;
     std::string m_newCharName;
     sf::Text m_charTitleText;
+    sf::Text m_charTitleCreateText;
     sf::Text m_charNameInput;      // 显示正在输入的名字
     sf::Text m_charHintText;
     struct CharButton {

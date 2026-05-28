@@ -18,6 +18,7 @@ void Game::refreshAllTexts()
     // 完全重建所有 UI（使用新语言文本和字体）
     initMenu();
     buildCharSelectUI();
+    buildCharCreateUI();
     refreshCharList();
     buildConfirmUI();
     buildPauseMenu();
