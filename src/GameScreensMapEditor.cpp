@@ -115,7 +115,7 @@ void Game::renderMapEditor()
 
     // 模式选择（下移）
     float modeY = panelY + 60;
-    const char *modeNames[] = {"Path", "Start", "End", "Blocked"};
+    const char *modeNames[] = {"Path", "Start", "End", "Treasure"};
     sf::Color modeColors[] = {
         sf::Color(160, 140, 100),
         sf::Color(0, 200, 0),
