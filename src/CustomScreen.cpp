@@ -68,12 +68,13 @@ void CustomScreen::buildUI()
     // 加载按钮纹理
     m_btnPlusTex.loadFromFile("textures/ButtonPlus.png");
     m_btnMinusTex.loadFromFile("textures/ButtonMinus.png");
+    m_arrowLeftTex.loadFromFile("textures/ArrowLeft.png");
+    m_arrowRightTex.loadFromFile("textures/ArrowRight.png");
     m_buttonTex.loadFromFile("textures/button.png");
 
     // 地图选择行
     {
         float yPos = 140.0f;
-        // 标签
         ParamButton labelBtn;
         labelBtn.bg.setSize(sf::Vector2f(180, 40));
         labelBtn.bg.setPosition(WINDOW_WIDTH / 2.0f - 300, yPos);
@@ -89,7 +90,7 @@ void CustomScreen::buildUI()
         ParamButton leftBtn;
         leftBtn.bg.setSize(sf::Vector2f(50, 40));
         leftBtn.bg.setPosition(WINDOW_WIDTH / 2.0f - 100, yPos);
-        leftBtn.bg.setTexture(&m_btnMinusTex);
+        leftBtn.bg.setTexture(&m_arrowLeftTex);
         leftBtn.label.setFont(m_font);
         leftBtn.label.setString("");
         m_buttons.push_back(leftBtn);
@@ -102,7 +103,7 @@ void CustomScreen::buildUI()
         nameBtn.bg.setOutlineColor(sf::Color(80, 80, 100));
         nameBtn.bg.setOutlineThickness(1);
         nameBtn.label.setFont(m_font);
-        nameBtn.label.setCharacterSize(14);
+        nameBtn.label.setCharacterSize(16);
         nameBtn.label.setFillColor(sf::Color::Yellow);
         m_buttons.push_back(nameBtn);
 
@@ -110,7 +111,7 @@ void CustomScreen::buildUI()
         ParamButton rightBtn;
         rightBtn.bg.setSize(sf::Vector2f(50, 40));
         rightBtn.bg.setPosition(WINDOW_WIDTH / 2.0f + 160, yPos);
-        rightBtn.bg.setTexture(&m_btnPlusTex);
+        rightBtn.bg.setTexture(&m_arrowRightTex);
         rightBtn.label.setFont(m_font);
         rightBtn.label.setString("");
         m_buttons.push_back(rightBtn);
@@ -319,7 +320,7 @@ void CustomScreen::refreshTexts()
         m_buttons[29].label.setPosition(WINDOW_WIDTH / 2.0f, 720);
     }
 
-    // 地图名
+    // 地图名（居中在显示框里）
     if (!m_mapList.empty())
     {
         std::string name = m_mapList[m_mapIndex];
@@ -328,6 +329,12 @@ void CustomScreen::refreshTexts()
         pos = name.rfind('\\');
         if (pos != std::string::npos) name = name.substr(pos + 1);
         m_buttons[2].label.setString(std::wstring(name.begin(), name.end()));
+        sf::FloatRect lb = m_buttons[2].label.getLocalBounds();
+        float bx = m_buttons[2].bg.getPosition().x;
+        float bw = m_buttons[2].bg.getSize().x;
+        m_buttons[2].label.setPosition(
+            bx + bw / 2.0f - lb.width / 2,
+            m_buttons[2].bg.getPosition().y + 8);
     }
 
     m_backHint.setString(L"ESC: Back to Menu");

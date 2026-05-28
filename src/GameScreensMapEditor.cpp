@@ -9,12 +9,12 @@ static const int EDITOR_ROWS = MAP_ROWS;
 
 void Game::enterMapEditor()
 {
-    // 初始化全 kong (Grass)
     for (int r = 0; r < EDITOR_ROWS; ++r)
         for (int c = 0; c < EDITOR_COLS; ++c)
             m_editGrid[c][r] = TileType::Grass;
-    m_editMode = 1; // 默认 Path 模式
+    m_editMode = 1;
     m_editorMsg.clear();
+    m_editorFileName = L"custom_editor";
     m_state = GameState::MapEditor;
 }
 
@@ -33,7 +33,6 @@ void Game::renderMapEditor()
             float x = static_cast<float>(c * TILE_SIZE);
             float y = static_cast<float>(r * TILE_SIZE);
 
-            // 背景
             m_tileShape.setPosition(x, y);
             m_tileShape.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
 
@@ -57,7 +56,6 @@ void Game::renderMapEditor()
             }
             m_window.draw(m_tileShape);
 
-            // 网格线
             sf::RectangleShape border(sf::Vector2f(TILE_SIZE, TILE_SIZE));
             border.setPosition(x, y);
             border.setFillColor(sf::Color::Transparent);
@@ -65,7 +63,6 @@ void Game::renderMapEditor()
             border.setOutlineThickness(1);
             m_window.draw(border);
 
-            // 显示编号
             if (m_editGrid[c][r] == TileType::Start)
             {
                 sf::Text t;
@@ -89,11 +86,35 @@ void Game::renderMapEditor()
         }
     }
 
-    // 右侧面板
     float panelX = EDITOR_COLS * TILE_SIZE + 10;
     float panelY = 10;
 
-    // 模式选择
+    // 文件名输入
+    sf::Text nameLabel;
+    nameLabel.setFont(m_menuFont);
+    nameLabel.setString("Name:");
+    nameLabel.setCharacterSize(14);
+    nameLabel.setFillColor(sf::Color(180, 180, 200));
+    nameLabel.setPosition(panelX, panelY);
+    m_window.draw(nameLabel);
+
+    sf::RectangleShape inputBox(sf::Vector2f(180, 28));
+    inputBox.setPosition(panelX, panelY + 20);
+    inputBox.setFillColor(sf::Color(30, 30, 45));
+    inputBox.setOutlineColor(m_editorEditingName ? sf::Color(255, 215, 0) : sf::Color(100, 100, 140));
+    inputBox.setOutlineThickness(1);
+    m_window.draw(inputBox);
+
+    sf::Text nameText;
+    nameText.setFont(m_menuFont);
+    nameText.setString(m_editorFileName + (m_editorEditingName ? L"_" : L""));
+    nameText.setCharacterSize(14);
+    nameText.setFillColor(sf::Color::Yellow);
+    nameText.setPosition(panelX + 5, panelY + 24);
+    m_window.draw(nameText);
+
+    // 模式选择（下移）
+    float modeY = panelY + 60;
     const char *modeNames[] = {"Path", "Start", "End", "Blocked"};
     sf::Color modeColors[] = {
         sf::Color(160, 140, 100),
@@ -105,7 +126,7 @@ void Game::renderMapEditor()
     for (int i = 0; i < 4; ++i)
     {
         sf::RectangleShape btn(sf::Vector2f(180, 36));
-        btn.setPosition(panelX, panelY + i * 42);
+        btn.setPosition(panelX, modeY + i * 42);
         btn.setFillColor(m_editMode == i + 1 ? sf::Color(255, 215, 0, 80) : sf::Color(50, 50, 70));
         btn.setOutlineColor(m_editMode == i + 1 ? sf::Color::Yellow : sf::Color(100, 100, 140));
         btn.setOutlineThickness(1);
@@ -116,14 +137,15 @@ void Game::renderMapEditor()
         label.setString(modeNames[i]);
         label.setCharacterSize(16);
         label.setFillColor(sf::Color::White);
-        label.setPosition(panelX + 8, panelY + i * 42 + 6);
+        label.setPosition(panelX + 8, modeY + i * 42 + 6);
         m_window.draw(label);
     }
 
     // 保存按钮
     {
+        float btnY = modeY + 190;
         sf::RectangleShape btn(sf::Vector2f(180, 40));
-        btn.setPosition(panelX, panelY + 180);
+        btn.setPosition(panelX, btnY);
         btn.setTexture(&m_buttonTex);
         btn.setFillColor(sf::Color(180, 255, 180));
         m_window.draw(btn);
@@ -134,14 +156,15 @@ void Game::renderMapEditor()
         label.setFillColor(sf::Color::White);
         sf::FloatRect lb = label.getLocalBounds();
         label.setOrigin(lb.width / 2, lb.height / 2);
-        label.setPosition(panelX + 90, panelY + 200);
+        label.setPosition(panelX + 90, btnY + 20);
         m_window.draw(label);
     }
 
     // 返回按钮
     {
+        float btnY = modeY + 240;
         sf::RectangleShape btn(sf::Vector2f(180, 40));
-        btn.setPosition(panelX, panelY + 230);
+        btn.setPosition(panelX, btnY);
         btn.setTexture(&m_buttonTex);
         btn.setFillColor(sf::Color(255, 180, 180));
         m_window.draw(btn);
@@ -152,7 +175,7 @@ void Game::renderMapEditor()
         label.setFillColor(sf::Color::White);
         sf::FloatRect lb = label.getLocalBounds();
         label.setOrigin(lb.width / 2, lb.height / 2);
-        label.setPosition(panelX + 90, panelY + 250);
+        label.setPosition(panelX + 90, btnY + 20);
         m_window.draw(label);
     }
 
@@ -180,18 +203,32 @@ void Game::renderMapEditor()
 
 void Game::processMapEditorEvents(const sf::Event &event)
 {
+    // 文件名输入模式
+    if (m_editorEditingName)
+    {
+        if (event.type == sf::Event::TextEntered)
+        {
+            sf::Uint32 ch = event.text.unicode;
+            if (ch == '\b') { if (!m_editorFileName.empty()) m_editorFileName.pop_back(); }
+            else if (ch == '\r' || ch == '\n') { m_editorEditingName = false; }
+            else if (ch >= 32 && ch < 127 && m_editorFileName.size() < 20)
+                m_editorFileName += static_cast<wchar_t>(ch);
+            return;
+        }
+        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+        { m_editorEditingName = false; return; }
+    }
+
     if (event.type == sf::Event::KeyPressed)
     {
         if (event.key.code == sf::Keyboard::Escape)
         {
+            if (m_editorEditingName) { m_editorEditingName = false; return; }
             m_state = GameState::Menu;
             return;
         }
-        // 数字键切换模式
         if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num4)
-        {
             m_editMode = event.key.code - sf::Keyboard::Num1 + 1;
-        }
         return;
     }
 
@@ -200,25 +237,22 @@ void Game::processMapEditorEvents(const sf::Event &event)
 
     sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     float mx = worldPos.x, my = worldPos.y;
-
     float panelX = EDITOR_COLS * TILE_SIZE + 10;
     float panelY = 10;
+    float modeY = panelY + 60;
 
-    // 右侧面板按钮
+    // 点击文件名输入框
+    if (mx >= panelX && mx <= panelX + 180 && my >= panelY + 20 && my <= panelY + 48)
+    { m_editorEditingName = true; return; }
+
     // 模式按钮
     for (int i = 0; i < 4; ++i)
-    {
-        if (mx >= panelX && mx <= panelX + 180 && my >= panelY + i * 42 && my <= panelY + i * 42 + 36)
-        {
-            m_editMode = i + 1;
-            return;
-        }
-    }
+        if (mx >= panelX && mx <= panelX + 180 && my >= modeY + i * 42 && my <= modeY + i * 42 + 36)
+        { m_editMode = i + 1; return; }
 
     // 保存按钮
-    if (mx >= panelX && mx <= panelX + 180 && my >= panelY + 180 && my <= panelY + 220)
+    if (mx >= panelX && mx <= panelX + 180 && my >= modeY + 190 && my <= modeY + 230)
     {
-        // 检查是否有 Start 和 End
         int startCount = 0, endCount = 0;
         for (int r = 0; r < EDITOR_ROWS; ++r)
             for (int c = 0; c < EDITOR_COLS; ++c)
@@ -226,15 +260,12 @@ void Game::processMapEditorEvents(const sf::Event &event)
                 if (m_editGrid[c][r] == TileType::Start) startCount++;
                 if (m_editGrid[c][r] == TileType::End) endCount++;
             }
-
         if (startCount != 1 || endCount != 1)
-        {
-            m_editorMsg = L"Need exactly 1 Start and 1 End!";
-            return;
-        }
+        { m_editorMsg = L"Need exactly 1 Start and 1 End!"; return; }
 
-        // 保存到源码 assets/maps/
-        std::string path = "../assets/maps/custom_editor.txt";
+        std::string name(m_editorFileName.begin(), m_editorFileName.end());
+        if (name.empty()) name = "custom_editor";
+        std::string path = "../assets/maps/" + name + ".txt";
         std::ofstream f(path);
         if (!f) { m_editorMsg = L"Save failed!"; return; }
         for (int r = 0; r < EDITOR_ROWS; ++r)
@@ -244,16 +275,13 @@ void Game::processMapEditorEvents(const sf::Event &event)
             f << "\n";
         }
         f.close();
-        m_editorMsg = L"Saved!";
+        m_editorMsg = std::wstring(L"Saved! maps/") + std::wstring(name.begin(), name.end()) + L".txt";
         return;
     }
 
     // 返回按钮
-    if (mx >= panelX && mx <= panelX + 180 && my >= panelY + 230 && my <= panelY + 270)
-    {
-        m_state = GameState::Menu;
-        return;
-    }
+    if (mx >= panelX && mx <= panelX + 180 && my >= modeY + 240 && my <= modeY + 280)
+    { m_state = GameState::Menu; return; }
 
     // 点击地图网格
     int col = static_cast<int>(mx / TILE_SIZE);

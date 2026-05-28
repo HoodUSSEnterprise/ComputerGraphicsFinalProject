@@ -109,6 +109,8 @@ private:
     TileType m_editGrid[MAP_COLS][MAP_ROWS] = {};
     int m_editMode = 1;
     std::wstring m_editorMsg;
+    std::wstring m_editorFileName;
+    bool m_editorEditingName = false;
     mutable sf::RectangleShape m_tileShape;
 
     // ---- 作弊码系统（罪恶都市风格） ----
