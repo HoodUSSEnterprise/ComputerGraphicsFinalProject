@@ -47,8 +47,8 @@ void Game::buildSettingsUI()
         btn.hovered = false;
         m_settingsButtons.push_back(btn);
     };
-    makeArrow(WINDOW_WIDTH / 2.0f - 180, 300, "<");
-    makeArrow(WINDOW_WIDTH / 2.0f + 180, 300, ">");
+    makeArrow(WINDOW_WIDTH / 2.0f - 120, 300, "<");
+    makeArrow(WINDOW_WIDTH / 2.0f + 120, 300, ">");
 
     m_langLabel.setFont(m_menuFont);
     m_langLabel.setString(LangManager::get(TextKey::Language_Label));
@@ -59,9 +59,9 @@ void Game::buildSettingsUI()
     m_langValue.setCharacterSize(22);
     m_langValue.setFillColor(sf::Color::Yellow);
 
-    // 背景图片箭头（按钮2,3）
-    makeArrow(WINDOW_WIDTH / 2.0f - 180, 350, "<");
-    makeArrow(WINDOW_WIDTH / 2.0f + 180, 350, ">");
+    // 背景图片箭头（按钮2,3），与语言箭头对齐
+    makeArrow(WINDOW_WIDTH / 2.0f - 120, 350, "<");
+    makeArrow(WINDOW_WIDTH / 2.0f + 120, 350, ">");
 
     {
         MenuButton btn;
@@ -126,21 +126,33 @@ void Game::renderSettings()
     title.setOrigin(tb.width / 2, tb.height / 2);
     title.setPosition(WINDOW_WIDTH / 2.0f, 120);
     m_window.draw(title);
-    m_langLabel.setPosition(WINDOW_WIDTH / 2.0f - 130, 280);
-    m_langValue.setPosition(WINDOW_WIDTH / 2.0f - 30, 280);
+    m_langLabel.setPosition(WINDOW_WIDTH / 2.0f - 280, 300);
+    m_langValue.setPosition(WINDOW_WIDTH / 2.0f, 300);
+    // 语言名称
+    std::string curLang = LangManager::currentLangName();
+    m_langValue.setString(curLang == "zh" ? L"简体中文" : L"English");
+    sf::FloatRect lvb = m_langValue.getLocalBounds();
+    m_langValue.setOrigin(lvb.width / 2, lvb.height / 2);
     m_window.draw(m_langLabel);
     m_window.draw(m_langValue);
 
-    // 背景图片标签
-    sf::Text bgLabel;
-    bgLabel.setFont(m_menuFont);
-    bgLabel.setString(L"Background: " + std::to_wstring(m_bgIndex + 1) + L"/" + std::to_wstring(m_bgSprites.size()));
-    bgLabel.setCharacterSize(18);
-    bgLabel.setFillColor(sf::Color(180, 180, 200));
-    sf::FloatRect bglb = bgLabel.getLocalBounds();
-    bgLabel.setOrigin(bglb.width / 2, bglb.height / 2);
-    bgLabel.setPosition(WINDOW_WIDTH / 2.0f, 340);
-    m_window.draw(bgLabel);
+    // 背景图片标签（与语言对齐）
+    sf::Text bgLabelLeft, bgLabelCenter;
+    bgLabelLeft.setFont(m_menuFont);
+    bgLabelLeft.setString(LangManager::get(TextKey::Background));
+    bgLabelLeft.setCharacterSize(24);
+    bgLabelLeft.setFillColor(sf::Color(180, 180, 200));
+    bgLabelLeft.setPosition(WINDOW_WIDTH / 2.0f - 280, 340);
+
+    bgLabelCenter.setFont(m_menuFont);
+    bgLabelCenter.setString(std::to_wstring(m_bgIndex + 1) + L"/" + std::to_wstring(m_bgSprites.size()));
+    bgLabelCenter.setCharacterSize(22);
+    bgLabelCenter.setFillColor(sf::Color::Yellow);
+    sf::FloatRect bglb = bgLabelCenter.getLocalBounds();
+    bgLabelCenter.setOrigin(bglb.width / 2, bglb.height / 2);
+    bgLabelCenter.setPosition(WINDOW_WIDTH / 2.0f, 355);
+    m_window.draw(bgLabelLeft);
+    m_window.draw(bgLabelCenter);
 
     float trackX = WINDOW_WIDTH / 2.0f - 150, trackY = 430;
     m_volTrack.setPosition(trackX, trackY);

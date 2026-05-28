@@ -33,6 +33,7 @@ enum class TextKey
     EscToMenu,
     Back,
     Volume,
+    Background,
     BGM_On,
     BGM_Off,
     CustomMode,

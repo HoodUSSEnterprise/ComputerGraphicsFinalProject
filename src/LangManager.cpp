@@ -46,6 +46,7 @@ static const KeyEntry KEY_MAP[] = {
     {"EscToMenu", TextKey::EscToMenu},
     {"Back", TextKey::Back},
     {"Volume", TextKey::Volume},
+    {"Background", TextKey::Background},
     {"BGM_On", TextKey::BGM_On},
     {"BGM_Off", TextKey::BGM_Off},
     {"CustomMode", TextKey::CustomMode},

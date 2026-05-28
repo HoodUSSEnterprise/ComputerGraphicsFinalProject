@@ -196,16 +196,6 @@ void Game::renderMenu()
         m_window.draw(btn.label);
     }
 
-    sf::Text langText;
-    langText.setFont(m_menuFont);
-    langText.setString(L"[" + std::wstring(LangManager::currentLangName().begin(), LangManager::currentLangName().end()) + L"]");
-    langText.setCharacterSize(16);
-    langText.setFillColor(sf::Color(100, 200, 100));
-    sf::FloatRect lb = langText.getLocalBounds();
-    langText.setOrigin(lb.width / 2, lb.height / 2);
-    langText.setPosition(WINDOW_WIDTH / 2.0f, 660);
-    m_window.draw(langText);
-
     sf::Text hint;
     hint.setFont(m_menuFont);
     hint.setString(LangManager::get(TextKey::MenuHint));
@@ -323,10 +313,9 @@ void Game::refreshAllTexts()
     refreshCharList();
     buildConfirmUI();
     buildPauseMenu();
+    buildSettingsUI();
 
     m_langLabel.setString(LangManager::get(TextKey::Language_Label));
-    m_langValue.setString(L"[" + std::wstring(LangManager::currentLangName().begin(), LangManager::currentLangName().end()) + L"]");
-
     m_campaignScreen.refreshTexts();
     m_campaignScreen.reloadFont();
     m_customScreen.refreshTexts();

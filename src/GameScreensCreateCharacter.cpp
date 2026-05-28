@@ -86,14 +86,12 @@ void Game::refreshCharList()
         cb.nameText.setFillColor(sf::Color(255, 215, 0));
         cb.nameText.setPosition(WINDOW_WIDTH / 2.0f - 265, y + 6);
 
-        std::string info = std::to_string(m_charList[i].unlockedLevels) + "/11 " +
-                           std::string(LangManager::get(TextKey::CharSelect_Progress).begin(),
-                                       LangManager::get(TextKey::CharSelect_Progress).end()) +
-                           "  |  " + std::to_string(m_charList[i].totalGold) + " " +
-                           std::string(LangManager::get(TextKey::CharSelect_Gold).begin(),
-                                       LangManager::get(TextKey::CharSelect_Gold).end());
+        std::wstring info = std::to_wstring(m_charList[i].unlockedLevels) + L"/11 " +
+                           LangManager::get(TextKey::CharSelect_Progress) +
+                           L"  |  " + std::to_wstring(m_charList[i].totalGold) + L" " +
+                           LangManager::get(TextKey::CharSelect_Gold);
         cb.infoText.setFont(m_menuFont);
-        cb.infoText.setString(std::wstring(info.begin(), info.end()));
+        cb.infoText.setString(info);
         cb.infoText.setCharacterSize(15);
         cb.infoText.setFillColor(sf::Color(160, 180, 200));
         cb.infoText.setPosition(WINDOW_WIDTH / 2.0f - 265, y + 32);
@@ -180,16 +178,6 @@ void Game::renderCharSelect()
         m_charHintText.setPosition(WINDOW_WIDTH / 2.0f, 430);
     }
     m_window.draw(m_charHintText);
-
-    sf::Text langText;
-    langText.setFont(m_menuFont);
-    langText.setString(L"[" + std::wstring(LangManager::currentLangName().begin(), LangManager::currentLangName().end()) + L"]");
-    langText.setCharacterSize(16);
-    langText.setFillColor(sf::Color(100, 200, 100));
-    sf::FloatRect lb = langText.getLocalBounds();
-    langText.setOrigin(lb.width / 2, lb.height / 2);
-    langText.setPosition(WINDOW_WIDTH / 2.0f, 660);
-    m_window.draw(langText);
 }
 
 void Game::processCharSelectEvents(const sf::Event &event)
