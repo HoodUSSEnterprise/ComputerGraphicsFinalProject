@@ -12,9 +12,12 @@ void Game::renderPlaying()
 {
     drawBackground();
     m_map.draw(m_window);
-    for (const auto &tower : m_towers) tower->draw(m_window);
-    for (const auto &proj : m_projectiles) proj->draw(m_window);
-    for (const auto &enemy : m_enemies) enemy->draw(m_window);
+    for (const auto &tower : m_towers)
+        tower->draw(m_window);
+    for (const auto &proj : m_projectiles)
+        proj->draw(m_window);
+    for (const auto &enemy : m_enemies)
+        enemy->draw(m_window);
     m_ui.draw(m_window);
     drawPopup();
 
@@ -53,9 +56,15 @@ void Game::renderEndScreen()
     title.setCharacterSize(zh ? 40 : 44);
     title.setStyle(sf::Text::Bold);
     if (m_state == GameState::GameWon)
-    { title.setString(LangManager::get(TextKey::Victory)); title.setFillColor(sf::Color::Yellow); }
+    {
+        title.setString(LangManager::get(TextKey::Victory));
+        title.setFillColor(sf::Color::Yellow);
+    }
     else
-    { title.setString(LangManager::get(TextKey::GameOver)); title.setFillColor(sf::Color::Red); }
+    {
+        title.setString(LangManager::get(TextKey::GameOver));
+        title.setFillColor(sf::Color::Red);
+    }
     sf::FloatRect tb = title.getLocalBounds();
     title.setOrigin(tb.width / 2, tb.height / 2);
     title.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f - 70);

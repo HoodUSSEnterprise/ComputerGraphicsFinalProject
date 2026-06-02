@@ -35,7 +35,7 @@ public:
     int getTreasureHP(int col, int row) const;
     int getTreasureMaxHP(int col, int row) const;
     int getTreasureGold(int col, int row) const;
-    int damageTreasure(int col, int row);  // 返回金币（0=没死或不是宝藏）
+    int damageTreasure(int col, int row); // 返回金币（0=没死或不是宝藏）
     bool isTreasure(int col, int row) const;
     bool isTreasureShowingHP(int col, int row) const;
     void initTreasureHP();
@@ -62,8 +62,8 @@ private:
     // 宝藏血量：每个格子独立
     int m_treasureHP[MAP_COLS][MAP_ROWS] = {};
     int m_treasureMaxHP[MAP_COLS][MAP_ROWS] = {};
-    int m_treasureIndex[MAP_COLS][MAP_ROWS] = {};  // 0/1/2 = 哪张图
-    mutable float m_treasureLastHit[MAP_COLS][MAP_ROWS] = {};  // 上次受击后经过的时间
+    int m_treasureIndex[MAP_COLS][MAP_ROWS] = {};             // 0/1/2 = 哪张图
+    mutable float m_treasureLastHit[MAP_COLS][MAP_ROWS] = {}; // 上次受击后经过的时间
 
     mutable sf::Sprite m_groundSprite;
     mutable sf::Sprite m_endSprite;

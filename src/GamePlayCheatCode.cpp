@@ -12,7 +12,9 @@ void Game::processCheatInput(sf::Uint32 unicode)
 {
     // 只接受可打印 ASCII 字母，自动转小写
     if (unicode >= 'A' && unicode <= 'Z')
+    {
         unicode = unicode + ('a' - 'A');
+    }
     if (unicode < 'a' || unicode > 'z')
     {
         // 回车键清空缓冲区
@@ -130,14 +132,16 @@ void Game::killAllEnemies()
     // 清理死亡敌人
     m_enemies.erase(
         std::remove_if(m_enemies.begin(), m_enemies.end(),
-            [](const std::shared_ptr<Enemy> &e) { return e->isDead(); }),
+                       [](const std::shared_ptr<Enemy> &e)
+                       { return e->isDead(); }),
         m_enemies.end());
 }
 
 void Game::spawnBoss()
 {
     const auto &waypoints = m_map.getWaypoints();
-    if (waypoints.empty()) return;
+    if (waypoints.empty())
+        return;
 
     int variant = Enemy::getRandomBoss();
     auto boss = std::make_shared<Enemy>(0, 80.0f, 300.0f, 50, variant);

@@ -130,7 +130,8 @@ void Game::loadMenuFont()
 
     // 暂停菜单
     m_pauseTitle.setFont(m_menuFont);
-    for (auto &btn : m_pauseButtons) btn.label.setFont(m_menuFont);
+    for (auto &btn : m_pauseButtons)
+        btn.label.setFont(m_menuFont);
 }
 
 void Game::updateMenuHover(float mx, float my)

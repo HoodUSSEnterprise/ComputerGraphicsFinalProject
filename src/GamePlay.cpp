@@ -87,7 +87,8 @@ void Game::processPlayingEvents(const sf::Event &event)
                     {
                         float discount = m_playerData.getTowerDiscount();
                         cost = static_cast<int>(baseCost * (1.0f - discount));
-                        if (cost < 1) cost = 1;
+                        if (cost < 1)
+                            cost = 1;
                     }
                     if (!m_infiniteGold && m_gold < cost)
                     {
@@ -101,7 +102,8 @@ void Game::processPlayingEvents(const sf::Event &event)
                     {
                         sf::Vector2f center = m_map.gridToWorld(gx, gy);
                         m_towers.push_back(std::make_shared<Tower>(tt, center));
-                        if (!m_infiniteGold) m_gold -= cost;
+                        if (!m_infiniteGold)
+                            m_gold -= cost;
                         m_map.setTile(gx, gy, TileType::Blocked);
                     }
                     hidePopup();
@@ -121,8 +123,13 @@ void Game::processPlayingEvents(const sf::Event &event)
                 if (mx >= px && mx <= px + 140 && my >= py && my <= py + 34)
                 {
                     if (twr->canUpgrade() && (m_infiniteGold || m_gold >= twr->getUpgradeCost()))
-                    { if (!m_infiniteGold) m_gold -= twr->getUpgradeCost(); twr->upgrade(); }
-                    hidePopup(); return;
+                    {
+                        if (!m_infiniteGold)
+                            m_gold -= twr->getUpgradeCost();
+                        twr->upgrade();
+                    }
+                    hidePopup();
+                    return;
                 }
                 if (mx >= px && mx <= px + 140 && my >= py + 38 && my <= py + 72)
                 {
@@ -131,12 +138,16 @@ void Game::processPlayingEvents(const sf::Event &event)
                     auto grid = m_map.worldToGrid(twr->getPosition().x, twr->getPosition().y);
                     m_map.setTile(grid.x, grid.y, TileType::Grass);
                     m_towers.erase(std::remove_if(m_towers.begin(), m_towers.end(),
-                        [&](auto &t) { return t.get() == twr.get(); }), m_towers.end());
+                                                  [&](auto &t)
+                                                  { return t.get() == twr.get(); }),
+                                   m_towers.end());
                     m_ui.showMessage(LangManager::get(TextKey::Msg_Sold) + std::to_wstring(refund));
-                    hidePopup(); return;
+                    hidePopup();
+                    return;
                 }
             }
-            hidePopup(); return;
+            hidePopup();
+            return;
         }
 
         auto grid = m_map.worldToGrid(mx, my);
@@ -178,7 +189,8 @@ void Game::processPlayingEvents(const sf::Event &event)
 
 void Game::update(float dt)
 {
-    if (m_paused) return;  // 暂停时不更新游戏逻辑
+    if (m_paused)
+        return; // 暂停时不更新游戏逻辑
 
     m_map.updateTreasureTimers(dt);
     updateEnemies(dt);
@@ -260,7 +272,8 @@ void Game::hidePopup() { m_popupType = PopupType::None; }
 
 void Game::drawPopup()
 {
-    if (m_popupType == PopupType::None) return;
+    if (m_popupType == PopupType::None)
+        return;
     float px = m_popupPos.x, py = m_popupPos.y;
 
     if (m_popupType == PopupType::Build)
@@ -299,16 +312,23 @@ void Game::drawPopup()
     else if (m_popupType == PopupType::Tower)
     {
         auto twr = m_popupTower.lock();
-        if (!twr) { hidePopup(); return; }
+        if (!twr)
+        {
+            hidePopup();
+            return;
+        }
 
         {
             sf::RectangleShape btn(sf::Vector2f(140, 34));
             btn.setPosition(px, py);
             btn.setFillColor(twr->canUpgrade() ? sf::Color(50, 150, 50) : sf::Color(60, 60, 60));
-            btn.setOutlineColor(sf::Color::White); btn.setOutlineThickness(1);
+            btn.setOutlineColor(sf::Color::White);
+            btn.setOutlineThickness(1);
             m_window.draw(btn);
             sf::Text label;
-            label.setFont(m_menuFont); label.setCharacterSize(15); label.setFillColor(sf::Color::White);
+            label.setFont(m_menuFont);
+            label.setCharacterSize(15);
+            label.setFillColor(sf::Color::White);
             if (twr->canUpgrade())
                 label.setString(L"Lv" + std::to_wstring(twr->getLevel()) + L" → " + std::to_wstring(twr->getLevel() + 1) + L"  $" + std::to_wstring(twr->getUpgradeCost()));
             else
@@ -320,10 +340,13 @@ void Game::drawPopup()
             sf::RectangleShape btn(sf::Vector2f(140, 34));
             btn.setPosition(px, py + 38);
             btn.setFillColor(sf::Color(180, 60, 60));
-            btn.setOutlineColor(sf::Color::White); btn.setOutlineThickness(1);
+            btn.setOutlineColor(sf::Color::White);
+            btn.setOutlineThickness(1);
             m_window.draw(btn);
             sf::Text label;
-            label.setFont(m_menuFont); label.setCharacterSize(15); label.setFillColor(sf::Color::White);
+            label.setFont(m_menuFont);
+            label.setCharacterSize(15);
+            label.setFillColor(sf::Color::White);
             label.setString(L"Sell $" + std::to_wstring(twr->getSellValue()));
             label.setPosition(px + 5, py + 38 + 6);
             m_window.draw(label);

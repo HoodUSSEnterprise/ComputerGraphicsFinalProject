@@ -37,10 +37,13 @@ void WaveManager::update(float dt, std::vector<std::shared_ptr<Enemy>> &enemies,
 
         // 最后一波首只怪 → 随机 BOSS，仅此一只
         int variant;
-        if (isLastWave && !m_boss2Spawned && m_spawnedInWave == 0) {
+        if (isLastWave && !m_boss2Spawned && m_spawnedInWave == 0)
+        {
             variant = Enemy::getRandomBoss();
             m_boss2Spawned = true;
-        } else {
+        }
+        else
+        {
             variant = Enemy::getRandomVariant();
         }
 
@@ -131,7 +134,8 @@ void WaveManager::setCustomWaves(int waveCount, int enemiesPerWave, float speedM
 
 void WaveManager::skipToLastWave()
 {
-    if (m_waves.empty() || m_allWavesComplete) return;
+    if (m_waves.empty() || m_allWavesComplete)
+        return;
 
     int lastIdx = static_cast<int>(m_waves.size()) - 1;
     m_currentWave = lastIdx;
@@ -148,5 +152,5 @@ void WaveManager::forceAllComplete()
 {
     m_waveActive = false;
     m_allWavesComplete = true;
-    m_currentWave = static_cast<int>(m_waves.size());  // 超过最大索引，标记全部完成
+    m_currentWave = static_cast<int>(m_waves.size()); // 超过最大索引，标记全部完成
 }

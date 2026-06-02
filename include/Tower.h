@@ -31,7 +31,7 @@ public:
 
     bool canFire() const;
     void resetFireTimer();
-    void applyFireRateBoost(float mult);  // 攻速加成
+    void applyFireRateBoost(float mult); // 攻速加成
 
     sf::Vector2f getPosition() const { return m_position; }
     float getRange() const { return m_stats.range; }
@@ -43,10 +43,10 @@ public:
     void setTargetAngle(float angle) { m_targetAngle = angle; }
 
     // 升级系统
-    int  getLevel() const { return m_level; }
+    int getLevel() const { return m_level; }
     bool canUpgrade() const { return m_level < 3; }
-    int  getUpgradeCost() const;
-    int  getSellValue() const;
+    int getUpgradeCost() const;
+    int getSellValue() const;
     void upgrade();
 
     static TowerStats getStats(TowerType type, int level = 1);
@@ -58,7 +58,7 @@ private:
     float m_fireTimer;
     int m_level = 1;
 
-    static sf::Texture s_textures[3][3];  // [type][level-1]
+    static sf::Texture s_textures[3][3]; // [type][level-1]
     static bool s_texturesLoaded;
 
     mutable sf::Sprite m_sprite;

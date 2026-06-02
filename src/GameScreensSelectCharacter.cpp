@@ -27,7 +27,7 @@ void Game::buildCharSelectUI()
     // 新建角色按钮
     float btnW = zh ? 380.0f : 340.0f;
     m_newCharBtn.setSize(sf::Vector2f(btnW, 80));
-    m_newCharBtn.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2, 250);  // 调整位置，两个按钮居中
+    m_newCharBtn.setPosition(WINDOW_WIDTH / 2.0f - btnW / 2, 250); // 调整位置，两个按钮居中
     m_newCharBtn.setTexture(&m_buttonTex);
     m_newCharBtn.setOutlineColor(sf::Color(100, 180, 100));
     m_newCharBtn.setOutlineThickness(2);
@@ -125,7 +125,7 @@ void Game::renderCharSelect()
         m_charHintText.setString(L"ESC: " + std::wstring(LangManager::get(TextKey::Back)));
         sf::FloatRect hb = m_charHintText.getLocalBounds();
         m_charHintText.setOrigin(hb.width / 2, hb.height / 2);
-        m_charHintText.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT - 30);  // 放在底部可见位置
+        m_charHintText.setPosition(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT - 30); // 放在底部可见位置
     }
     else
     {
@@ -182,7 +182,7 @@ void Game::processCharSelectEvents(const sf::Event &event)
     {
         m_newCharName.clear();
         m_charNameInput.setString(LangManager::get(TextKey::CharSelect_EnterName));
-        m_state = GameState::CharCreate;  // 切换到新建角色页面
+        m_state = GameState::CharCreate; // 切换到新建角色页面
         return;
     }
 

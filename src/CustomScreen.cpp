@@ -18,11 +18,14 @@ void CustomScreen::scanMaps()
     namespace fs = std::filesystem;
     std::error_code ec;
 
-    auto addDir = [&](const std::string &dir) {
-        if (!fs::exists(dir, ec)) return;
+    auto addDir = [&](const std::string &dir)
+    {
+        if (!fs::exists(dir, ec))
+            return;
         for (const auto &entry : fs::directory_iterator(dir, ec))
         {
-            if (!entry.is_regular_file()) continue;
+            if (!entry.is_regular_file())
+                continue;
             if (entry.path().extension() == ".txt")
                 m_mapList.push_back(entry.path().string());
         }
@@ -35,10 +38,14 @@ void CustomScreen::scanMaps()
     // 也扫描自定义编辑器地图
     std::string customPath = "../assets/maps/custom_editor.txt";
     if (fs::exists(customPath, ec))
+    {
         m_mapList.push_back(customPath);
+    }
 
     if (m_mapList.empty())
+    {
         m_mapList.push_back("../assets/maps/grassland/1-1.txt");
+    }
     m_params.mapFile = m_mapList[0];
 }
 
@@ -259,7 +266,7 @@ void CustomScreen::refreshValueLabels()
 
     for (int i = 0; i < 6; ++i)
     {
-        int idx = i * 4 + 2 + 4;  // +4 for map row
+        int idx = i * 4 + 2 + 4; // +4 for map row
         if (idx < static_cast<int>(m_buttons.size()))
         {
             if (vals[i].isFloat)
@@ -297,23 +304,25 @@ void CustomScreen::refreshTexts()
     static const TextKey paramKeys[] = {
         TextKey::CustomWaves, TextKey::CustomEnemies,
         TextKey::CustomGold, TextKey::CustomLives,
-        TextKey::CustomSpeed, TextKey::CustomHP
-    };
-    for (int i = 0; i < 6; ++i) {
-        int idx = i * 4 + 4;  // +4 for map row
+        TextKey::CustomSpeed, TextKey::CustomHP};
+    for (int i = 0; i < 6; ++i)
+    {
+        int idx = i * 4 + 4; // +4 for map row
         if (idx < static_cast<int>(m_buttons.size()))
             m_buttons[idx].label.setString(LangManager::get(paramKeys[i]));
     }
 
     // 刷新开始/返回按钮
     int n = static_cast<int>(m_buttons.size());
-    if (n > 28) {
+    if (n > 28)
+    {
         m_buttons[28].label.setString(LangManager::get(TextKey::CustomStart));
         sf::FloatRect lb = m_buttons[28].label.getLocalBounds();
         m_buttons[28].label.setOrigin(lb.width / 2, lb.height / 2);
         m_buttons[28].label.setPosition(WINDOW_WIDTH / 2.0f, 650);
     }
-    if (n > 29) {
+    if (n > 29)
+    {
         m_buttons[29].label.setString(LangManager::get(TextKey::Back));
         sf::FloatRect lb = m_buttons[29].label.getLocalBounds();
         m_buttons[29].label.setOrigin(lb.width / 2, lb.height / 2);
@@ -325,9 +334,11 @@ void CustomScreen::refreshTexts()
     {
         std::string name = m_mapList[m_mapIndex];
         auto pos = name.rfind('/');
-        if (pos != std::string::npos) name = name.substr(pos + 1);
+        if (pos != std::string::npos)
+            name = name.substr(pos + 1);
         pos = name.rfind('\\');
-        if (pos != std::string::npos) name = name.substr(pos + 1);
+        if (pos != std::string::npos)
+            name = name.substr(pos + 1);
         m_buttons[2].label.setString(std::wstring(name.begin(), name.end()));
         sf::FloatRect lb = m_buttons[2].label.getLocalBounds();
         float bx = m_buttons[2].bg.getPosition().x;
@@ -354,7 +365,7 @@ void CustomScreen::reloadFont()
 }
 
 int CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
-                          CustomParams &outParams)
+                         CustomParams &outParams)
 {
     if (event.type == sf::Event::MouseMoved)
     {
@@ -379,7 +390,8 @@ int CustomScreen::update(const sf::Event &event, sf::RenderWindow &window,
     sf::Vector2f worldPos = window.mapPixelToCoords(
         sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     int idx = getButtonIndex(worldPos.x, worldPos.y);
-    if (idx < 0) return 0;
+    if (idx < 0)
+        return 0;
 
     // 地图选择行 (0-3)
     if (idx >= 0 && idx <= 3)

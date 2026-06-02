@@ -34,12 +34,13 @@ Projectile::Projectile(sf::Vector2f start, sf::Vector2f targetPos,
     m_shape.setRadius(4);
     m_shape.setOrigin(4, 4);
     m_shape.setPosition(start);
-    m_shape.setFillColor(sf::Color(255, 200, 50));  // 金色子弹，区别于普通攻击
+    m_shape.setFillColor(sf::Color(255, 200, 50)); // 金色子弹，区别于普通攻击
 }
 
 void Projectile::update(float dt)
 {
-    if (m_hasHit) return;
+    if (m_hasHit)
+        return;
 
     sf::Vector2f targetPos;
 

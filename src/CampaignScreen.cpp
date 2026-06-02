@@ -2,11 +2,10 @@
 #include "LangManager.h"
 #include <iostream>
 
-static const char* biomeNamesC[] = {"grassland","desert","hell","community"};
+static const char *biomeNamesC[] = {"grassland", "desert", "hell", "community"};
 static const TextKey biomeTitleKeys[] = {
     TextKey::Biome_Grassland, TextKey::Biome_Desert,
-    TextKey::Biome_Hell, TextKey::Biome_Community
-};
+    TextKey::Biome_Hell, TextKey::Biome_Community};
 
 CampaignScreen::CampaignScreen()
 {
@@ -23,7 +22,11 @@ void CampaignScreen::loadFont()
     else
         paths = {"fonts/arial.ttf"};
     for (const auto &p : paths)
-        if (m_font.loadFromFile(p)) { std::cout << "[Font] Campaign loaded: " << p << std::endl; break; }
+        if (m_font.loadFromFile(p))
+        {
+            std::cout << "[Font] Campaign loaded: " << p << std::endl;
+            break;
+        }
 }
 
 void CampaignScreen::reloadFont()
@@ -54,17 +57,22 @@ void CampaignScreen::buildUI()
         int b = static_cast<int>(levels[i].biome);
 
         // 新群系标题行
-        if (b != curBiome) {
+        if (b != curBiome)
+        {
             curBiome = b;
             RowItem header;
             header.levelIndex = -1;
             header.bg.setSize(sf::Vector2f(600, 36));
             header.bg.setPosition(WINDOW_WIDTH / 2.0f - 300, y);
             sf::Color hdrCol(60, 60, 80);
-            if (b == 0) hdrCol = sf::Color(40, 100, 40);       // grassland green
-            else if (b == 1) hdrCol = sf::Color(160, 120, 40); // desert orange
-            else if (b == 2) hdrCol = sf::Color(140, 30, 30);  // hell red
-            else if (b == 3) hdrCol = sf::Color(60, 60, 120);  // community blue
+            if (b == 0)
+                hdrCol = sf::Color(40, 100, 40); // grassland green
+            else if (b == 1)
+                hdrCol = sf::Color(160, 120, 40); // desert orange
+            else if (b == 2)
+                hdrCol = sf::Color(140, 30, 30); // hell red
+            else if (b == 3)
+                hdrCol = sf::Color(60, 60, 120); // community blue
             header.bg.setFillColor(hdrCol);
             header.bg.setOutlineThickness(0);
             header.label.setFont(m_font);
@@ -109,22 +117,31 @@ void CampaignScreen::refreshTexts()
 
     for (auto &row : m_rows)
     {
-        if (row.levelIndex < 0) {
+        if (row.levelIndex < 0)
+        {
             // 群系标题：从后续关卡推断群系
-            for (auto &r2 : m_rows) {
-                if (r2.levelIndex >= 0) {
+            for (auto &r2 : m_rows)
+            {
+                if (r2.levelIndex >= 0)
+                {
                     int b = static_cast<int>(levels[r2.levelIndex].biome);
-                    if (b > curBiome) { curBiome = b; break; }
+                    if (b > curBiome)
+                    {
+                        curBiome = b;
+                        break;
+                    }
                 }
             }
             if (curBiome >= 0 && curBiome < 4)
                 row.label.setString(LangManager::get(biomeTitleKeys[curBiome]));
-        } else {
+        }
+        else
+        {
             int idx = row.levelIndex;
-            if (idx < static_cast<int>(levels.size())) {
+            if (idx < static_cast<int>(levels.size()))
+            {
                 row.label.setString(
-                    std::wstring(levels[idx].id.begin(), levels[idx].id.end())
-                    + L"  " + LangManager::get(levels[idx].nameKey));
+                    std::wstring(levels[idx].id.begin(), levels[idx].id.end()) + L"  " + LangManager::get(levels[idx].nameKey));
             }
         }
     }
@@ -136,20 +153,23 @@ void CampaignScreen::refreshTexts()
 }
 
 bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
-                             LevelConfig &outLevel, int unlockedCount)
+                            LevelConfig &outLevel, int unlockedCount)
 {
-    if (event.type == sf::Event::MouseMoved) {
+    if (event.type == sf::Event::MouseMoved)
+    {
         sf::Vector2f worldPos = window.mapPixelToCoords(
             sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
         auto levels = getCampaignLevels();
-        for (auto &row : m_rows) {
+        for (auto &row : m_rows)
+        {
             bool inside = row.bg.getGlobalBounds().contains(worldPos.x, worldPos.y);
             bool isLevel = row.levelIndex >= 0;
             bool isCommunity = isLevel && row.levelIndex < static_cast<int>(levels.size()) &&
                                levels[row.levelIndex].biome == Biome::Community;
             bool locked = isLevel && row.levelIndex >= unlockedCount && !isCommunity;
             row.hovered = inside && isLevel && !locked;
-            if (isLevel) {
+            if (isLevel)
+            {
                 if (locked)
                     row.bg.setFillColor(sf::Color(25, 25, 35));
                 else
@@ -160,11 +180,13 @@ bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
     }
 
     if (event.type == sf::Event::MouseButtonPressed &&
-        event.mouseButton.button == sf::Mouse::Left) {
+        event.mouseButton.button == sf::Mouse::Left)
+    {
         sf::Vector2f worldPos = window.mapPixelToCoords(
             sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
         int idx = getRowIndex(worldPos.x, worldPos.y);
-        if (idx >= 0 && m_rows[idx].levelIndex >= 0) {
+        if (idx >= 0 && m_rows[idx].levelIndex >= 0)
+        {
             int li = m_rows[idx].levelIndex;
             auto levels = getCampaignLevels();
             // 社区关卡不受锁限制
@@ -172,7 +194,8 @@ bool CampaignScreen::update(const sf::Event &event, sf::RenderWindow &window,
                                levels[li].biome == Biome::Community;
             if (li >= unlockedCount && !isCommunity)
                 return false;
-            if (li < static_cast<int>(levels.size())) {
+            if (li < static_cast<int>(levels.size()))
+            {
                 outLevel = levels[li];
                 return true;
             }
@@ -189,13 +212,15 @@ void CampaignScreen::draw(sf::RenderWindow &window, int unlockedCount) const
     window.draw(m_titleText);
 
     auto levels = getCampaignLevels();
-    for (const auto &row : m_rows) {
+    for (const auto &row : m_rows)
+    {
         window.draw(row.bg);
 
         bool isCommunity = row.levelIndex >= 0 && row.levelIndex < static_cast<int>(levels.size()) &&
                            levels[row.levelIndex].biome == Biome::Community;
         // 社区关卡不显示锁定/完成标记
-        if (!isCommunity && row.levelIndex >= 0 && row.levelIndex >= unlockedCount) {
+        if (!isCommunity && row.levelIndex >= 0 && row.levelIndex >= unlockedCount)
+        {
             window.draw(row.label);
             sf::Text lockText;
             lockText.setFont(m_font);
@@ -206,7 +231,8 @@ void CampaignScreen::draw(sf::RenderWindow &window, int unlockedCount) const
                                  row.bg.getPosition().y + 10);
             window.draw(lockText);
         }
-        else if (!isCommunity && row.levelIndex >= 0 && row.levelIndex < unlockedCount - 1) {
+        else if (!isCommunity && row.levelIndex >= 0 && row.levelIndex < unlockedCount - 1)
+        {
             window.draw(row.label);
             sf::Text doneText;
             doneText.setFont(m_font);
@@ -217,7 +243,8 @@ void CampaignScreen::draw(sf::RenderWindow &window, int unlockedCount) const
                                  row.bg.getPosition().y + 10);
             window.draw(doneText);
         }
-        else {
+        else
+        {
             window.draw(row.label);
         }
     }

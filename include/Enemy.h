@@ -28,14 +28,20 @@ public:
 
     static void loadTextures();
     static int getRandomVariant();
-    static int getRandomBoss();     // 随机选一只 BOSS
+    static int getRandomBoss(); // 随机选一只 BOSS
 
 private:
     // 纹理和变体配置
     static const int MAX_VARIANTS = 8;
     static sf::Texture s_textures[MAX_VARIANTS];
     static int s_variantCount;
-    struct VariantCfg { float hpMul; float spdMul; int rewardMul; int weight; };
+    struct VariantCfg
+    {
+        float hpMul;
+        float spdMul;
+        int rewardMul;
+        int weight;
+    };
     static VariantCfg s_variants[MAX_VARIANTS];
     friend void initVariantConfig();
 

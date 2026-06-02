@@ -39,7 +39,8 @@ TowerStats Tower::getStats(TowerType type, int level)
 
 int Tower::getUpgradeCost() const
 {
-    if (m_level >= 3) return 0;
+    if (m_level >= 3)
+        return 0;
     return getStats(m_stats.type, m_level + 1).cost / 2;
 }
 
@@ -53,7 +54,8 @@ int Tower::getSellValue() const
 
 void Tower::upgrade()
 {
-    if (m_level >= 3) return;
+    if (m_level >= 3)
+        return;
     ++m_level;
     m_stats = getStats(m_stats.type, m_level);
     applyStats();
@@ -81,7 +83,7 @@ void Tower::applyStats()
         auto sz = s_textures[t][lv].getSize();
         float sx = TILE_SIZE * 0.85f / sz.x;
         float sy = TILE_SIZE * 0.85f / sz.y;
-        float scale = std::min(sx, sy);  // 用较小缩放保证不截断
+        float scale = std::min(sx, sy); // 用较小缩放保证不截断
         m_sprite.setOrigin(sz.x / 2.0f, sz.y / 2.0f);
         m_sprite.setScale(scale, scale);
         m_sprite.setPosition(m_position);

@@ -20,15 +20,15 @@
 
 enum class GameState
 {
-    CharSelect,         // 角色选择
-    CharCreate,         // 角色创建
-    CharLoad,           // 加载已有角色
-    Menu,               // 主菜单
+    CharSelect, // 角色选择
+    CharCreate, // 角色创建
+    CharLoad,   // 加载已有角色
+    Menu,       // 主菜单
     Settings,
     CampaignSelect,
     CustomSetup,
-    Shop,               // 商店
-    MapEditor,          // 地图编辑器
+    Shop,      // 商店
+    MapEditor, // 地图编辑器
     Playing,
     GameOver,
     GameWon
@@ -48,7 +48,7 @@ private:
     bool loadGame();
     void returnToMenu();
     void enterMenu();
-    void enterMapEditor();       // 从角色选择进入主菜单
+    void enterMapEditor(); // 从角色选择进入主菜单
     void applyShopBonuses(const LevelConfig &cfg, int &gold, int &lives) const;
 
     // ---- events ----
@@ -81,7 +81,7 @@ private:
     void renderMapEditor();
     void renderPlaying();
     void renderEndScreen();
-    void renderConfirmDialog();    // 确认覆盖存档对话框
+    void renderConfirmDialog(); // 确认覆盖存档对话框
 
     // ---- gameplay ----
     void handleTowerPlacement(float x, float y);
@@ -95,7 +95,12 @@ private:
     void handleTowerUpgrade(float x, float y);
 
     // ---- 弹出菜单 ----
-    enum class PopupType { None, Build, Tower };
+    enum class PopupType
+    {
+        None,
+        Build,
+        Tower
+    };
     PopupType m_popupType = PopupType::None;
     sf::Vector2f m_popupPos;
     sf::Vector2i m_popupGrid;
@@ -118,12 +123,12 @@ private:
 
     // ---- 作弊码系统（罪恶都市风格） ----
     char m_cheatBuffer[CheatCode::BUFFER_SIZE] = {};
-    int  m_cheatBufLen = 0;
-    bool m_infiniteGold   = false;
+    int m_cheatBufLen = 0;
+    bool m_infiniteGold = false;
     bool m_infiniteDamage = false;
-    bool m_unlockAll      = false;  // 临时解锁所有关卡
+    bool m_unlockAll = false; // 临时解锁所有关卡
     sf::Clock m_cheatMsgClock;
-    sf::Text  m_cheatMsgText;
+    sf::Text m_cheatMsgText;
     void processCheatInput(sf::Uint32 unicode);
     void activateCheat(const std::string &code);
     void clearCheatBuffer();
@@ -133,7 +138,8 @@ private:
 
     // ---- 暂停菜单 ----
     bool m_paused = false;
-    struct PauseButton {
+    struct PauseButton
+    {
         sf::RectangleShape bg;
         sf::Text label;
         bool hovered = false;
@@ -148,7 +154,7 @@ private:
     sf::RenderWindow m_window;
     sf::View m_view;
     GameState m_state;
-    GameState m_stateBeforeSettings = GameState::Menu;  // 记录进入设置前的状态
+    GameState m_stateBeforeSettings = GameState::Menu; // 记录进入设置前的状态
 
     Map m_map;
     UI m_ui;
@@ -163,7 +169,7 @@ private:
     int m_gold;
     int m_lives;
     int m_currentCampaignIndex = -1;
-    float m_waveCountdown = 0;  // 下一波倒计时
+    float m_waveCountdown = 0; // 下一波倒计时
 
     sf::Clock m_clock;
 
@@ -230,9 +236,10 @@ private:
     std::string m_newCharName;
     sf::Text m_charTitleText;
     sf::Text m_charTitleCreateText;
-    sf::Text m_charNameInput;      // 显示正在输入的名字
+    sf::Text m_charNameInput; // 显示正在输入的名字
     sf::Text m_charHintText;
-    struct CharButton {
+    struct CharButton
+    {
         sf::RectangleShape bg;
         sf::Text nameText;
         sf::Text infoText;
@@ -243,7 +250,7 @@ private:
     sf::Text m_newCharBtnLabel;
     sf::RectangleShape m_loadCharBtn;
     sf::Text m_loadCharBtnLabel;
-    bool m_showCharList = false;  // 点击"加载角色"后显示列表
+    bool m_showCharList = false; // 点击"加载角色"后显示列表
     sf::RectangleShape m_confirmCharBtn;
     sf::Text m_confirmCharBtnLabel;
     void refreshCharList();
@@ -251,7 +258,8 @@ private:
     void buildCharCreateUI();
 
     // ---- 商店系统 ----
-    struct ShopButton {
+    struct ShopButton
+    {
         sf::RectangleShape bg;
         sf::Text nameText;
         sf::Text levelText;

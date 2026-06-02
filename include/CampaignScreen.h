@@ -22,7 +22,7 @@ private:
     {
         sf::RectangleShape bg;
         sf::Text label;
-        int levelIndex = -1;  // -1 = 群系标题, >=0 = 关卡在 getCampaignLevels() 中的索引
+        int levelIndex = -1; // -1 = 群系标题, >=0 = 关卡在 getCampaignLevels() 中的索引
         bool hovered = false;
     };
 

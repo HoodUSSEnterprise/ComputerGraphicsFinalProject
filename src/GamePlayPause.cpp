@@ -123,7 +123,8 @@ void Game::processPauseEvents(const sf::Event &event)
         return;
     }
 
-    if (event.type != sf::Event::MouseButtonPressed || event.mouseButton.button != sf::Mouse::Left) return;
+    if (event.type != sf::Event::MouseButtonPressed || event.mouseButton.button != sf::Mouse::Left)
+        return;
 
     sf::Vector2f worldPos = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
     float mx = worldPos.x, my = worldPos.y;

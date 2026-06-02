@@ -224,13 +224,14 @@ void Game::processSettingsEvents(const sf::Event &event)
             refreshAllTexts();
             break;
         }
-        case 2: case 3:
+        case 2:
+        case 3:
             // 背景切换
             if (!m_bgSprites.empty())
             {
                 m_bgIndex = (idx == 2) ? (m_bgIndex - 1 + m_bgSprites.size()) % m_bgSprites.size()
-                                        : (m_bgIndex + 1) % m_bgSprites.size();
-                buildSettingsUI();  // 刷新标签
+                                       : (m_bgIndex + 1) % m_bgSprites.size();
+                buildSettingsUI(); // 刷新标签
             }
             break;
         case 4:

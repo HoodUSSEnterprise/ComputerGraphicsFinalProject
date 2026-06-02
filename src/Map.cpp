@@ -100,10 +100,14 @@ void Map::loadTreasureTextures()
 void Map::loadKongTexture(const std::string &biome)
 {
     int idx = 1;
-    if (biome == "grassland") idx = 1;
-    else if (biome == "desert") idx = 2;
-    else if (biome == "hell") idx = 3;
-    else if (biome == "community") idx = 1;
+    if (biome == "grassland")
+        idx = 1;
+    else if (biome == "desert")
+        idx = 2;
+    else if (biome == "hell")
+        idx = 3;
+    else if (biome == "community")
+        idx = 1;
 
     std::string path = "textures/kong" + std::to_string(idx) + ".png";
     m_hasKongTex = m_kongTex.loadFromFile(path);

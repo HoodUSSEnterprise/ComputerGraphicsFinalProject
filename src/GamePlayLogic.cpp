@@ -8,19 +8,34 @@
 //  游戏逻辑
 // ============================================================
 
-void Game::updateTowers(float dt) { for (auto &tower : m_towers) tower->update(dt); }
-void Game::updateProjectiles(float dt) { for (auto &proj : m_projectiles) proj->update(dt); }
+void Game::updateTowers(float dt)
+{
+    for (auto &tower : m_towers)
+        tower->update(dt);
+}
+void Game::updateProjectiles(float dt)
+{
+    for (auto &proj : m_projectiles)
+        proj->update(dt);
+}
 
 void Game::updateEnemies(float dt)
 {
     const auto &waypoints = m_map.getWaypoints();
-    for (auto &enemy : m_enemies) enemy->update(dt, waypoints);
+    for (auto &enemy : m_enemies)
+        enemy->update(dt, waypoints);
     m_enemies.erase(
         std::remove_if(m_enemies.begin(), m_enemies.end(),
-            [this](const std::shared_ptr<Enemy> &e) {
-                if (e->hasReachedEnd()) { m_lives--; return true; }
-                return e->isDead();
-            }), m_enemies.end());
+                       [this](const std::shared_ptr<Enemy> &e)
+                       {
+                           if (e->hasReachedEnd())
+                           {
+                               m_lives--;
+                               return true;
+                           }
+                           return e->isDead();
+                       }),
+        m_enemies.end());
 }
 
 void Game::towerFindTargets()
@@ -40,7 +55,8 @@ void Game::towerFindTargets()
 
     for (auto &tower : m_towers)
     {
-        if (!tower->canFire()) continue;
+        if (!tower->canFire())
+            continue;
 
         // 优先攻击宝藏（如果被标记且在范围内）
         if (treasureAlive)
@@ -59,10 +75,11 @@ void Game::towerFindTargets()
                     tower->setTargetAngle(std::atan2(ady, adx) * 180.0f / 3.14159265f + 90.0f);
                 }
                 m_projectiles.push_back(std::make_shared<Projectile>(
-                    tower->getPosition(), tpos + sf::Vector2f(0, TILE_SIZE/2),
+                    tower->getPosition(), tpos + sf::Vector2f(0, TILE_SIZE / 2),
                     tower->getDamage() * dmgMul, 400.0f, tower->getType()));
                 tower->resetFireTimer();
-                if (frMul > 1.0f) tower->applyFireRateBoost(frMul);
+                if (frMul > 1.0f)
+                    tower->applyFireRateBoost(frMul);
                 continue;
             }
         }
@@ -72,12 +89,16 @@ void Game::towerFindTargets()
         float bestDist = range;
         for (auto &enemy : m_enemies)
         {
-            if (enemy->isDead() || enemy->hasReachedEnd()) continue;
+            if (enemy->isDead() || enemy->hasReachedEnd())
+                continue;
             float dx = enemy->getPosition().x - tower->getPosition().x;
             float dy = enemy->getPosition().y - tower->getPosition().y;
             float dist = std::sqrt(dx * dx + dy * dy);
             if (dist <= range && (!bestTarget || dist < bestDist))
-            { bestTarget = enemy; bestDist = dist; }
+            {
+                bestTarget = enemy;
+                bestDist = dist;
+            }
         }
         if (bestTarget)
         {
@@ -126,14 +147,17 @@ void Game::checkProjectileCollisions()
                 {
                     float dmg = m_infiniteDamage ? 99999.0f : proj->getDamage();
                     target->takeDamage(dmg);
-                    if (proj->getTowerType() == TowerType::Ice) target->applySlow(0.4f, 2.0f);
-                    if (target->isDead()) m_gold += target->getReward();
+                    if (proj->getTowerType() == TowerType::Ice)
+                        target->applySlow(0.4f, 2.0f);
+                    if (target->isDead())
+                        m_gold += target->getReward();
                 }
             }
         }
     }
     m_projectiles.erase(
         std::remove_if(m_projectiles.begin(), m_projectiles.end(),
-            [](const std::shared_ptr<Projectile> &p) { return p->hasHit(); }),
+                       [](const std::shared_ptr<Projectile> &p)
+                       { return p->hasHit(); }),
         m_projectiles.end());
 }
