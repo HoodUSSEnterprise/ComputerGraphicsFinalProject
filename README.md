@@ -95,4 +95,4 @@ cmake --build build
 
 如果你使用了本项目的代码，请在项目中包含以下声明：
 
-部分代码参考自 [ComputerGraphicsFinalProject][https://github.com/HoodUSSEnterprise/ComputerGraphicsFinalProject.git],原作者：[hhy]
+部分代码参考自 [ComputerGraphicsFinalProject][https://github.com/HoodUSSEnterprise/ComputerGraphicsFinalProject.git], 原作者：[hhy]
