@@ -11,9 +11,11 @@
 ## 下载与安装
 
 ### 1. 安装 CMake
+
 从 [cmake.org/download](https://cmake.org/download/) 下载安装包，安装时勾选"Add CMake to system PATH"。
 
 ### 2. 安装 SFML
+
 从 [sfml-dev.org](https://www.sfml-dev.org/download/sfml/2.6.1/) 下载 **2.6.1** 版本，解压到 `D:\SFML-2.6.1`（目录结构应包含 `bin/`、`include/`、`lib/`、`share/`）。
 
 如果已有 SFML DLL，说明已下载，可以跳过这一步。
@@ -70,3 +72,27 @@ cmake --build build
 └── build/                  # 构建输出目录
     └── tower_defense.exe
 ```
+
+## 许可证与使用说明
+
+本项目基于 **MIT 许可证** 开源。
+
+你可以：
+
+- 任意使用、复制、修改本项目的代码
+- 将代码用于学习或商业项目
+- 将代码作为自己项目的一部分
+
+唯一要求：
+
+- **使用时须声明出处**，即保留原始的版权声明和许可证文件
+
+本项目适合作为 **SFML 学习参考**，代码自取。
+
+---
+
+### 声明出处的示例
+
+如果你使用了本项目的代码，请在项目中包含以下声明：
+
+> 部分代码参考自 [ComputerGraphicsFinalProject]（[https://github.com/HoodUSSEnterprise/ComputerGraphicsFinalProject.git]），原作者：[hhy]
